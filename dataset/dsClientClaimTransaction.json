@@ -1,0 +1,78 @@
+{
+	"name": "dsClientClaimTransaction",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "GrahamDWHLinkedService",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "POC"
+		},
+		"annotations": [],
+		"type": "AzureSqlDWTable",
+		"schema": [
+			{
+				"name": "ClaimTransactionKey",
+				"type": "bigint",
+				"precision": 19
+			},
+			{
+				"name": "ClientCode",
+				"type": "nvarchar"
+			},
+			{
+				"name": "ValuationDate",
+				"type": "date"
+			},
+			{
+				"name": "ClaimNumber",
+				"type": "varchar"
+			},
+			{
+				"name": "Location_Level1",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Location_Level2",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Location_Level3",
+				"type": "nvarchar"
+			},
+			{
+				"name": "DateofHire",
+				"type": "date"
+			},
+			{
+				"name": "DateofBirth",
+				"type": "date"
+			},
+			{
+				"name": "Age",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Gender",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Wheelchair_Accesible",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Driver",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Occupation",
+				"type": "nvarchar"
+			}
+		],
+		"typeProperties": {
+			"schema": "stage",
+			"table": "ClientClaimTransaction"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

@@ -1,0 +1,51 @@
+{
+	"name": "dsMerakeyMasterLocationDataFile",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "InsuranceFilesLinkedService",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "POC/ClientData"
+		},
+		"annotations": [],
+		"type": "Excel",
+		"typeProperties": {
+			"sheetName": "Sheet2",
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileName": "Master Data File - Locations.xlsx",
+				"folderPath": "MERAKEY-01",
+				"fileSystem": "client-source"
+			},
+			"firstRowAsHeader": true
+		},
+		"schema": [
+			{
+				"name": "Entity_Key",
+				"type": "String"
+			},
+			{
+				"name": "Service_Line_Key",
+				"type": "String"
+			},
+			{
+				"name": "LocationKey",
+				"type": "String"
+			},
+			{
+				"name": "LocationName",
+				"type": "String"
+			},
+			{
+				"name": "Cost_Center_Key",
+				"type": "String"
+			},
+			{
+				"name": "Cost_Center_Name",
+				"type": "String"
+			}
+		]
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

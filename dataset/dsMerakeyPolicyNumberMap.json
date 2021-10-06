@@ -1,0 +1,26 @@
+{
+	"name": "dsMerakeyPolicyNumberMap",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "InsuranceFilesLinkedService",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "POC"
+		},
+		"annotations": [],
+		"type": "Excel",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileName": "MERAKEY-01 Policy Number to Policy Number Description Mapping.XLSX",
+				"folderPath": "MERAKEY-01",
+				"fileSystem": "client-source"
+			},
+			"sheetIndex": 0,
+			"firstRowAsHeader": true
+		},
+		"schema": []
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

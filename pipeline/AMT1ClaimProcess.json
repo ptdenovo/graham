@@ -1,0 +1,72 @@
+{
+	"name": "AMT1ClaimProcess",
+	"properties": {
+		"activities": [
+			{
+				"name": "ExtractCarrierFiles",
+				"type": "ExecutePipeline",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "ValidateExtractCarrierFiles",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"CarrierName": {
+							"value": "@pipeline().parameters.CarrierCode",
+							"type": "Expression"
+						},
+						"ContainerName": {
+							"value": "@pipeline().parameters.ContainerName",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "AMT1Transform",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "ExtractCarrierFiles",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "AMT1Transform",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"CarrierCode": {
+							"value": "@pipeline().parameters.CarrierCode",
+							"type": "Expression"
+						}
+					}
+				}
+			}
+		],
+		"parameters": {
+			"CarrierCode": {
+				"type": "string",
+				"defaultValue": "AMT1"
+			},
+			"ContainerName": {
+				"type": "string",
+				"defaultValue": "carrier-source"
+			}
+		},
+		"folder": {
+			"name": "POC"
+		},
+		"annotations": [],
+		"lastPublishTime": "2021-09-29T18:38:08Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

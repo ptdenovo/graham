@@ -1,0 +1,38 @@
+{
+	"name": "dsExcelTRA0Census",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "InsuranceFilesLinkedService",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"FileName": {
+				"type": "string"
+			}
+		},
+		"folder": {
+			"name": "POC"
+		},
+		"annotations": [],
+		"type": "Excel",
+		"typeProperties": {
+			"sheetName": "Census",
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileName": {
+					"value": "@dataset().FileName",
+					"type": "Expression"
+				},
+				"folderPath": "TRA0",
+				"fileSystem": "carrier-source"
+			},
+			"range": {
+				"value": "A1",
+				"type": "Expression"
+			},
+			"firstRowAsHeader": true
+		},
+		"schema": []
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

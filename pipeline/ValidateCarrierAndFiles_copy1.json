@@ -1,0 +1,120 @@
+{
+	"name": "ValidateCarrierAndFiles_copy1",
+	"properties": {
+		"activities": [
+			{
+				"name": "IsValidCarrier",
+				"type": "Lookup",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "SqlDWSource",
+						"sqlReaderStoredProcedureName": "[dbo].[IsValidCarrier]",
+						"storedProcedureParameters": {
+							"carriercode": {
+								"type": "String",
+								"value": {
+									"value": "@pipeline().parameters.CarrierName",
+									"type": "Expression"
+								}
+							}
+						},
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"dataset": {
+						"referenceName": "dsgrahamDW",
+						"type": "DatasetReference"
+					}
+				}
+			},
+			{
+				"name": "If Valid Carrier",
+				"type": "IfCondition",
+				"dependsOn": [
+					{
+						"activity": "IsValidCarrier",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"expression": {
+						"value": "@equals(activity('IsValidCarrier').output.firstRow.Valid,1)",
+						"type": "Expression"
+					},
+					"ifFalseActivities": [
+						{
+							"name": "MoveInvalidCarrierFiles",
+							"type": "ExecutePipeline",
+							"dependsOn": [],
+							"userProperties": [],
+							"typeProperties": {
+								"pipeline": {
+									"referenceName": "MoveFile",
+									"type": "PipelineReference"
+								},
+								"waitOnCompletion": true,
+								"parameters": {
+									"SourceContainer": "carrier-source",
+									"SinkContainer": "skipped-files",
+									"FilePath": {
+										"value": "@pipeline().parameters.CarrierName",
+										"type": "Expression"
+									}
+								}
+							}
+						}
+					],
+					"ifTrueActivities": [
+						{
+							"name": "ClassifyCarrierFiles",
+							"type": "ExecutePipeline",
+							"dependsOn": [],
+							"userProperties": [],
+							"typeProperties": {
+								"pipeline": {
+									"referenceName": "ClassifyCarrierFiles",
+									"type": "PipelineReference"
+								},
+								"waitOnCompletion": true,
+								"parameters": {
+									"CarrierName": {
+										"value": "@pipeline().parameters.CarrierName",
+										"type": "Expression"
+									}
+								}
+							}
+						}
+					]
+				}
+			}
+		],
+		"parameters": {
+			"CarrierName": {
+				"type": "string"
+			}
+		},
+		"variables": {
+			"name": {
+				"type": "String"
+			}
+		},
+		"folder": {
+			"name": "POC/BKP"
+		},
+		"annotations": [],
+		"lastPublishTime": "2021-06-10T12:20:38Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

@@ -1,0 +1,90 @@
+{
+	"name": "DimCauseType",
+	"properties": {
+		"folder": {
+			"name": "Dimesnion"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "dsExcelCauseType",
+						"type": "DatasetReference"
+					},
+					"name": "CauseTypeSource"
+				},
+				{
+					"dataset": {
+						"referenceName": "dsDimCauseType",
+						"type": "DatasetReference"
+					},
+					"name": "DimCauseTypeSource"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "dsDimCauseType",
+						"type": "DatasetReference"
+					},
+					"name": "DimCauseType"
+				}
+			],
+			"transformations": [
+				{
+					"name": "SelectColumns"
+				},
+				{
+					"name": "AlterCauseTypeRow"
+				},
+				{
+					"name": "DerivedCauseType"
+				},
+				{
+					"name": "AggregateCauseType"
+				},
+				{
+					"name": "AggregateCauseTypeKey"
+				},
+				{
+					"name": "DerivedKeyField"
+				},
+				{
+					"name": "SelectMaxKey"
+				},
+				{
+					"name": "JoinExisting"
+				},
+				{
+					"name": "ConditionalCauseTypeRows"
+				},
+				{
+					"name": "SelectColumnsToProcess"
+				},
+				{
+					"name": "SurrogateKeyCauseType"
+				},
+				{
+					"name": "DerivedTempKey"
+				},
+				{
+					"name": "DerivedCauseTypeKey"
+				},
+				{
+					"name": "UnionForUpsert"
+				},
+				{
+					"name": "JoinMaxKey"
+				},
+				{
+					"name": "DerivedLoadTime"
+				},
+				{
+					"name": "FilterRows"
+				}
+			],
+			"script": "source(output(\n\t\tCauseTypeId as string,\n\t\t{Cause Type} as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> CauseTypeSource\nsource(output(\n\t\tCauseTypeKey as integer,\n\t\tCauseType as string,\n\t\tLastLoadTime as timestamp,\n\t\tCauseTypeID as integer\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_COMMITTED',\n\tformat: 'table',\n\tstaged: false) ~> DimCauseTypeSource\nDerivedCauseType select(mapColumn(\n\t\tCauseTypeId,\n\t\tCauseType\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SelectColumns\nDerivedLoadTime alterRow(upsertIf(true())) ~> AlterCauseTypeRow\nCauseTypeSource derive(CauseType = trim({Cause Type}),\n\t\tCauseTypeId = toInteger(CauseTypeId)) ~> DerivedCauseType\nSelectColumns aggregate(groupBy(CauseType),\n\teach(match(!in(['CauseType'],name)), $$ = first($$))) ~> AggregateCauseType\nDimCauseTypeSource aggregate(CauseTypeKey = coalesce(max(CauseTypeKey), 0)) ~> AggregateCauseTypeKey\nAggregateCauseTypeKey derive(Key = 'MaxKey') ~> DerivedKeyField\nDerivedKeyField select(mapColumn(\n\t\tMaxCauseTypeKey = CauseTypeKey,\n\t\tKey\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SelectMaxKey\nAggregateCauseType, DimCauseTypeSource join(AggregateCauseType@CauseTypeId == DimCauseTypeSource@CauseTypeID,\n\tjoinType:'left',\n\tbroadcast: 'auto')~> JoinExisting\nSelectColumnsToProcess split(!isNull(CauseTypeKey),\n\tdisjoint: false) ~> ConditionalCauseTypeRows@(UpdateRows, InsertRows)\nFilterRows select(mapColumn(\n\t\tCauseType = AggregateCauseType@CauseType,\n\t\tCauseTypeId = AggregateCauseType@CauseTypeId,\n\t\tCauseTypeKey\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SelectColumnsToProcess\nConditionalCauseTypeRows@InsertRows keyGenerate(output(SurrogateCauseTypeKey as long),\n\tstartAt: 1L) ~> SurrogateKeyCauseType\nSurrogateKeyCauseType derive(TempKey = 'MaxKey') ~> DerivedTempKey\nJoinMaxKey derive(CauseTypeKey = SurrogateCauseTypeKey+MaxCauseTypeKey) ~> DerivedCauseTypeKey\nConditionalCauseTypeRows@UpdateRows, DerivedCauseTypeKey union(byName: true)~> UnionForUpsert\nDerivedTempKey, SelectMaxKey join(TempKey == Key,\n\tjoinType:'inner',\n\tbroadcast: 'auto')~> JoinMaxKey\nUnionForUpsert derive(LoadTime = currentTimestamp()) ~> DerivedLoadTime\nJoinExisting filter(!isNull(AggregateCauseType@CauseTypeId) && lower(AggregateCauseType@CauseType)!='unknown') ~> FilterRows\nAlterCauseTypeRow sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinput(\n\t\tCauseTypeKey as integer,\n\t\tCauseType as string,\n\t\tLastLoadTime as timestamp,\n\t\tCauseTypeID as integer\n\t),\n\tdeletable:false,\n\tinsertable:false,\n\tupdateable:false,\n\tupsertable:true,\n\tkeys:['CauseTypeKey'],\n\tformat: 'table',\n\tstaged: false,\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError',\n\tmapColumn(\n\t\tCauseTypeKey,\n\t\tCauseType,\n\t\tLastLoadTime = LoadTime,\n\t\tCauseTypeID = CauseTypeId\n\t)) ~> DimCauseType"
+		}
+	}
+}

@@ -1,0 +1,41 @@
+{
+	"name": "dsDimInjuryType",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "GrahamDWHLinkedService",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "POC"
+		},
+		"annotations": [],
+		"type": "AzureSqlDWTable",
+		"schema": [
+			{
+				"name": "InjuryTypeKey",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "InjuryType",
+				"type": "nvarchar"
+			},
+			{
+				"name": "LastLoadTime",
+				"type": "smalldatetime",
+				"precision": 16,
+				"scale": 0
+			},
+			{
+				"name": "InjuryTypeID",
+				"type": "int",
+				"precision": 10
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "DimInjuryType"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

@@ -1,0 +1,41 @@
+{
+	"name": "dsDimCauseType",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "GrahamDWHLinkedService",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "POC"
+		},
+		"annotations": [],
+		"type": "AzureSqlDWTable",
+		"schema": [
+			{
+				"name": "CauseTypeKey",
+				"type": "smallint",
+				"precision": 5
+			},
+			{
+				"name": "CauseType",
+				"type": "nvarchar"
+			},
+			{
+				"name": "LastLoadTime",
+				"type": "smalldatetime",
+				"precision": 16,
+				"scale": 0
+			},
+			{
+				"name": "CauseTypeID",
+				"type": "int",
+				"precision": 10
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "DimCauseType"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

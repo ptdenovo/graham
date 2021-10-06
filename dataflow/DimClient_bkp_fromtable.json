@@ -1,0 +1,48 @@
+{
+	"name": "DimClient_bkp_fromtable",
+	"properties": {
+		"folder": {
+			"name": "Copy"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "dsgrahamDB",
+						"type": "DatasetReference"
+					},
+					"name": "Client"
+				},
+				{
+					"dataset": {
+						"referenceName": "dsQuery",
+						"type": "DatasetReference"
+					},
+					"name": "DimClient"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "dsDimClient",
+						"type": "DatasetReference"
+					},
+					"name": "UpdateDimClient"
+				}
+			],
+			"transformations": [
+				{
+					"name": "JoinSource"
+				},
+				{
+					"name": "SelectRecords"
+				},
+				{
+					"name": "AlterClientRow"
+				}
+			],
+			"script": "source(output(\n\t\tClientKey as short,\n\t\tClientCode as string,\n\t\tClientName as string,\n\t\tEnabled as integer,\n\t\tIndustry as string,\n\t\tLocation1_Enabled as integer,\n\t\tLocation2_Enabled as integer,\n\t\tLocation3_Enabled as integer,\n\t\tLocation4_Enabled as integer,\n\t\tLocation5_Enabled as integer,\n\t\tLocation6_Enabled as integer,\n\t\tLocation7_Enabled as integer,\n\t\tLocation8_Enabled as integer,\n\t\tLocation9_Enabled as integer,\n\t\tLocation10_Enabled as integer,\n\t\tHQ_State as string,\n\t\tNAICS_Code as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_COMMITTED',\n\tquery: 'SELECT ClientID AS ClientKey,ClientCode,ClientName, \\nCASE WHEN [Enabled]=\\'YES\\' THEN 1 ELSE 0 END [Enabled],\\n[Industry],\\nCASE WHEN [Location1_Enabled]=\\'YES\\' THEN 1 ELSE 0 END [Location1_Enabled],\\nCASE WHEN [Location2_Enabled]=\\'YES\\' THEN 1 ELSE 0 END [Location2_Enabled],\\nCASE WHEN [Location3_Enabled]=\\'YES\\' THEN 1 ELSE 0 END [Location3_Enabled],\\nCASE WHEN [Location4_Enabled]=\\'YES\\' THEN 1 ELSE 0 END [Location4_Enabled],\\nCASE WHEN [Location5_Enabled]=\\'YES\\' THEN 1 ELSE 0 END [Location5_Enabled],\\nCASE WHEN [Location6_Enabled]=\\'YES\\' THEN 1 ELSE 0 END [Location6_Enabled],\\nCASE WHEN [Location7_Enabled]=\\'YES\\' THEN 1 ELSE 0 END [Location7_Enabled],\\nCASE WHEN [Location8_Enabled]=\\'YES\\' THEN 1 ELSE 0 END [Location8_Enabled],\\nCASE WHEN [Location9_Enabled]=\\'YES\\' THEN 1 ELSE 0 END [Location9_Enabled],\\nCASE WHEN [Location10_Enabled]=\\'YES\\' THEN 1 ELSE 0 END [Location10_Enabled],\\nHQ_State,NAICS_Code\\nFROM [dbo].[Client]',\n\tformat: 'query') ~> Client\nsource(output(\n\t\tClientKey as short,\n\t\tClientCode as string,\n\t\tClientName as string,\n\t\tEnabled as boolean,\n\t\tIndustry as string,\n\t\tLocation1_Enabled as boolean,\n\t\tLocation2_Enabled as boolean,\n\t\tLocation3_Enabled as boolean,\n\t\tLocation4_Enabled as boolean,\n\t\tLocation5_Enabled as boolean,\n\t\tLocation6_Enabled as boolean,\n\t\tLocation7_Enabled as boolean,\n\t\tLocation8_Enabled as boolean,\n\t\tLocation9_Enabled as boolean,\n\t\tLocation10_Enabled as boolean,\n\t\tHQ_State as string,\n\t\tNAICS_Code as string,\n\t\tLastLoadTime as timestamp\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_COMMITTED',\n\tquery: 'SELECT * FROM DimClient',\n\tformat: 'query',\n\tstaged: false) ~> DimClient\nClient, DimClient join(Client@ClientCode == DimClient@ClientCode,\n\tjoinType:'left',\n\tbroadcast: 'auto')~> JoinSource\nJoinSource select(mapColumn(\n\t\tClientKey = Client@ClientKey,\n\t\tClientCode = Client@ClientCode,\n\t\tClientName = Client@ClientName,\n\t\tEnabled = Client@Enabled,\n\t\tIndustry = Client@Industry,\n\t\tLocation1_Enabled = Client@Location1_Enabled,\n\t\tLocation2_Enabled = Client@Location2_Enabled,\n\t\tLocation3_Enabled = Client@Location3_Enabled,\n\t\tLocation4_Enabled = Client@Location4_Enabled,\n\t\tLocation5_Enabled = Client@Location5_Enabled,\n\t\tLocation6_Enabled = Client@Location6_Enabled,\n\t\tLocation7_Enabled = Client@Location7_Enabled,\n\t\tLocation8_Enabled = Client@Location8_Enabled,\n\t\tLocation9_Enabled = Client@Location9_Enabled,\n\t\tLocation10_Enabled = Client@Location10_Enabled,\n\t\tHQ_State = Client@HQ_State,\n\t\tNAICS_Code = Client@NAICS_Code\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SelectRecords\nSelectRecords alterRow(upsertIf(true())) ~> AlterClientRow\nAlterClientRow sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinput(\n\t\tClientKey as integer,\n\t\tClientCode as string,\n\t\tClientName as string,\n\t\tEnabled as boolean,\n\t\tIndustry as string,\n\t\tLocation1_Enabled as boolean,\n\t\tLocation2_Enabled as boolean,\n\t\tLocation3_Enabled as boolean,\n\t\tLocation4_Enabled as boolean,\n\t\tLocation5_Enabled as boolean,\n\t\tLocation6_Enabled as boolean,\n\t\tLocation7_Enabled as boolean,\n\t\tLocation8_Enabled as boolean,\n\t\tLocation9_Enabled as boolean,\n\t\tLocation10_Enabled as boolean,\n\t\tNAICS_Code as string,\n\t\tLastLoadTime as timestamp,\n\t\tHQ_State as string\n\t),\n\tdeletable:false,\n\tinsertable:false,\n\tupdateable:false,\n\tupsertable:true,\n\tkeys:['ClientKey'],\n\tformat: 'table',\n\tstaged: false,\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError',\n\tmapColumn(\n\t\tClientKey,\n\t\tClientCode,\n\t\tClientName,\n\t\tEnabled,\n\t\tIndustry,\n\t\tLocation1_Enabled,\n\t\tLocation2_Enabled,\n\t\tLocation3_Enabled,\n\t\tLocation4_Enabled,\n\t\tLocation5_Enabled,\n\t\tLocation6_Enabled,\n\t\tLocation7_Enabled,\n\t\tLocation8_Enabled,\n\t\tLocation9_Enabled,\n\t\tLocation10_Enabled,\n\t\tNAICS_Code,\n\t\tHQ_State\n\t)) ~> UpdateDimClient"
+		}
+	}
+}

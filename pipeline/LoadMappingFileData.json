@@ -1,0 +1,86 @@
+{
+	"name": "LoadMappingFileData",
+	"properties": {
+		"activities": [
+			{
+				"name": "FieldValueMapping",
+				"type": "ExecutePipeline",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "FieldValueMapping",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true
+				}
+			},
+			{
+				"name": "InsuredIdentifierClientCodeMapping",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "FieldValueMapping",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "InsuredIdentifierClientCodeMapping",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true
+				}
+			},
+			{
+				"name": "ClaimCorrectionMap",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "InsuredIdentifierClientCodeMapping",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "ClaimCorrectionMap",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true
+				}
+			},
+			{
+				"name": "FieldValueCombinedMap",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "ClaimCorrectionMap",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "FieldValueCombinedMap",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true
+				}
+			}
+		],
+		"folder": {
+			"name": "POC/Extract Mapping File Data"
+		},
+		"annotations": [],
+		"lastPublishTime": "2021-09-22T09:40:20Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

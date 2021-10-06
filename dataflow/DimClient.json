@@ -1,0 +1,115 @@
+{
+	"name": "DimClient",
+	"properties": {
+		"folder": {
+			"name": "Dimesnion"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "dsQuery",
+						"type": "DatasetReference"
+					},
+					"name": "DimClient"
+				},
+				{
+					"dataset": {
+						"referenceName": "dsClientControl",
+						"type": "DatasetReference"
+					},
+					"name": "ExcelClientControl"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "dsDimClient",
+						"type": "DatasetReference"
+					},
+					"name": "sinkDisableClient"
+				},
+				{
+					"dataset": {
+						"referenceName": "dsDimClient",
+						"type": "DatasetReference"
+					},
+					"name": "sinkActiveClient"
+				}
+			],
+			"transformations": [
+				{
+					"name": "SelectCilentControlColumns"
+				},
+				{
+					"name": "FilterRowsWithoutClientCode"
+				},
+				{
+					"name": "DeriveDeletedStatus"
+				},
+				{
+					"name": "AllClients"
+				},
+				{
+					"name": "ActiveClients"
+				},
+				{
+					"name": "SelectColsOfActiveClients"
+				},
+				{
+					"name": "AggregateClientKey"
+				},
+				{
+					"name": "KeyForMaxClient"
+				},
+				{
+					"name": "ConditionalSplitClientRecord"
+				},
+				{
+					"name": "SurrogateClientKey"
+				},
+				{
+					"name": "DerivedTempMaxKey"
+				},
+				{
+					"name": "JoinWithMaxKey"
+				},
+				{
+					"name": "DerivedNewClientKey"
+				},
+				{
+					"name": "SelectInsertRows"
+				},
+				{
+					"name": "UnionInsertRows"
+				},
+				{
+					"name": "DeActivatedClients"
+				},
+				{
+					"name": "DerivedDeletedKey"
+				},
+				{
+					"name": "SelectDeActivatedClients"
+				},
+				{
+					"name": "SelectRowsToSave"
+				},
+				{
+					"name": "AlterActiveClients"
+				},
+				{
+					"name": "AlterDeActivatedClients"
+				},
+				{
+					"name": "DerivedEnableStatus"
+				},
+				{
+					"name": "Select1"
+				}
+			],
+			"script": "source(output(\n\t\tClientKey as short,\n\t\tClientCode as string,\n\t\tClientName as string,\n\t\tEnabled as boolean,\n\t\tIndustry as string,\n\t\tLocation1_Enabled as boolean,\n\t\tLocation2_Enabled as boolean,\n\t\tLocation3_Enabled as boolean,\n\t\tLocation4_Enabled as boolean,\n\t\tLocation5_Enabled as boolean,\n\t\tLocation6_Enabled as boolean,\n\t\tLocation7_Enabled as boolean,\n\t\tLocation8_Enabled as boolean,\n\t\tLocation9_Enabled as boolean,\n\t\tLocation10_Enabled as boolean,\n\t\tHQ_State as string,\n\t\tNAICS_Code as string,\n\t\tLastLoadTime as timestamp\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_COMMITTED',\n\tquery: 'SELECT * FROM DimClient',\n\tformat: 'query',\n\tstaged: false) ~> DimClient\nsource(output(\n\t\t{Client Code} as string,\n\t\t{Client Contacts Who Have GA Access} as string,\n\t\t{Email Addresses for Client Contacts} as string,\n\t\t{User ID} as string,\n\t\t{Date Access Provided} as string,\n\t\tIndustry as string,\n\t\t{Client Name} as string,\n\t\tEnabled as string,\n\t\t{Logo Filename} as string,\n\t\tCalculateClientListChart as string,\n\t\tShowClientListTab as string,\n\t\t{Background Color} as string,\n\t\t{Tab Color} as string,\n\t\t{Title Color} as string,\n\t\t{Border Color} as string,\n\t\t{Caption Background} as string,\n\t\t{Color 3} as string,\n\t\t{Color 4} as string,\n\t\t{Color 5} as string,\n\t\t{Color 6} as string,\n\t\t{Line Color 2} as string,\n\t\t{Line Color 3} as string,\n\t\t{Location 1 Enabled} as string,\n\t\t{Location 2 Enabled} as string,\n\t\t{Location 3 Enabled} as string,\n\t\t{Location 4 Enabled} as string,\n\t\t{Location 5 Enabled} as string,\n\t\t{Location 6 Enabled} as string,\n\t\t{Location 7 Enabled} as string,\n\t\t{Location 8 Enabled} as string,\n\t\t{Location 9 Enabled} as string,\n\t\t{Location 10 Enabled} as string,\n\t\t{HQ State} as string,\n\t\t{NAICS Code} as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> ExcelClientControl\nExcelClientControl select(mapColumn(\n\t\tExcelClientCode = {Client Code},\n\t\tExcelIndustry = Industry,\n\t\tExcelClientName = {Client Name},\n\t\tExcelEnabled = Enabled,\n\t\tExcelLocation1_Enabled = {Location 1 Enabled},\n\t\tExcelLocation2_Enabled = {Location 2 Enabled},\n\t\tExcelLocation3_Enabled = {Location 3 Enabled},\n\t\tExcelLocation4_Enabled = {Location 4 Enabled},\n\t\tExcelLocation5_Enabled = {Location 5 Enabled},\n\t\tExcelLocation6_Enabled = {Location 6 Enabled},\n\t\tExcelLocation7_Enabled = {Location 7 Enabled},\n\t\tExcelLocation8_Enabled = {Location 8 Enabled},\n\t\tExcelLocation9_Enabled = {Location 9 Enabled},\n\t\tExcelLocation10_Enabled = {Location 10 Enabled},\n\t\tExcelHQState = {HQ State},\n\t\tExcelNAICSCode = {NAICS Code}\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SelectCilentControlColumns\nSelectCilentControlColumns filter(not(isNull(ExcelClientCode))) ~> FilterRowsWithoutClientCode\nFilterRowsWithoutClientCode derive(Deleted = false()) ~> DeriveDeletedStatus\nDeriveDeletedStatus, DimClient join(ExcelClientCode == ClientCode,\n\tjoinType:'outer',\n\tbroadcast: 'auto')~> AllClients\nAllClients filter(not(isNull(ExcelClientCode))) ~> ActiveClients\nActiveClients select(mapColumn(\n\t\tExcelClientCode,\n\t\tExcelIndustry,\n\t\tExcelClientName,\n\t\tExcelEnabled,\n\t\tExcelLocation1_Enabled,\n\t\tExcelLocation2_Enabled,\n\t\tExcelLocation3_Enabled,\n\t\tExcelLocation4_Enabled,\n\t\tExcelLocation5_Enabled,\n\t\tExcelLocation6_Enabled,\n\t\tExcelLocation7_Enabled,\n\t\tExcelLocation8_Enabled,\n\t\tExcelLocation9_Enabled,\n\t\tExcelLocation10_Enabled,\n\t\tExcelHQState,\n\t\tExcelNAICSCode,\n\t\tDeleted,\n\t\tClientKey\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SelectColsOfActiveClients\nDimClient aggregate(MaxClientKey = max(ClientKey)) ~> AggregateClientKey\nAggregateClientKey derive(Key = 'Client') ~> KeyForMaxClient\nSelectColsOfActiveClients split(!isNull(ClientKey),\n\tdisjoint: false) ~> ConditionalSplitClientRecord@(UpdateStream, InsertStream)\nConditionalSplitClientRecord@InsertStream keyGenerate(output(SurrogateClientKey as long),\n\tstartAt: 1L) ~> SurrogateClientKey\nSurrogateClientKey derive(TempMaxKey = 'Client') ~> DerivedTempMaxKey\nDerivedTempMaxKey, KeyForMaxClient join(TempMaxKey == Key,\n\tjoinType:'inner',\n\tbroadcast: 'auto')~> JoinWithMaxKey\nJoinWithMaxKey derive(ClientKey = SurrogateClientKey+MaxClientKey) ~> DerivedNewClientKey\nDerivedNewClientKey select(mapColumn(\n\t\tExcelClientCode,\n\t\tExcelIndustry,\n\t\tExcelClientName,\n\t\tExcelEnabled,\n\t\tExcelLocation1_Enabled,\n\t\tExcelLocation2_Enabled,\n\t\tExcelLocation3_Enabled,\n\t\tExcelLocation4_Enabled,\n\t\tExcelLocation5_Enabled,\n\t\tExcelLocation6_Enabled,\n\t\tExcelLocation7_Enabled,\n\t\tExcelLocation8_Enabled,\n\t\tExcelLocation9_Enabled,\n\t\tExcelLocation10_Enabled,\n\t\tExcelHQState,\n\t\tExcelNAICSCode,\n\t\tDeleted,\n\t\tClientKey\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SelectInsertRows\nSelect1, SelectInsertRows union(byName: true)~> UnionInsertRows\nAllClients filter(isNull({ExcelClientCode})) ~> DeActivatedClients\nDeActivatedClients derive(Enabled = toBoolean('0'),\n\t\tLastLoadTime = currentTimestamp()) ~> DerivedDeletedKey\nDerivedDeletedKey select(mapColumn(\n\t\tClientKey,\n\t\tClientCode,\n\t\tClientName,\n\t\tEnabled,\n\t\tIndustry,\n\t\tLocation1_Enabled,\n\t\tLocation2_Enabled,\n\t\tLocation3_Enabled,\n\t\tLocation4_Enabled,\n\t\tLocation5_Enabled,\n\t\tLocation6_Enabled,\n\t\tLocation7_Enabled,\n\t\tLocation8_Enabled,\n\t\tLocation9_Enabled,\n\t\tLocation10_Enabled,\n\t\tHQ_State,\n\t\tNAICS_Code,\n\t\tLastLoadTime\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SelectDeActivatedClients\nDerivedEnableStatus select(mapColumn(\n\t\tClientCode = ExcelClientCode,\n\t\tIndustry = ExcelIndustry,\n\t\tClientName = ExcelClientName,\n\t\tEnabled = ExcelEnabled,\n\t\tLocation1_Enabled = ExcelLocation1_Enabled,\n\t\tLocation2_Enabled = ExcelLocation2_Enabled,\n\t\tLocation3_Enabled = ExcelLocation3_Enabled,\n\t\tLocation4_Enabled = ExcelLocation4_Enabled,\n\t\tLocation5_Enabled = ExcelLocation5_Enabled,\n\t\tLocation6_Enabled = ExcelLocation6_Enabled,\n\t\tLocation7_Enabled = ExcelLocation7_Enabled,\n\t\tLocation8_Enabled = ExcelLocation8_Enabled,\n\t\tLocation9_Enabled = ExcelLocation9_Enabled,\n\t\tLocation10_Enabled = ExcelLocation10_Enabled,\n\t\tHQState = ExcelHQState,\n\t\tNAICSCode = ExcelNAICSCode,\n\t\tDeleted,\n\t\tClientKey,\n\t\tLastLoadTime\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SelectRowsToSave\nSelectRowsToSave alterRow(upsertIf(true())) ~> AlterActiveClients\nSelectDeActivatedClients alterRow(updateIf(true())) ~> AlterDeActivatedClients\nUnionInsertRows derive(ExcelEnabled = true(),\n\t\tExcelLocation1_Enabled = toBoolean(ExcelLocation1_Enabled),\n\t\tExcelLocation2_Enabled = toBoolean(ExcelLocation2_Enabled),\n\t\tExcelLocation3_Enabled = toBoolean(ExcelLocation3_Enabled),\n\t\tExcelLocation4_Enabled = toBoolean(ExcelLocation4_Enabled),\n\t\tExcelLocation5_Enabled = toBoolean(ExcelLocation5_Enabled),\n\t\tExcelLocation6_Enabled = toBoolean(ExcelLocation6_Enabled),\n\t\tExcelLocation7_Enabled = toBoolean(ExcelLocation7_Enabled),\n\t\tExcelLocation8_Enabled = toBoolean(ExcelLocation8_Enabled),\n\t\tExcelLocation9_Enabled = toBoolean(ExcelLocation9_Enabled),\n\t\tExcelLocation10_Enabled = toBoolean(ExcelLocation10_Enabled),\n\t\tLastLoadTime = currentTimestamp()) ~> DerivedEnableStatus\nConditionalSplitClientRecord@UpdateStream select(mapColumn(\n\t\tExcelClientCode,\n\t\tExcelIndustry,\n\t\tExcelClientName,\n\t\tExcelEnabled,\n\t\tExcelLocation1_Enabled,\n\t\tExcelLocation2_Enabled,\n\t\tExcelLocation3_Enabled,\n\t\tExcelLocation4_Enabled,\n\t\tExcelLocation5_Enabled,\n\t\tExcelLocation6_Enabled,\n\t\tExcelLocation7_Enabled,\n\t\tExcelLocation8_Enabled,\n\t\tExcelLocation9_Enabled,\n\t\tExcelLocation10_Enabled,\n\t\tExcelHQState,\n\t\tExcelNAICSCode,\n\t\tDeleted,\n\t\tClientKey\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> Select1\nAlterDeActivatedClients sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinput(\n\t\tClientKey as integer,\n\t\tClientCode as string,\n\t\tClientName as string,\n\t\tEnabled as boolean,\n\t\tIndustry as string,\n\t\tLocation1_Enabled as boolean,\n\t\tLocation2_Enabled as boolean,\n\t\tLocation3_Enabled as boolean,\n\t\tLocation4_Enabled as boolean,\n\t\tLocation5_Enabled as boolean,\n\t\tLocation6_Enabled as boolean,\n\t\tLocation7_Enabled as boolean,\n\t\tLocation8_Enabled as boolean,\n\t\tLocation9_Enabled as boolean,\n\t\tLocation10_Enabled as boolean,\n\t\tNAICS_Code as string,\n\t\tLastLoadTime as timestamp,\n\t\tHQ_State as string\n\t),\n\tdeletable:false,\n\tinsertable:false,\n\tupdateable:true,\n\tupsertable:false,\n\tkeys:['ClientKey'],\n\tformat: 'table',\n\tstaged: false,\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\tsaveOrder: 2,\n\terrorHandlingOption: 'stopOnFirstError',\n\tmapColumn(\n\t\tClientKey,\n\t\tEnabled,\n\t\tLastLoadTime\n\t)) ~> sinkDisableClient\nAlterActiveClients sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinput(\n\t\tClientKey as integer,\n\t\tClientCode as string,\n\t\tClientName as string,\n\t\tEnabled as boolean,\n\t\tIndustry as string,\n\t\tLocation1_Enabled as boolean,\n\t\tLocation2_Enabled as boolean,\n\t\tLocation3_Enabled as boolean,\n\t\tLocation4_Enabled as boolean,\n\t\tLocation5_Enabled as boolean,\n\t\tLocation6_Enabled as boolean,\n\t\tLocation7_Enabled as boolean,\n\t\tLocation8_Enabled as boolean,\n\t\tLocation9_Enabled as boolean,\n\t\tLocation10_Enabled as boolean,\n\t\tNAICS_Code as string,\n\t\tLastLoadTime as timestamp,\n\t\tHQ_State as string\n\t),\n\tdeletable:false,\n\tinsertable:false,\n\tupdateable:false,\n\tupsertable:true,\n\tkeys:['ClientCode'],\n\tformat: 'table',\n\tstaged: false,\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\tsaveOrder: 1,\n\terrorHandlingOption: 'stopOnFirstError',\n\tmapColumn(\n\t\tClientKey,\n\t\tClientCode,\n\t\tClientName,\n\t\tEnabled,\n\t\tIndustry,\n\t\tLocation1_Enabled,\n\t\tLocation2_Enabled,\n\t\tLocation3_Enabled,\n\t\tLocation4_Enabled,\n\t\tLocation5_Enabled,\n\t\tLocation6_Enabled,\n\t\tLocation7_Enabled,\n\t\tLocation8_Enabled,\n\t\tLocation9_Enabled,\n\t\tLocation10_Enabled,\n\t\tNAICS_Code = NAICSCode,\n\t\tLastLoadTime,\n\t\tHQ_State = HQState\n\t)) ~> sinkActiveClient"
+		}
+	}
+}

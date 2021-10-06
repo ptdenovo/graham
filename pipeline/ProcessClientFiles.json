@@ -1,0 +1,51 @@
+{
+	"name": "ProcessClientFiles",
+	"properties": {
+		"activities": [
+			{
+				"name": "ExtractKeyshumEmployeeCount",
+				"type": "ExecutePipeline",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "ExtractKeyshumEmployeeCount",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true
+				}
+			},
+			{
+				"name": "ExtractKeyshumEmkayClaim",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "ExtractKeyshumEmployeeCount",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "ExtractKeyshumEmkayClaim",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true
+				}
+			}
+		],
+		"parameters": {
+			"ContainerName": {
+				"type": "string"
+			}
+		},
+		"folder": {
+			"name": "ClientData"
+		},
+		"annotations": [],
+		"lastPublishTime": "2021-09-13T17:03:22Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

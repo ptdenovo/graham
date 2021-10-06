@@ -1,0 +1,70 @@
+{
+	"name": "FillerClaims",
+	"properties": {
+		"folder": {
+			"name": "FillerClaims"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "dsFillerClaim",
+						"type": "DatasetReference"
+					},
+					"name": "FillerClaimFile"
+				},
+				{
+					"dataset": {
+						"referenceName": "dsQuery",
+						"type": "DatasetReference"
+					},
+					"name": "ClientCarrierGroup"
+				},
+				{
+					"dataset": {
+						"referenceName": "dsQuery",
+						"type": "DatasetReference"
+					},
+					"name": "DimClaim"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "dsDimClaim",
+						"type": "DatasetReference"
+					},
+					"name": "snkDimClaim"
+				}
+			],
+			"transformations": [
+				{
+					"name": "FilterTest"
+				},
+				{
+					"name": "JoinClientCarrierGroup"
+				},
+				{
+					"name": "NotExistingInDimClaim"
+				},
+				{
+					"name": "SelectClaim"
+				},
+				{
+					"name": "DerivedDimClaimColumns"
+				},
+				{
+					"name": "DerivedClaimHashKey"
+				},
+				{
+					"name": "SelectClientCarrierGroup"
+				},
+				{
+					"name": "DerivedPolicyNumber"
+				}
+			],
+			"script": "parameters{\n\tCarrierCode as string\n}\nsource(output(\n\t\t{Client Code} as string,\n\t\t{Coverage (Line of Business)} as string,\n\t\t{Policy Effective Date} as date,\n\t\t{Carrier Code} as string,\n\t\t{Policy Number} as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\twildcardPaths:[(concat($CarrierCode, '/',$CarrierCode, ' Filler Claims.xlsx'))]) ~> FillerClaimFile\nsource(output(\n\t\tClientCarrierGroupKey as integer,\n\t\tClientKey as short,\n\t\tClientCode as string,\n\t\tLOBCode as string,\n\t\tPolicyEffectiveDate as date,\n\t\tLineOfBusinessKey as short,\n\t\tCarrierKey as short\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_COMMITTED',\n\tquery: (concat('SELECT ClientCarrierGroupKey,ClientKey,ClientCode,LOBCode,PolicyEffectiveDate,LineOfBusinessKey,CarrierKey FROM DimClientCarrierGroup WHERE CarrierCode=',\"'\", $CarrierCode,\"'\")),\n\tformat: 'query',\n\tstaged: false) ~> ClientCarrierGroup\nsource(output(\n\t\tClaimKey as long,\n\t\tClaimNumber as string,\n\t\tPolicyNumber as string,\n\t\tPolicyEffectiveDate as date,\n\t\tPolicyExpirationDate as date,\n\t\tClaimant as string,\n\t\tAccident_Description as string,\n\t\tDateofLoss as date,\n\t\tReportedDate as date,\n\t\tClosedDate as date,\n\t\tDateOfHire as date,\n\t\tDriver as string,\n\t\tPolicyYear as short,\n\t\tPolicyPeriod as string,\n\t\tAge as integer,\n\t\tClientCarrierGroupKey as integer,\n\t\tTimeOfLoss as string,\n\t\tLagTime as string,\n\t\tDaysToClose as integer,\n\t\tTenure as short,\n\t\tOccurrence_State as string,\n\t\tBenefit_State as string,\n\t\tClientKey as short,\n\t\tLastLoadTime as timestamp,\n\t\tDayOfWeek as string,\n\t\tLineOfBusinessKey as short,\n\t\tCarrierKey as short,\n\t\tClaimHashKey as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_COMMITTED',\n\tquery: (concat('SELECT dc.* FROM DimClaim dc INNER JOIN DimCarrier c ON dc.CarrierKey=c.CarrierKey WHERE c.CarrierCode=',\"'\",$CarrierCode,\"'\" )),\n\tformat: 'query',\n\tstaged: false) ~> DimClaim\nFillerClaimFile filter(!isNull({Client Code})) ~> FilterTest\nDerivedPolicyNumber, ClientCarrierGroup join(trim({Coverage (Line of Business)}) == LOBCode\n\t&& {Client Code} == ClientCode\n\t&& {Policy Effective Date} == PolicyEffectiveDate,\n\tjoinType:'inner',\n\tbroadcast: 'auto')~> JoinClientCarrierGroup\nSelectClientCarrierGroup, SelectClaim exists(SelectClientCarrierGroup@ClientCarrierGroupKey == SelectClaim@ClientCarrierGroupKey\n\t&& SelectClientCarrierGroup@PolicyNumber== SelectClaim@PolicyNumber,\n\tnegate:true,\n\tbroadcast: 'left')~> NotExistingInDimClaim\nDimClaim select(skipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SelectClaim\nNotExistingInDimClaim derive(ClaimNumber = 'N/A',\n\t\tPolicyNumber = coalesce({Policy Number},'N/A'),\n\t\tPolicyEffectiveDate = PolicyEffectiveDate,\n\t\tPolicyExpirationDate = addMonths(PolicyEffectiveDate, 12),\n\t\tClaimant = 'Unknown',\n\t\tPolicyYear = year(PolicyEffectiveDate),\n\t\tPolicyPeriod = concat(toString(year({Policy Effective Date})),'-',toString(year({Policy Effective Date})+1)),\n\t\tLastLoadTime = currentTimestamp(),\n\t\tFillerClaim = toBoolean('1'),\n\t\tAccident_Description = 'N/A',\n\t\tDriver = 'N/A',\n\t\tOccurance_State = 'N/A',\n\t\tBenefit_State = 'N/A',\n\t\tDayOfWeek = 'N/A') ~> DerivedDimClaimColumns\nDerivedDimClaimColumns derive(ClaimHashKey = md5(ClaimNumber,trim(Claimant),ClientCarrierGroupKey,1)) ~> DerivedClaimHashKey\nJoinClientCarrierGroup select(mapColumn(\n\t\t{Client Code},\n\t\t{Coverage (Line of Business)},\n\t\t{Policy Effective Date},\n\t\t{Carrier Code},\n\t\t{Policy Number},\n\t\tPolicyNumber,\n\t\tClientCarrierGroupKey,\n\t\tClientKey,\n\t\tClientCode,\n\t\tLOBCode,\n\t\tPolicyEffectiveDate,\n\t\tLineOfBusinessKey,\n\t\tCarrierKey\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SelectClientCarrierGroup\nFilterTest derive(PolicyNumber = coalesce({Policy Number},'N/A')) ~> DerivedPolicyNumber\nDerivedClaimHashKey sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinput(\n\t\tClaimKey as long,\n\t\tClaimNumber as string,\n\t\tPolicyNumber as string,\n\t\tPolicyEffectiveDate as date,\n\t\tPolicyExpirationDate as date,\n\t\tClaimant as string,\n\t\tAccident_Description as string,\n\t\tDateofLoss as date,\n\t\tReportedDate as date,\n\t\tClosedDate as date,\n\t\tDateOfHire as date,\n\t\tDriver as string,\n\t\tPolicyYear as integer,\n\t\tPolicyPeriod as string,\n\t\tAge as integer,\n\t\tClientCarrierGroupKey as integer,\n\t\tTimeOfLoss as string,\n\t\tLagTime as string,\n\t\tDaysToClose as integer,\n\t\tTenure as integer,\n\t\tOccurrence_State as string,\n\t\tBenefit_State as string,\n\t\tClientKey as integer,\n\t\tLastLoadTime as timestamp,\n\t\tDayOfWeek as string,\n\t\tLineOfBusinessKey as integer,\n\t\tCarrierKey as integer,\n\t\tClaimHashKey as string,\n\t\tFillerClaim as boolean\n\t),\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tstaged: false,\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\tsaveOrder: 1,\n\terrorHandlingOption: 'stopOnFirstError',\n\tmapColumn(\n\t\tClaimNumber,\n\t\tPolicyNumber,\n\t\tPolicyEffectiveDate,\n\t\tPolicyExpirationDate,\n\t\tClaimant,\n\t\tPolicyYear,\n\t\tPolicyPeriod,\n\t\tClientCarrierGroupKey,\n\t\tClientKey,\n\t\tLastLoadTime,\n\t\tLineOfBusinessKey,\n\t\tCarrierKey,\n\t\tClaimHashKey,\n\t\tFillerClaim,\n\t\tAccident_Description,\n\t\tDriver,\n\t\tDayOfWeek,\n\t\tBenefit_State,\n\t\tOccurrence_State = Occurance_State\n\t)) ~> snkDimClaim"
+		}
+	}
+}

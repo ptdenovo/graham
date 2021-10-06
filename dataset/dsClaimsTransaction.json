@@ -1,0 +1,288 @@
+{
+	"name": "dsClaimsTransaction",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "GrahamDWHLinkedService",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "POC"
+		},
+		"annotations": [],
+		"type": "AzureSqlDWTable",
+		"schema": [
+			{
+				"name": "ClaimTransactionKey",
+				"type": "bigint",
+				"precision": 19
+			},
+			{
+				"name": "CarrierCode",
+				"type": "nvarchar"
+			},
+			{
+				"name": "ClientCode",
+				"type": "nvarchar"
+			},
+			{
+				"name": "ValuationDate",
+				"type": "date"
+			},
+			{
+				"name": "Policy Year",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "Policy Effective Date",
+				"type": "date"
+			},
+			{
+				"name": "Policy Expiration Date",
+				"type": "date"
+			},
+			{
+				"name": "Policy Number",
+				"type": "varchar"
+			},
+			{
+				"name": "Accident_Description",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Claimant",
+				"type": "nvarchar"
+			},
+			{
+				"name": "ClaimNumber",
+				"type": "varchar"
+			},
+			{
+				"name": "Date of Loss",
+				"type": "date"
+			},
+			{
+				"name": "Lag Time",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Date Reported",
+				"type": "date"
+			},
+			{
+				"name": "Day of Week",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Closed Date",
+				"type": "date"
+			},
+			{
+				"name": "DaysToClose",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "ClaimStatus",
+				"type": "varchar"
+			},
+			{
+				"name": "Gender",
+				"type": "nvarchar"
+			},
+			{
+				"name": "MaritalStatus",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Date of Hire",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Driver",
+				"type": "varchar"
+			},
+			{
+				"name": "Occupation",
+				"type": "nvarchar"
+			},
+			{
+				"name": "LOBCode",
+				"type": "nvarchar"
+			},
+			{
+				"name": "ClaimTypeCode",
+				"type": "varchar"
+			},
+			{
+				"name": "InjuryType",
+				"type": "nvarchar"
+			},
+			{
+				"name": "BodyPart",
+				"type": "nvarchar"
+			},
+			{
+				"name": "CauseType",
+				"type": "nvarchar"
+			},
+			{
+				"name": "NAICS_Code",
+				"type": "varchar"
+			},
+			{
+				"name": "Litigation",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Location_Name",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Department_Name",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Division_Name",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Total_Paid",
+				"type": "decimal",
+				"precision": 18,
+				"scale": 2
+			},
+			{
+				"name": "Total_Reserve",
+				"type": "decimal",
+				"precision": 18,
+				"scale": 2
+			},
+			{
+				"name": "Recovery_Total",
+				"type": "decimal",
+				"precision": 18,
+				"scale": 2
+			},
+			{
+				"name": "Total_Incurred",
+				"type": "decimal",
+				"precision": 18,
+				"scale": 2
+			},
+			{
+				"name": "Net_Incurred",
+				"type": "decimal",
+				"precision": 18,
+				"scale": 2
+			},
+			{
+				"name": "Expense_Paid",
+				"type": "decimal",
+				"precision": 18,
+				"scale": 2
+			},
+			{
+				"name": "Expense_Reserve",
+				"type": "decimal",
+				"precision": 18,
+				"scale": 2
+			},
+			{
+				"name": "Expense_Recovery",
+				"type": "decimal",
+				"precision": 18,
+				"scale": 2
+			},
+			{
+				"name": "Expense_Incurred",
+				"type": "decimal",
+				"precision": 18,
+				"scale": 2
+			},
+			{
+				"name": "Medical_BI_Paid",
+				"type": "decimal",
+				"precision": 18,
+				"scale": 2
+			},
+			{
+				"name": "Medical_BI_Reserves",
+				"type": "decimal",
+				"precision": 18,
+				"scale": 2
+			},
+			{
+				"name": "Indemnity_PD_Paid",
+				"type": "decimal",
+				"precision": 18,
+				"scale": 2
+			},
+			{
+				"name": "Indemnity_PD_Reserves",
+				"type": "decimal",
+				"precision": 18,
+				"scale": 2
+			},
+			{
+				"name": "Incurred_BI_Med",
+				"type": "decimal",
+				"precision": 18,
+				"scale": 2
+			},
+			{
+				"name": "Incurred_PD_LT",
+				"type": "decimal",
+				"precision": 18,
+				"scale": 2
+			},
+			{
+				"name": "Recovery_BI_Med",
+				"type": "decimal",
+				"precision": 18,
+				"scale": 2
+			},
+			{
+				"name": "Recovery_PD_LT",
+				"type": "decimal",
+				"precision": 18,
+				"scale": 2
+			},
+			{
+				"name": "Occurrance_State",
+				"type": "varchar"
+			},
+			{
+				"name": "Benefit_State",
+				"type": "varchar"
+			},
+			{
+				"name": "Insured_Identifier",
+				"type": "nvarchar"
+			},
+			{
+				"name": "RowID",
+				"type": "bigint",
+				"precision": 19
+			},
+			{
+				"name": "Age",
+				"type": "nvarchar"
+			},
+			{
+				"name": "ClientCarrierGroupKey",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "ClaimHashKey",
+				"type": "char"
+			}
+		],
+		"typeProperties": {
+			"schema": "stage",
+			"table": "ClaimTransaction"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

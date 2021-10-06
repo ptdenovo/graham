@@ -1,0 +1,48 @@
+{
+	"name": "FillerClaimException",
+	"properties": {
+		"folder": {
+			"name": "Exceptions"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "dsFillerClaim",
+						"type": "DatasetReference"
+					},
+					"name": "FillerClaimFile"
+				},
+				{
+					"dataset": {
+						"referenceName": "dsQuery",
+						"type": "DatasetReference"
+					},
+					"name": "ClientCarrierGroup"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "dsFillerClaimsMissingClientCarrier",
+						"type": "DatasetReference"
+					},
+					"name": "sinkException"
+				}
+			],
+			"transformations": [
+				{
+					"name": "JoinClientCarrierGroupKey"
+				},
+				{
+					"name": "FilterRowsWithoutKey"
+				},
+				{
+					"name": "TrimColumns"
+				}
+			],
+			"script": "parameters{\n\tCarrierCode as string\n}\nsource(output(\n\t\t{Client Code} as string,\n\t\t{Coverage (Line of Business)} as string,\n\t\t{Policy Effective Date} as date,\n\t\t{Carrier Code} as string,\n\t\t{Policy Number} as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\twildcardPaths:[(concat($CarrierCode, '/',$CarrierCode, ' Filler Claims.xlsx'))]) ~> FillerClaimFile\nsource(output(\n\t\tClientCarrierGroupKey as integer,\n\t\tClientKey as short,\n\t\tClientCode as string,\n\t\tLOBCode as string,\n\t\tPolicyEffectiveDate as date,\n\t\tLineOfBusinessKey as short,\n\t\tCarrierKey as short\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_COMMITTED',\n\tquery: (concat('SELECT ClientCarrierGroupKey,ClientKey,ClientCode,LOBCode,PolicyEffectiveDate,LineOfBusinessKey,CarrierKey FROM DimClientCarrierGroup WHERE CarrierCode=',\"'\", $CarrierCode,\"'\")),\n\tformat: 'query',\n\tstaged: false) ~> ClientCarrierGroup\nTrimColumns, ClientCarrierGroup join({Client Code} == ClientCode\n\t&& {Coverage (Line of Business)} == LOBCode\n\t&& {Policy Effective Date} == PolicyEffectiveDate,\n\tjoinType:'left',\n\tbroadcast: 'auto')~> JoinClientCarrierGroupKey\nJoinClientCarrierGroupKey filter(isNull(ClientCarrierGroupKey)) ~> FilterRowsWithoutKey\nFillerClaimFile derive({Client Code} = trim({Client Code}),\n\t\t{Coverage (Line of Business)} = trim({Coverage (Line of Business)})) ~> TrimColumns\nFilterRowsWithoutKey sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tpartitionFileNames:[(concat($CarrierCode,\"_MissingClientCarrierRecords.csv\"))],\n\tumask: 0022,\n\tpreCommands: [],\n\tpostCommands: [],\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\tpartitionBy('hash', 1)) ~> sinkException"
+		}
+	}
+}

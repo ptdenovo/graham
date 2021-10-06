@@ -1,0 +1,58 @@
+{
+	"name": "dsExcelFiles",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "InsuranceFilesLinkedService",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"ContainerName": {
+				"type": "string"
+			},
+			"CarrierCode": {
+				"type": "string"
+			},
+			"DataStartRange": {
+				"type": "string"
+			},
+			"SheetIndex": {
+				"type": "int"
+			},
+			"FirstRowHeader": {
+				"type": "bool"
+			}
+		},
+		"folder": {
+			"name": "POC"
+		},
+		"annotations": [],
+		"type": "Excel",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"folderPath": {
+					"value": "@dataset().CarrierCode",
+					"type": "Expression"
+				},
+				"fileSystem": {
+					"value": "@dataset().ContainerName",
+					"type": "Expression"
+				}
+			},
+			"sheetIndex": {
+				"value": "@dataset().SheetIndex",
+				"type": "Expression"
+			},
+			"range": {
+				"value": "@dataset().DataStartRange",
+				"type": "Expression"
+			},
+			"firstRowAsHeader": {
+				"value": "@dataset().FirstRowHeader",
+				"type": "Expression"
+			}
+		},
+		"schema": []
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

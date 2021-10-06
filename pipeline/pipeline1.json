@@ -1,0 +1,50 @@
+{
+	"name": "pipeline1",
+	"properties": {
+		"activities": [
+			{
+				"name": "ValidateExtractCarrierFiles",
+				"type": "ExecutePipeline",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "ValidateExtractCarrierFiles",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"CarrierName": {
+							"value": "@pipeline().parameters.CarrierName",
+							"type": "Expression"
+						},
+						"ContainerName": {
+							"value": "@pipeline().parameters.ContainerName",
+							"type": "Expression"
+						}
+					}
+				}
+			}
+		],
+		"parameters": {
+			"ContainerName": {
+				"type": "string",
+				"defaultValue": "carrier-source"
+			},
+			"CarrierName": {
+				"type": "string",
+				"defaultValue": "TRA0"
+			},
+			"DataStartRange": {
+				"type": "string",
+				"defaultValue": "A7"
+			}
+		},
+		"folder": {
+			"name": "POC"
+		},
+		"annotations": [],
+		"lastPublishTime": "2021-09-28T14:07:21Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

@@ -1,0 +1,106 @@
+{
+	"name": "PMACClaimProcess",
+	"properties": {
+		"activities": [
+			{
+				"name": "ExtractCarrierFiles",
+				"type": "ExecutePipeline",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "ValidateExtractCarrierFiles",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"CarrierName": {
+							"value": "@pipeline().parameters.CarrierCode",
+							"type": "Expression"
+						},
+						"ContainerName": {
+							"value": "@pipeline().parameters.ContainerName",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "PMACTransform",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "ExtractCarrierFiles",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "PMACTransform",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"CarrierCode": {
+							"value": "@pipeline().parameters.CarrierCode",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "RecordExceptionsPMAC",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [
+					{
+						"activity": "PMACTransform",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "1.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "RecordExceptionsPMAC",
+						"type": "DataFlowReference",
+						"parameters": {
+							"CarrierCode": "'PMAC'"
+						}
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			}
+		],
+		"parameters": {
+			"CarrierCode": {
+				"type": "string",
+				"defaultValue": "PMAC"
+			},
+			"ContainerName": {
+				"type": "string",
+				"defaultValue": "carrier-source"
+			}
+		},
+		"folder": {
+			"name": "POC"
+		},
+		"annotations": [],
+		"lastPublishTime": "2021-09-10T12:20:41Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

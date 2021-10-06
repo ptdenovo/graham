@@ -1,0 +1,157 @@
+{
+	"name": "ProcessExcelSheets",
+	"properties": {
+		"activities": [
+			{
+				"name": "Set FoldeName and FileName",
+				"type": "SetVariable",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "ResponseBody",
+					"value": {
+						"value": "@concat('{\"foldeName\":','\"',pipeline().parameters.CarrierCode,'\",','\"fileName\":','\"',pipeline().parameters.FileName,'\"}')",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "GetExcelSheetList",
+				"type": "AzureFunctionActivity",
+				"dependsOn": [
+					{
+						"activity": "Set FoldeName and FileName",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"functionName": "GetSheetIndexesInExcelFile",
+					"method": "POST",
+					"body": {
+						"value": "@variables('ResponseBody')",
+						"type": "Expression"
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "grahamdenovoazurefunctions",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "Set Sheet Index List",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "GetExcelSheetList",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "ExcelSheetIndexList",
+					"value": {
+						"value": "@split(activity('GetExcelSheetList').output.Response,',')",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "For Each Sheets In File",
+				"type": "ForEach",
+				"dependsOn": [
+					{
+						"activity": "Set Sheet Index List",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@variables('ExcelSheetIndexList')",
+						"type": "Expression"
+					},
+					"isSequential": false,
+					"activities": [
+						{
+							"name": "CopyExcelSheetData",
+							"type": "ExecutePipeline",
+							"dependsOn": [],
+							"userProperties": [],
+							"typeProperties": {
+								"pipeline": {
+									"referenceName": "CopyExcelSheetData",
+									"type": "PipelineReference"
+								},
+								"waitOnCompletion": true,
+								"parameters": {
+									"FileName": {
+										"value": "@pipeline().parameters.FileName",
+										"type": "Expression"
+									},
+									"SheetIndex": {
+										"value": "@item()",
+										"type": "Expression"
+									},
+									"ContainerName": {
+										"value": "@pipeline().parameters.ContainerName",
+										"type": "Expression"
+									},
+									"CarrierCode": {
+										"value": "@pipeline().parameters.CarrierCode",
+										"type": "Expression"
+									},
+									"DataStartRange": {
+										"value": "@pipeline().parameters.DataStartRange",
+										"type": "Expression"
+									}
+								}
+							}
+						}
+					]
+				}
+			}
+		],
+		"parameters": {
+			"CarrierCode": {
+				"type": "string"
+			},
+			"FileName": {
+				"type": "string"
+			},
+			"ContainerName": {
+				"type": "string"
+			},
+			"DataStartRange": {
+				"type": "string"
+			}
+		},
+		"variables": {
+			"ResponseBody": {
+				"type": "String"
+			},
+			"ExcelSheetIndexList": {
+				"type": "Array"
+			}
+		},
+		"folder": {
+			"name": "POC/IngestExtract"
+		},
+		"annotations": [],
+		"lastPublishTime": "2021-05-26T16:32:15Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

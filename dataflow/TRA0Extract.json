@@ -1,0 +1,45 @@
+{
+	"name": "TRA0Extract",
+	"properties": {
+		"folder": {
+			"name": "Transform"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "dsExcelTRA0Census",
+						"type": "DatasetReference"
+					},
+					"name": "dsExcelCensus"
+				},
+				{
+					"dataset": {
+						"referenceName": "dsExcelTRA0Finance",
+						"type": "DatasetReference"
+					},
+					"name": "dsExcelFinancial"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "dsgrahamStageDBTables",
+						"type": "DatasetReference"
+					},
+					"name": "sinkstageTRAO"
+				}
+			],
+			"transformations": [
+				{
+					"name": "JoinFinancials"
+				},
+				{
+					"name": "SelectCols"
+				}
+			],
+			"script": "parameters{\n\tCarrierCode as string ('TRA0')\n}\nsource(output(\n\t\tREC_TYPE as short,\n\t\tCLAIM_NO as string,\n\t\tCYCLE_DATE as date,\n\t\tACCT_NBR as string,\n\t\tPOLICY_NO as string,\n\t\tACCDATE as date,\n\t\tRESULT_DESC as string,\n\t\tACC_STATE as string,\n\t\tTIMEDAY as string,\n\t\tACC_YEAR as short,\n\t\tADJ_OFFICE as short,\n\t\tFILLER2A as string,\n\t\tATTY_INV_IND as boolean,\n\t\tCARRIER_CD as string,\n\t\tFILLER2B as string,\n\t\tCLM_HNDL_ID as string,\n\t\tSTATUS as string,\n\t\tCLOSEDATE as string,\n\t\tCONT_CLM_IND as string,\n\t\tFILE_PREFIX as string,\n\t\tSTATE as string,\n\t\tFREEAREA as string,\n\t\tINCIDENT_IND as boolean,\n\t\tMAJ_LINE as string,\n\t\tLOSSDATE as date,\n\t\tORGFLDS as string,\n\t\tEFFECTDATE as date,\n\t\tPOLICY_FORM as string,\n\t\tPOL_YEAR as short,\n\t\tFILLER2C as string,\n\t\tREFINALDATE as string,\n\t\tREOPENDATE as string,\n\t\tTYPE_CD as string,\n\t\tCLMTAGE as short,\n\t\tCLAIMANT as string,\n\t\tFATAL_IND as boolean,\n\t\tGENDER as string,\n\t\tBENE_ST_CD as string,\n\t\tCONTACTDT as date,\n\t\tEMPNTFYDT as date,\n\t\tINJ_TYPE_CD as short,\n\t\tJOB_CLASS as string,\n\t\tNCCI_AGENCY as short,\n\t\tNCCI_CAUSE as short,\n\t\tNCCI_RESULT as string,\n\t\tOCCUP_DESC as string,\n\t\tDRIVER_AGE as short,\n\t\tDRIVER_NAME as string,\n\t\tVEHICLE_NUM as string,\n\t\tLITIGAT_IND as boolean,\n\t\tCOVERAGECD as short,\n\t\tCAUSE_DESC as string,\n\t\tPP_DATE as string,\n\t\tPP_CLM as double,\n\t\tPP_MED as double,\n\t\tPP_EXP as double,\n\t\tLITG_PD_EXP as double,\n\t\tEMPLOY_DATE as integer\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> dsExcelCensus\nsource(output(\n\t\tREC_TYPE as short,\n\t\tCLAIM_NO as string,\n\t\tSAIL_LN_CD as short,\n\t\tLOICLOSEDATE as string,\n\t\tLOI_STATUS as string,\n\t\tSUBLINE_CD as string,\n\t\tPROCESS_DT as date,\n\t\tINC_CLAIM as double,\n\t\tINC_MEDICAL as double,\n\t\tINC_EXPENSE as double,\n\t\tINC_TOTAL as double,\n\t\tPD_CLAIM as double,\n\t\tPD_MEDICAL as double,\n\t\tPD_EXPENSE as double,\n\t\tPD_TOTAL as double,\n\t\tOUT_CLAIM as double,\n\t\tOUT_MEDICAL as double,\n\t\tOUT_EXPENSE as double,\n\t\tOUT_TOTAL as double,\n\t\tSALV_CLM as double,\n\t\tSALV_MED as double,\n\t\tSALV_EXP as double,\n\t\tTOTAL_SALV as double,\n\t\tSUBR_CLM as double,\n\t\tSUBR_MED as double,\n\t\tSUBR_EXP as double,\n\t\tTOTAL_SUBR as double,\n\t\tACCT_NBR as string,\n\t\t{_c28} as string,\n\t\t{_c29} as string,\n\t\t{_c30} as string,\n\t\t{_c31} as string,\n\t\t{_c32} as string,\n\t\t{_c33} as string,\n\t\t{_c34} as string,\n\t\t{_c35} as string,\n\t\t{_c36} as string,\n\t\t{_c37} as string,\n\t\t{_c38} as string,\n\t\t{_c39} as string,\n\t\t{_c40} as string,\n\t\t{_c41} as string,\n\t\t{_c42} as string,\n\t\t{_c43} as string,\n\t\t{_c44} as string,\n\t\t{_c45} as string,\n\t\t{_c46} as string,\n\t\t{_c47} as string,\n\t\t{_c48} as string,\n\t\t{_c49} as string,\n\t\t{_c50} as string,\n\t\t{_c51} as string,\n\t\t{_c52} as string,\n\t\t{_c53} as string,\n\t\t{_c54} as string,\n\t\t{_c55} as string,\n\t\t{_c56} as string,\n\t\t{_c57} as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> dsExcelFinancial\ndsExcelCensus, dsExcelFinancial join(dsExcelCensus@CLAIM_NO == dsExcelFinancial@CLAIM_NO,\n\tjoinType:'left',\n\tbroadcast: 'auto')~> JoinFinancials\nJoinFinancials select(mapColumn(\n\t\tREC_TYPE = dsExcelCensus@REC_TYPE,\n\t\tCLAIM_NO = dsExcelCensus@CLAIM_NO,\n\t\tCYCLE_DATE,\n\t\tACCT_NBR = dsExcelCensus@ACCT_NBR,\n\t\tPOLICY_NO,\n\t\tACCDATE,\n\t\tRESULT_DESC,\n\t\tACC_STATE,\n\t\tTIMEDAY,\n\t\tACC_YEAR,\n\t\tADJ_OFFICE,\n\t\tFILLER2A,\n\t\tATTY_INV_IND,\n\t\tCARRIER_CD,\n\t\tFILLER2B,\n\t\tCLM_HNDL_ID,\n\t\tSTATUS,\n\t\tCLOSEDATE,\n\t\tCONT_CLM_IND,\n\t\tFILE_PREFIX,\n\t\tSTATE,\n\t\tFREEAREA,\n\t\tINCIDENT_IND,\n\t\tMAJ_LINE,\n\t\tLOSSDATE,\n\t\tORGFLDS,\n\t\tEFFECTDATE,\n\t\tPOLICY_FORM,\n\t\tPOL_YEAR,\n\t\tFILLER2C,\n\t\tREFINALDATE,\n\t\tREOPENDATE,\n\t\tTYPE_CD,\n\t\tCLMTAGE,\n\t\tCLAIMANT,\n\t\tFATAL_IND,\n\t\tGENDER,\n\t\tBENE_ST_CD,\n\t\tCONTACTDT,\n\t\tEMPNTFYDT,\n\t\tINJ_TYPE_CD,\n\t\tJOB_CLASS,\n\t\tNCCI_AGENCY,\n\t\tNCCI_CAUSE,\n\t\tNCCI_RESULT,\n\t\tOCCUP_DESC,\n\t\tDRIVER_AGE,\n\t\tDRIVER_NAME,\n\t\tVEHICLE_NUM,\n\t\tLITIGAT_IND,\n\t\tCOVERAGECD,\n\t\tCAUSE_DESC,\n\t\tPP_DATE,\n\t\tPP_CLM,\n\t\tPP_MED,\n\t\tPP_EXP,\n\t\tLITG_PD_EXP,\n\t\tEMPLOY_DATE,\n\t\tFIN_REC_TYPE = dsExcelFinancial@REC_TYPE,\n\t\tSAIL_LN_CD,\n\t\tLOICLOSEDATE,\n\t\tLOI_STATUS,\n\t\tSUBLINE_CD,\n\t\tPROCESS_DT,\n\t\tINC_CLAIM,\n\t\tINC_MEDICAL,\n\t\tINC_EXPENSE,\n\t\tINC_TOTAL,\n\t\tPD_CLAIM,\n\t\tPD_MEDICAL,\n\t\tPD_EXPENSE,\n\t\tPD_TOTAL,\n\t\tOUT_CLAIM,\n\t\tOUT_MEDICAL,\n\t\tOUT_EXPENSE,\n\t\tOUT_TOTAL,\n\t\tSALV_CLM,\n\t\tSALV_MED,\n\t\tSALV_EXP,\n\t\tTOTAL_SALV,\n\t\tSUBR_CLM,\n\t\tSUBR_MED,\n\t\tSUBR_EXP,\n\t\tTOTAL_SUBR\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SelectCols\nSelectCols sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError') ~> sinkstageTRAO"
+		}
+	}
+}

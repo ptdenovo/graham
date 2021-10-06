@@ -1,0 +1,42 @@
+{
+	"name": "dsExcelCarrierControl",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "InsuranceFilesLinkedService",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "POC"
+		},
+		"annotations": [],
+		"type": "Excel",
+		"typeProperties": {
+			"sheetName": "Carrier Control",
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileName": "Carrier Control.xlsx",
+				"fileSystem": "control-files"
+			},
+			"firstRowAsHeader": true
+		},
+		"schema": [
+			{
+				"name": "Carrier Code",
+				"type": "String"
+			},
+			{
+				"name": "Enabled",
+				"type": "String"
+			},
+			{
+				"name": "Carrier Name",
+				"type": "String"
+			},
+			{
+				"name": "Spreadsheet Name",
+				"type": "String"
+			}
+		]
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

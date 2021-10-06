@@ -1,0 +1,54 @@
+{
+	"name": "dsDimClaimType",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "GrahamDWHLinkedService",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "POC"
+		},
+		"annotations": [],
+		"type": "AzureSqlDWTable",
+		"schema": [
+			{
+				"name": "ClaimTypeKey",
+				"type": "smallint",
+				"precision": 5
+			},
+			{
+				"name": "ClaimTypeCode",
+				"type": "varchar"
+			},
+			{
+				"name": "ClaimTypeName",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Notice_ClaimType",
+				"type": "bit"
+			},
+			{
+				"name": "LineOfBusinessKey",
+				"type": "smallint",
+				"precision": 5
+			},
+			{
+				"name": "LastLoadTime",
+				"type": "smalldatetime",
+				"precision": 16,
+				"scale": 0
+			},
+			{
+				"name": "ClaimTypeID",
+				"type": "smallint",
+				"precision": 5
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "DimClaimType"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

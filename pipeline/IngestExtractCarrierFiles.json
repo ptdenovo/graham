@@ -1,0 +1,101 @@
+{
+	"name": "IngestExtractCarrierFiles",
+	"properties": {
+		"activities": [
+			{
+				"name": "IngestModifiedFiles",
+				"type": "ExecutePipeline",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "IngestModifiedFiles",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"CarrierName": {
+							"value": "@pipeline().parameters.CarrierName",
+							"type": "Expression"
+						},
+						"ContainerName": {
+							"value": "@pipeline().parameters.ContainerName",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "ValidateCarrierAndFiles",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "IngestModifiedFiles",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "ValidateCarrierAndFiles",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"CarrierName": {
+							"value": "@pipeline().parameters.CarrierName",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "ExtractCarrierSourceFiles",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "ValidateCarrierAndFiles",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "ExtractSourceFiles",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"ContainerName": {
+							"value": "@pipeline().parameters.ContainerName",
+							"type": "Expression"
+						},
+						"CarrierCode": {
+							"value": "@pipeline().parameters.CarrierName",
+							"type": "Expression"
+						}
+					}
+				}
+			}
+		],
+		"parameters": {
+			"CarrierName": {
+				"type": "string"
+			},
+			"ContainerName": {
+				"type": "string",
+				"defaultValue": "carrier-source"
+			}
+		},
+		"folder": {
+			"name": "POC"
+		},
+		"annotations": [],
+		"lastPublishTime": "2021-09-27T16:55:55Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

@@ -1,0 +1,61 @@
+{
+	"name": "MapClientCode_copy1",
+	"properties": {
+		"folder": {
+			"name": "Copy"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "dsgrahamDB",
+						"type": "DatasetReference"
+					},
+					"name": "InsuredIdentifierClient"
+				},
+				{
+					"dataset": {
+						"referenceName": "dsQuery",
+						"type": "DatasetReference"
+					},
+					"name": "ClaimsTransaction"
+				},
+				{
+					"dataset": {
+						"referenceName": "dsQuery",
+						"type": "DatasetReference"
+					},
+					"name": "CHAC"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "dsClaimsTransaction",
+						"type": "DatasetReference"
+					},
+					"name": "sinkClaimTransaction"
+				}
+			],
+			"transformations": [
+				{
+					"name": "DeriveInsuredIdentifier"
+				},
+				{
+					"name": "JoinCHAC"
+				},
+				{
+					"name": "JoinInsuredIdentifier"
+				},
+				{
+					"name": "DerivedClientCode"
+				},
+				{
+					"name": "AlterClientCode"
+				}
+			],
+			"script": "parameters{\n\tCarrierCode as string ('CHAC')\n}\nsource(output(\n\t\tInsuredIdentifierName as string,\n\t\tClientCode as string,\n\t\tCarrierCode as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_COMMITTED',\n\tquery: (concat('SELECT TRIM(InsuredIdentifierName) AS InsuredIdentifierName,ClientCode,CarrierCode FROM dbo.InsuredIdentifier_Client_Carrier_Map WHERE CarrierCode=','\\'', $CarrierCode,'\\'')),\n\tformat: 'query') ~> InsuredIdentifierClient\nsource(output(\n\t\tInsured_Identifier as string,\n\t\tClientCode as string,\n\t\tCarrierCode as string,\n\t\tRowID as long,\n\t\tClaimTransactionKey as long\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_COMMITTED',\n\tquery: (concat('SELECT Insured_Identifier,ClientCode,CarrierCode,RowID,ClaimTransactionKey FROM stage.ClaimTransaction WHERE CarrierCode=','\\'',$CarrierCode,'\\'')),\n\tformat: 'query',\n\tstaged: false) ~> ClaimsTransaction\nsource(output(\n\t\t{Account Name} as string,\n\t\t{Policy Number} as string,\n\t\t{Insured Name} as string,\n\t\tValuationDate as date,\n\t\tRowID as integer\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_COMMITTED',\n\tquery: 'SELECT TRIM([Account Name]) AS [Account Name],[Policy Number],TRIM([Insured Name]) AS [Insured Name],[ValuationDate],[RowID]  FROM stage.CHAC',\n\tformat: 'query',\n\tstaged: false) ~> CHAC\nJoinCHAC derive(Insured_Identifier = iif(!isNull({Insured Name}) && {Insured Name}!='', ({Insured Name}),iif(((upper({Account Name})!='THE GRAHAM COMPANY') && ValuationDate<toDate('2017-06-30')),{Account Name},{Policy Number}))) ~> DeriveInsuredIdentifier\nClaimsTransaction, CHAC join(ClaimsTransaction@RowID == CHAC@RowID,\n\tjoinType:'left',\n\tbroadcast: 'auto')~> JoinCHAC\nDeriveInsuredIdentifier, InsuredIdentifierClient join(ClaimsTransaction@CarrierCode == InsuredIdentifierClient@CarrierCode\n\t&& Insured_Identifier == InsuredIdentifierName,\n\tjoinType:'left',\n\tbroadcast: 'auto')~> JoinInsuredIdentifier\nJoinInsuredIdentifier derive(ClientCode = InsuredIdentifierClient@ClientCode) ~> DerivedClientCode\nDerivedClientCode alterRow(updateIf(true())) ~> AlterClientCode\nAlterClientCode sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinput(\n\t\tClaimTransactionKey as long,\n\t\tCarrierCode as string,\n\t\tClientCode as string,\n\t\tValuationDate as date,\n\t\t{Policy Year} as integer,\n\t\t{Policy Effective Date} as date,\n\t\t{Policy Expiration Date} as date,\n\t\t{Policy Number} as string,\n\t\tAccident_Description as string,\n\t\tClaimant as string,\n\t\tClaimNumber as string,\n\t\t{Date of Loss} as date,\n\t\t{Lag Time} as string,\n\t\t{Date Reported} as date,\n\t\t{Day of Week} as string,\n\t\t{Closed Date} as date,\n\t\tDaysToClose as integer,\n\t\tClaimStatus as string,\n\t\tGender as string,\n\t\tMaritalStatus as string,\n\t\t{Date of Hire} as string,\n\t\tDriver as string,\n\t\tOccupation as string,\n\t\tLOBCode as string,\n\t\tClaimTypeCode as string,\n\t\tInjuryType as string,\n\t\tBodyPart as string,\n\t\tCauseType as string,\n\t\tNAICS_Code as string,\n\t\tLitigation as string,\n\t\tLocation_Name as string,\n\t\tDepartment_Name as string,\n\t\tDivision_Name as string,\n\t\tTotal_Paid as decimal(18,2),\n\t\tTotal_Reserve as decimal(18,2),\n\t\tRecovery_Total as decimal(18,2),\n\t\tTotal_Incurred as decimal(18,2),\n\t\tNet_Incurred as decimal(18,2),\n\t\tExpense_Paid as decimal(18,2),\n\t\tExpense_Reserve as decimal(18,2),\n\t\tExpense_Recovery as decimal(18,2),\n\t\tExpense_Incurred as decimal(18,2),\n\t\tMedical_BI_Paid as decimal(18,2),\n\t\tMedical_BI_Reserves as decimal(18,2),\n\t\tIndemnity_PD_Paid as decimal(18,2),\n\t\tIndemnity_PD_Reserves as decimal(18,2),\n\t\tIncurred_BI_Med as decimal(18,2),\n\t\tIncurred_PD_LT as decimal(18,2),\n\t\tRecovery_BI_Med as decimal(18,2),\n\t\tRecovery_PD_LT as decimal(18,2),\n\t\tOccurrance_State as string,\n\t\tBenefit_State as string,\n\t\tInsured_Identifier as string,\n\t\tRowID as long,\n\t\tAge as string,\n\t\tClientCarrierGroupKey as integer,\n\t\tClaimHashKey as string\n\t),\n\tdeletable:false,\n\tinsertable:false,\n\tupdateable:true,\n\tupsertable:false,\n\tkeys:['ClaimTransactionKey'],\n\tformat: 'table',\n\tstaged: false,\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError',\n\tmapColumn(\n\t\tClaimTransactionKey,\n\t\tClientCode,\n\t\tInsured_Identifier\n\t)) ~> sinkClaimTransaction"
+		}
+	}
+}

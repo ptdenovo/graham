@@ -1,0 +1,20 @@
+{
+	"name": "dsFactClaimTrans",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "GrahamDWHLinkedService",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "POC"
+		},
+		"annotations": [],
+		"type": "AzureSqlDWTable",
+		"schema": [],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "FactClaimTransaction"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

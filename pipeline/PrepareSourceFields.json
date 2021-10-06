@@ -1,0 +1,305 @@
+{
+	"name": "PrepareSourceFields",
+	"properties": {
+		"activities": [
+			{
+				"name": "Get Carrier Files",
+				"type": "GetMetadata",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataset": {
+						"referenceName": "dsExcelFiles",
+						"type": "DatasetReference",
+						"parameters": {
+							"ContainerName": {
+								"value": "@pipeline().parameters.ContainerName",
+								"type": "Expression"
+							},
+							"CarrierCode": {
+								"value": "@pipeline().parameters.CarrierCode",
+								"type": "Expression"
+							},
+							"DataStartRange": {
+								"value": "@pipeline().parameters.DataStartRow",
+								"type": "Expression"
+							},
+							"SheetIndex": 0,
+							"FirstRowHeader": "False"
+						}
+					},
+					"fieldList": [
+						"childItems"
+					],
+					"storeSettings": {
+						"type": "AzureBlobFSReadSettings",
+						"recursive": true,
+						"enablePartitionDiscovery": false
+					}
+				}
+			},
+			{
+				"name": "ForEachCarrierClaimFiles",
+				"type": "ForEach",
+				"dependsOn": [
+					{
+						"activity": "Get Carrier Files",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@activity('Get Carrier Files').output.childItems",
+						"type": "Expression"
+					},
+					"activities": [
+						{
+							"name": "LookupClaimFileMetadata",
+							"type": "Lookup",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "7.00:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"source": {
+									"type": "ExcelSource",
+									"storeSettings": {
+										"type": "AzureBlobFSReadSettings",
+										"recursive": false,
+										"wildcardFolderPath": {
+											"value": "@pipeline().parameters.CarrierCode",
+											"type": "Expression"
+										},
+										"wildcardFileName": {
+											"value": "@item().name",
+											"type": "Expression"
+										},
+										"enablePartitionDiscovery": false
+									}
+								},
+								"dataset": {
+									"referenceName": "dsExcelFiles",
+									"type": "DatasetReference",
+									"parameters": {
+										"ContainerName": {
+											"value": "@pipeline().parameters.ContainerName",
+											"type": "Expression"
+										},
+										"CarrierCode": {
+											"value": "@pipeline().parameters.CarrierCode",
+											"type": "Expression"
+										},
+										"DataStartRange": {
+											"value": "@pipeline().parameters.DataStartRow",
+											"type": "Expression"
+										},
+										"SheetIndex": 0,
+										"FirstRowHeader": "False"
+									}
+								}
+							}
+						},
+						{
+							"name": "GetFiledsInFile",
+							"type": "AzureFunctionActivity",
+							"dependsOn": [
+								{
+									"activity": "LookupClaimFileMetadata",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"policy": {
+								"timeout": "7.00:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"functionName": "GetColumnNamesFromMetadata",
+								"method": "POST",
+								"body": {
+									"value": "@activity('LookupClaimFileMetadata').output.firstRow",
+									"type": "Expression"
+								}
+							},
+							"linkedServiceName": {
+								"referenceName": "grahamdenovoazurefunctions",
+								"type": "LinkedServiceReference"
+							}
+						},
+						{
+							"name": "Insert Fields in file",
+							"type": "SqlServerStoredProcedure",
+							"dependsOn": [
+								{
+									"activity": "GetFiledsInFile",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"policy": {
+								"timeout": "7.00:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"storedProcedureName": "[dbo].[InsertFileMetadata]",
+								"storedProcedureParameters": {
+									"carriercode": {
+										"value": {
+											"value": "@pipeline().parameters.CarrierCode",
+											"type": "Expression"
+										},
+										"type": "String"
+									},
+									"columnNames": {
+										"value": {
+											"value": "@activity('GetFiledsInFile').output.keys",
+											"type": "Expression"
+										},
+										"type": "String"
+									}
+								}
+							},
+							"linkedServiceName": {
+								"referenceName": "GrahamStageDBService",
+								"type": "LinkedServiceReference"
+							}
+						},
+						{
+							"name": "StageTableExists",
+							"type": "GetMetadata",
+							"dependsOn": [
+								{
+									"activity": "Insert Fields in file",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"policy": {
+								"timeout": "7.00:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"dataset": {
+									"referenceName": "dsgrahamStageDBTables",
+									"type": "DatasetReference",
+									"parameters": {
+										"SchemaName": "stage",
+										"TableName": {
+											"value": "@pipeline().parameters.CarrierCode",
+											"type": "Expression"
+										}
+									}
+								},
+								"fieldList": [
+									"exists"
+								]
+							}
+						},
+						{
+							"name": "If Table Exists",
+							"type": "IfCondition",
+							"dependsOn": [
+								{
+									"activity": "StageTableExists",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"userProperties": [],
+							"typeProperties": {
+								"expression": {
+									"value": "@activity('StageTableExists').output.exists",
+									"type": "Expression"
+								},
+								"ifTrueActivities": [
+									{
+										"name": "AlterStageTable",
+										"type": "SqlServerStoredProcedure",
+										"dependsOn": [],
+										"policy": {
+											"timeout": "7.00:00:00",
+											"retry": 0,
+											"retryIntervalInSeconds": 30,
+											"secureOutput": false,
+											"secureInput": false
+										},
+										"userProperties": [],
+										"typeProperties": {
+											"storedProcedureName": "[dbo].[AlterStageTable]",
+											"storedProcedureParameters": {
+												"CarrierCode": {
+													"value": {
+														"value": "@pipeline().parameters.CarrierCode",
+														"type": "Expression"
+													},
+													"type": "String"
+												}
+											}
+										},
+										"linkedServiceName": {
+											"referenceName": "GrahamStageDBService",
+											"type": "LinkedServiceReference"
+										}
+									}
+								]
+							}
+						}
+					]
+				}
+			}
+		],
+		"parameters": {
+			"CarrierCode": {
+				"type": "string"
+			},
+			"ContainerName": {
+				"type": "string"
+			},
+			"DataStartRow": {
+				"type": "string"
+			}
+		},
+		"variables": {
+			"Metadata": {
+				"type": "String"
+			}
+		},
+		"folder": {
+			"name": "POC/IngestExtract"
+		},
+		"annotations": [],
+		"lastPublishTime": "2021-06-10T18:43:22Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

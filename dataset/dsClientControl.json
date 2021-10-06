@@ -1,0 +1,162 @@
+{
+	"name": "dsClientControl",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "InsuranceFilesLinkedService",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "POC"
+		},
+		"annotations": [],
+		"type": "Excel",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileName": "Client Control.xlsx",
+				"fileSystem": "control-files"
+			},
+			"sheetIndex": 0,
+			"firstRowAsHeader": true
+		},
+		"schema": [
+			{
+				"name": "Client Code",
+				"type": "String"
+			},
+			{
+				"name": "Client Contacts Who Have GA Access",
+				"type": "String"
+			},
+			{
+				"name": "Email Addresses for Client Contacts",
+				"type": "String"
+			},
+			{
+				"name": "User ID",
+				"type": "String"
+			},
+			{
+				"name": "Date Access Provided",
+				"type": "String"
+			},
+			{
+				"name": "Industry",
+				"type": "String"
+			},
+			{
+				"name": "Client Name",
+				"type": "String"
+			},
+			{
+				"name": "Enabled",
+				"type": "String"
+			},
+			{
+				"name": "Logo Filename",
+				"type": "String"
+			},
+			{
+				"name": "CalculateClientListChart",
+				"type": "String"
+			},
+			{
+				"name": "ShowClientListTab",
+				"type": "String"
+			},
+			{
+				"name": "Background Color",
+				"type": "String"
+			},
+			{
+				"name": "Tab Color",
+				"type": "String"
+			},
+			{
+				"name": "Title Color",
+				"type": "String"
+			},
+			{
+				"name": "Border Color",
+				"type": "String"
+			},
+			{
+				"name": "Caption Background",
+				"type": "String"
+			},
+			{
+				"name": "Color 3",
+				"type": "String"
+			},
+			{
+				"name": "Color 4",
+				"type": "String"
+			},
+			{
+				"name": "Color 5",
+				"type": "String"
+			},
+			{
+				"name": "Color 6",
+				"type": "String"
+			},
+			{
+				"name": "Line Color 2",
+				"type": "String"
+			},
+			{
+				"name": "Line Color 3",
+				"type": "String"
+			},
+			{
+				"name": "Location 1 Enabled",
+				"type": "String"
+			},
+			{
+				"name": "Location 2 Enabled",
+				"type": "String"
+			},
+			{
+				"name": "Location 3 Enabled",
+				"type": "String"
+			},
+			{
+				"name": "Location 4 Enabled",
+				"type": "String"
+			},
+			{
+				"name": "Location 5 Enabled",
+				"type": "String"
+			},
+			{
+				"name": "Location 6 Enabled",
+				"type": "String"
+			},
+			{
+				"name": "Location 7 Enabled",
+				"type": "String"
+			},
+			{
+				"name": "Location 8 Enabled",
+				"type": "String"
+			},
+			{
+				"name": "Location 9 Enabled",
+				"type": "String"
+			},
+			{
+				"name": "Location 10 Enabled",
+				"type": "String"
+			},
+			{
+				"name": "HQ State",
+				"type": "String"
+			},
+			{
+				"name": "NAICS Code",
+				"type": "String"
+			}
+		]
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

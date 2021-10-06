@@ -1,0 +1,119 @@
+{
+	"name": "ApplyFieldValueMaps",
+	"properties": {
+		"activities": [
+			{
+				"name": "LookupFieldValueMaps",
+				"type": "Lookup",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "SqlDWSource",
+						"sqlReaderQuery": {
+							"value": "@concat('SELECT * FROM FieldValueMap WHERE CarrierCode=','''',pipeline().parameters.CarrierCode,'''')",
+							"type": "Expression"
+						},
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"dataset": {
+						"referenceName": "dsQuery",
+						"type": "DatasetReference"
+					},
+					"firstRowOnly": false
+				}
+			},
+			{
+				"name": "ForEachMaps",
+				"type": "ForEach",
+				"dependsOn": [
+					{
+						"activity": "LookupFieldValueMaps",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@activity('LookupFieldValueMaps').output.value",
+						"type": "Expression"
+					},
+					"batchCount": 30,
+					"activities": [
+						{
+							"name": "ApplyFieldValueMap",
+							"type": "SqlServerStoredProcedure",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "7.00:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"storedProcedureName": "[dbo].[ApplyFieldValueMaps]",
+								"storedProcedureParameters": {
+									"CarrierCode": {
+										"value": {
+											"value": "@pipeline().parameters.CarrierCode",
+											"type": "Expression"
+										},
+										"type": "String"
+									},
+									"FieldName": {
+										"value": {
+											"value": "@item().FieldName",
+											"type": "Expression"
+										},
+										"type": "String"
+									},
+									"MappedValue": {
+										"value": {
+											"value": "@item().MappedValue",
+											"type": "Expression"
+										},
+										"type": "String"
+									},
+									"SourceValue": {
+										"value": {
+											"value": "@item().SourceValue",
+											"type": "Expression"
+										},
+										"type": "String"
+									}
+								}
+							},
+							"linkedServiceName": {
+								"referenceName": "GrahamDWHLinkedService",
+								"type": "LinkedServiceReference"
+							}
+						}
+					]
+				}
+			}
+		],
+		"parameters": {
+			"CarrierCode": {
+				"type": "string"
+			}
+		},
+		"folder": {
+			"name": "POC/Transform"
+		},
+		"annotations": [],
+		"lastPublishTime": "2021-03-11T08:34:11Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

@@ -1,0 +1,230 @@
+{
+	"name": "ClaimCorrectionMap",
+	"properties": {
+		"activities": [
+			{
+				"name": "Copy ClaimCorrectionMap Data",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "ExcelSource",
+						"additionalColumns": [
+							{
+								"name": "J",
+								"value": "NULL"
+							}
+						],
+						"storeSettings": {
+							"type": "AzureBlobFSReadSettings",
+							"recursive": true,
+							"wildcardFileName": "ClaimCorrectionMaps.xlsx",
+							"enablePartitionDiscovery": false
+						}
+					},
+					"sink": {
+						"type": "AzureSqlSink",
+						"preCopyScript": "TRUNCATE TABLE dbo.ClaimCorrectionMap",
+						"disableMetricsCollection": false
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "AttributeName",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "FieldName",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "MappingFields",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "MappingFields",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "CC",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "CarrierCode",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "A",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "FieldValue1",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "B",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "FieldValue2",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "C",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "FieldValue3",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "D",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "FieldValue4",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "E",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "FieldValue5",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "F",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "FieldValue6",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "G",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "FieldValue7",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "H",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "FieldValue8",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "I",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "FieldValue9",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "J",
+									"type": "String"
+								},
+								"sink": {
+									"name": "FieldValue10",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							}
+						],
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "dsControlFiles",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "dsGrahamAnaDB",
+						"type": "DatasetReference",
+						"parameters": {
+							"SchemaName": "dbo",
+							"TableName": "ClaimCorrectionMap"
+						}
+					}
+				]
+			}
+		],
+		"folder": {
+			"name": "POC/Extract Mapping File Data"
+		},
+		"annotations": [],
+		"lastPublishTime": "2021-09-13T17:00:53Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

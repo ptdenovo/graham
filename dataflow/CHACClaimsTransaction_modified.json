@@ -1,0 +1,309 @@
+{
+	"name": "CHACClaimsTransaction_modified",
+	"properties": {
+		"folder": {
+			"name": "Copy"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "dsQuery",
+						"type": "DatasetReference"
+					},
+					"name": "Carrier"
+				},
+				{
+					"dataset": {
+						"referenceName": "dsClaimsTransaction",
+						"type": "DatasetReference"
+					},
+					"name": "ClaimTrans"
+				},
+				{
+					"dataset": {
+						"referenceName": "dsQuery",
+						"type": "DatasetReference"
+					},
+					"name": "CHAC"
+				},
+				{
+					"dataset": {
+						"referenceName": "dsQuery",
+						"type": "DatasetReference"
+					},
+					"name": "Gender"
+				},
+				{
+					"dataset": {
+						"referenceName": "dsQuery",
+						"type": "DatasetReference"
+					},
+					"name": "MaritalStatus"
+				},
+				{
+					"dataset": {
+						"referenceName": "dsQuery",
+						"type": "DatasetReference"
+					},
+					"name": "BodyPart"
+				},
+				{
+					"dataset": {
+						"referenceName": "dsQuery",
+						"type": "DatasetReference"
+					},
+					"name": "InjuryType"
+				},
+				{
+					"dataset": {
+						"referenceName": "dsQuery",
+						"type": "DatasetReference"
+					},
+					"name": "ClaimType"
+				},
+				{
+					"dataset": {
+						"referenceName": "dsQuery",
+						"type": "DatasetReference"
+					},
+					"name": "CauseType"
+				},
+				{
+					"dataset": {
+						"referenceName": "dsQuery",
+						"type": "DatasetReference"
+					},
+					"name": "Occupation"
+				},
+				{
+					"dataset": {
+						"referenceName": "dsQuery",
+						"type": "DatasetReference"
+					},
+					"name": "DimClaim"
+				},
+				{
+					"dataset": {
+						"referenceName": "dsQuery",
+						"type": "DatasetReference"
+					},
+					"name": "AgeRange"
+				},
+				{
+					"dataset": {
+						"referenceName": "dsQuery",
+						"type": "DatasetReference"
+					},
+					"name": "TenureRange"
+				},
+				{
+					"dataset": {
+						"referenceName": "dsQuery",
+						"type": "DatasetReference"
+					},
+					"name": "LagAmountRange"
+				},
+				{
+					"dataset": {
+						"referenceName": "dsQuery",
+						"type": "DatasetReference"
+					},
+					"name": "ClosePeriodRange"
+				},
+				{
+					"dataset": {
+						"referenceName": "dsQuery",
+						"type": "DatasetReference"
+					},
+					"name": "LossAmtRange"
+				},
+				{
+					"dataset": {
+						"referenceName": "dsQuery",
+						"type": "DatasetReference"
+					},
+					"name": "Date"
+				},
+				{
+					"dataset": {
+						"referenceName": "dsgrahamDB",
+						"type": "DatasetReference"
+					},
+					"name": "CHACLocationMap"
+				},
+				{
+					"dataset": {
+						"referenceName": "dsQuery",
+						"type": "DatasetReference"
+					},
+					"name": "Location"
+				},
+				{
+					"dataset": {
+						"referenceName": "dsQuery",
+						"type": "DatasetReference"
+					},
+					"name": "ClaimTypeRollup"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "dsFactClaimTrans_tmp",
+						"type": "DatasetReference"
+					},
+					"name": "ClaimTransaction"
+				}
+			],
+			"transformations": [
+				{
+					"name": "FilterCarrier"
+				},
+				{
+					"name": "DerivedFinancialCols"
+				},
+				{
+					"name": "JoinCHAC"
+				},
+				{
+					"name": "SelectTranFields"
+				},
+				{
+					"name": "SelectTranColumns"
+				},
+				{
+					"name": "LookupGender"
+				},
+				{
+					"name": "LookupMaritalStatus"
+				},
+				{
+					"name": "LookupBodyPart"
+				},
+				{
+					"name": "LookupInjuryType"
+				},
+				{
+					"name": "LookupClaimType"
+				},
+				{
+					"name": "LookupCauseType"
+				},
+				{
+					"name": "LookupOccupation"
+				},
+				{
+					"name": "DerivedColforClaimNumber"
+				},
+				{
+					"name": "JoinClaims"
+				},
+				{
+					"name": "LookupAgeRange"
+				},
+				{
+					"name": "LookupTenureRange"
+				},
+				{
+					"name": "LookupLagAmtRange"
+				},
+				{
+					"name": "LookupClosePeriodRange"
+				},
+				{
+					"name": "LookupLossLeveNetInc"
+				},
+				{
+					"name": "LookupLossLevelTotalInc"
+				},
+				{
+					"name": "SelectCols"
+				},
+				{
+					"name": "LookupValuationDate"
+				},
+				{
+					"name": "SelectLocationFields"
+				},
+				{
+					"name": "CLInsureName"
+				},
+				{
+					"name": "JoinInsuredName"
+				},
+				{
+					"name": "DerivedLocationInsuredName"
+				},
+				{
+					"name": "CLGrahamCompanyName"
+				},
+				{
+					"name": "JoinAccountName"
+				},
+				{
+					"name": "DerivedLocationNameOnAccName"
+				},
+				{
+					"name": "JoinPolicyNumber"
+				},
+				{
+					"name": "DerivedLocationOnPolicyNumber"
+				},
+				{
+					"name": "JoinLocAccAndPolicyNumber"
+				},
+				{
+					"name": "SelectLocPolicyNumber"
+				},
+				{
+					"name": "AccPolicyBasedLocations"
+				},
+				{
+					"name": "SelectAccPolicyLocationDetails"
+				},
+				{
+					"name": "JoinAccPolicyLocation"
+				},
+				{
+					"name": "FinalLocation"
+				},
+				{
+					"name": "SelectLocationDetails"
+				},
+				{
+					"name": "JoinLocation"
+				},
+				{
+					"name": "JoinLocationKey"
+				},
+				{
+					"name": "DerivedKeyValues"
+				},
+				{
+					"name": "JoinClaimRollup"
+				},
+				{
+					"name": "ComputeRollupPriority"
+				},
+				{
+					"name": "AlterRowTrans"
+				},
+				{
+					"name": "AggregateKeys"
+				},
+				{
+					"name": "FilterClientKey"
+				},
+				{
+					"name": "GenerateClaimTypeRank"
+				},
+				{
+					"name": "SelectFinalCols"
+				}
+			],
+			"script": "parameters{\n\tCarrierCode as string ('CHAC')\n}\nsource(output(\n\t\tCarrierKey as short,\n\t\tCarrierCode as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tquery: (concat('SELECT CarrierKey, CarrierCode From DimCarrier WHERE CarrierCode=', '\\'',$CarrierCode,'\\'')),\n\tformat: 'query',\n\tstaged: false) ~> Carrier\nsource(output(\n\t\tClaimTransactionKey as long,\n\t\tCarrierCode as string,\n\t\tClientCode as string,\n\t\tValuationDate as date,\n\t\t{Policy Year} as integer,\n\t\t{Policy Effective Date} as date,\n\t\t{Policy Expiration Date} as date,\n\t\t{Policy Number} as string,\n\t\tAccident_Description as string,\n\t\tClaimant as string,\n\t\tClaimNumber as string,\n\t\t{Date of Loss} as date,\n\t\t{Lag Time} as string,\n\t\t{Date Reported} as date,\n\t\t{Day of Week} as string,\n\t\t{Closed Date} as date,\n\t\tDaysToClose as integer,\n\t\tClaimStatus as string,\n\t\tGender as string,\n\t\tMaritalStatus as string,\n\t\t{Date of Hire} as string,\n\t\tDriver as string,\n\t\tOccupation as string,\n\t\tLOBCode as string,\n\t\tClaimTypeCode as string,\n\t\tInjuryType as string,\n\t\tBodyPart as string,\n\t\tCauseType as string,\n\t\tNAICS_Code as string,\n\t\tLitigation as string,\n\t\tLocation_Name as string,\n\t\tDepartment_Name as string,\n\t\tDivision_Name as string,\n\t\tTotal_Paid as decimal(18,2),\n\t\tTotal_Reserve as decimal(18,2),\n\t\tRecovery_Total as decimal(18,2),\n\t\tTotal_Incurred as decimal(18,2),\n\t\tNet_Incurred as decimal(18,2),\n\t\tExpense_Paid as decimal(18,2),\n\t\tExpense_Reserve as decimal(18,2),\n\t\tExpense_Recovery as decimal(18,2),\n\t\tExpense_Incurred as decimal(18,2),\n\t\tMedical_BI_Paid as decimal(18,2),\n\t\tMedical_BI_Reserves as decimal(18,2),\n\t\tIndemnity_PD_Paid as decimal(18,2),\n\t\tIndemnity_PD_Reserves as decimal(18,2),\n\t\tIncurred_BI_Med as decimal(18,2),\n\t\tIncurred_PD_LT as decimal(18,2),\n\t\tRecovery_BI_Med as decimal(18,2),\n\t\tRecovery_PD_LT as decimal(18,2),\n\t\tOccurrance_State as string,\n\t\tBenefit_State as string,\n\t\tInsured_Identifier as string,\n\t\tRowID as long,\n\t\tAge as integer,\n\t\tClientCarrierGroupKey as integer\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_COMMITTED',\n\tformat: 'table',\n\tstaged: false) ~> ClaimTrans\nsource(output(\n\t\tRowID as integer,\n\t\t{Policy Type} as string,\n\t\t{Medical Paid} as decimal(18,2),\n\t\tBI as decimal(18,2),\n\t\t{Property Damage} as decimal(18,2),\n\t\t{Indemnity Paid} as decimal(18,2),\n\t\t{Account Name} as string,\n\t\t{Insured Name} as string,\n\t\t{Policy Number} as string,\n\t\t{Location Code} as string,\n\t\t{Location Name} as string,\n\t\tValuationDate as date,\n\t\tSourceClaimType as string,\n\t\t{Cause of Loss Code} as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_COMMITTED',\n\tquery: 'SELECT RowID,TRIM([Policy Type]) AS [Policy Type],[Medical Paid],[BI],[Property Damage],\\n[Indemnity Paid],TRIM([Account Name]) AS [Account Name],\\nTRIM([Insured Name]) AS [Insured Name],[Policy Number],\\nTRIM([Location Code]) AS [Location Code],\\nTRIM([Location Name]) AS [Location Name],[ValuationDate],[Claim Type] AS [SourceClaimType],[Cause of Loss Code]\\nFROM stage.CHAC',\n\tformat: 'query',\n\tstaged: false) ~> CHAC\nsource(output(\n\t\tGenderKey as integer,\n\t\tGender as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_COMMITTED',\n\tquery: 'SELECT GenderKey,Gender FROM DimGender',\n\tformat: 'query',\n\tstaged: false) ~> Gender\nsource(output(\n\t\tMaritalStatusKey as integer,\n\t\tMaritalStatus as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_COMMITTED',\n\tquery: 'SELECT MaritalStatusKey,MaritalStatus FROM DimMaritalStatus',\n\tformat: 'query',\n\tstaged: false) ~> MaritalStatus\nsource(output(\n\t\tBodyPartKey as short,\n\t\tBodyPart as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tquery: 'SELECT BodyPartKey,BodyPart FROM DimBodyPart',\n\tformat: 'query',\n\tstaged: false) ~> BodyPart\nsource(output(\n\t\tInjuryTypeKey as integer,\n\t\tInjuryType as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tquery: 'SELECT InjuryTypeKey,InjuryType FROM DimInjuryType',\n\tformat: 'query',\n\tstaged: false) ~> InjuryType\nsource(output(\n\t\tClaimTypeKey as short,\n\t\tClaimTypeCode as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_COMMITTED',\n\tquery: 'SELECT ClaimTypeKey,ClaimTypeCode FROM DimClaimType',\n\tformat: 'query',\n\tstaged: false) ~> ClaimType\nsource(output(\n\t\tCauseTypeKey as short,\n\t\tCauseType as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_COMMITTED',\n\tquery: 'SELECT CauseTypeKey,CauseType FROM DimCauseType',\n\tformat: 'query',\n\tstaged: false) ~> CauseType\nsource(output(\n\t\tOccupationKey as integer,\n\t\tOccupation as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_COMMITTED',\n\tquery: 'SELECT OccupationKey,Occupation FROM DimOccupation',\n\tformat: 'query',\n\tstaged: false) ~> Occupation\nsource(output(\n\t\tClaimKey as long,\n\t\tClientCarrierGroupKey as integer,\n\t\tTenure as short,\n\t\tLagTime as string,\n\t\tDaysToClose as integer,\n\t\tClaimTransactionKey as long,\n\t\tClientKey as short\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tquery: (concat('SELECT ClaimKey,dc.ClientCarrierGroupKey,Tenure,LagTime,dc.DaysToClose,ClaimTransactionKey,ClientKey FROM DimClaim dc INNER JOIN stage.ClaimTransaction c ON dc.ClaimNumber=c.ClaimNumber AND dc.Claimant=c.Claimant AND dc.ClientCarrierGroupKey=c.ClientCarrierGroupKey WHERE c.CarrierCode=','\\'',$CarrierCode,'\\'')),\n\tformat: 'query',\n\tstaged: false) ~> DimClaim\nsource(output(\n\t\tAgeRangeKey as integer,\n\t\tAgeRange as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_COMMITTED',\n\tquery: 'SELECT AgeRangeKey,AgeRange FROM DimAgeRange',\n\tformat: 'query',\n\tstaged: false) ~> AgeRange\nsource(output(\n\t\tClaimTenureRangeKey as integer,\n\t\tClaimTenureRange as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_COMMITTED',\n\tquery: 'SELECT ClaimTenureRangeKey,ClaimTenureRange FROM DimClaimTenureRange',\n\tformat: 'query',\n\tstaged: false) ~> TenureRange\nsource(output(\n\t\tClaimLagAmountRangeKey as integer,\n\t\tClaimLagAmountRange as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_COMMITTED',\n\tquery: 'SELECT ClaimLagAmountRangeKey,ClaimLagAmountRange FROM DimClaimLagAmountRange',\n\tformat: 'query',\n\tstaged: false) ~> LagAmountRange\nsource(output(\n\t\tClaimClosePeriodRangeKey as integer,\n\t\tClaimClosePeriodRange as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_COMMITTED',\n\tquery: 'SELECT ClaimClosePeriodRangeKey,ClaimClosePeriodRange FROM DimClaimClosePeriodRange',\n\tformat: 'query',\n\tstaged: false) ~> ClosePeriodRange\nsource(output(\n\t\tClaimLossAmtRangeKey as integer,\n\t\tClaimLossAmtRange as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_COMMITTED',\n\tquery: 'SELECT ClaimLossAmtRangeKey,ClaimLossAmtRange FROM DimClaimLossAmtRange',\n\tformat: 'query',\n\tstaged: false) ~> LossAmtRange\nsource(output(\n\t\tDate as date,\n\t\tDateKey as integer\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_COMMITTED',\n\tquery: (concat('select Date,DateKey FROM DimDate dd INNER JOIN stage.ClaimTransaction c ON dd.Date=c.ValuationDate WHERE c.CarrierCode =', '\\'',$CarrierCode,'\\'')),\n\tformat: 'query',\n\tstaged: false) ~> Date\nsource(output(\n\t\tAccountName as string,\n\t\tInsuredName as string,\n\t\tPolicyNumber as string,\n\t\tLocationCode as string,\n\t\tCHACLocationName as string,\n\t\tLocationName as string,\n\t\tDepartmentName as string,\n\t\tDivisionName as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_COMMITTED',\n\tquery: 'SELECT TRIM([AccountName]) AS [AccountName],TRIM([InsuredName]) AS [InsuredName],TRIM([PolicyNumber]) AS [PolicyNumber],TRIM([LocationCode]) AS [LocationCode],TRIM([CHACLocationName]) AS [CHACLocationName],TRIM([LocationName]) AS [LocationName],TRIM([DepartmentName]) AS [DepartmentName],TRIM([DivisionName]) AS [DivisionName] FROM [dbo].[CHACLocation_Map]',\n\tformat: 'query') ~> CHACLocationMap\nsource(output(\n\t\tLocationKey as integer,\n\t\tLocation_Name as string,\n\t\tDepartment_Name as string,\n\t\tDivision_Name as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_COMMITTED',\n\tquery: 'SELECT LocationKey,Location_Name,Department_Name,Division_Name FROM DimLocation',\n\tformat: 'query',\n\tstaged: false) ~> Location\nsource(output(\n\t\tClaimTypeKey as short,\n\t\tRollup_Priority as integer\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_COMMITTED',\n\tquery: (concat('SELECT ClaimTypeKey,Rollup_Priority FROM DimClaimTypeRollupPrority dp INNER JOIN DimCarrier dc ON dp.CarrierKey=dc.CarrierKey WHERE dc.CarrierCode=','\\'',$CarrierCode,'\\'')),\n\tformat: 'query',\n\tstaged: false) ~> ClaimTypeRollup\nClaimTrans filter(CarrierCode==$CarrierCode) ~> FilterCarrier\nJoinCHAC derive({Day of Week} = iif(dayOfWeek({Date of Loss})== 1d, 'Monday',\r\niif(dayOfWeek({Date of Loss})== 2d, 'Tuesday',\r\niif(dayOfWeek({Date of Loss})== 3d, 'Wednesday',\r\niif(dayOfWeek({Date of Loss})== 4d, 'Thursday',\r\niif(dayOfWeek({Date of Loss})== 5d, 'Friday',\r\niif(dayOfWeek({Date of Loss})== 6d, 'Saturday',\r\niif(dayOfWeek({Date of Loss})== 0d, 'Sunday',\r\n'')\r\n)))))),\n\t\tMedical_BI_Paid = iif({Policy Type}=='WORK COMP', coalesce({Medical Paid},0), coalesce({Medical Paid},0) + coalesce(BI,0)),\n\t\tIndemnity_PD_Paid = iif({Policy Type}=='WORK COMP', coalesce({Indemnity Paid},0), coalesce({Indemnity Paid},0) + coalesce({Property Damage},0)),\n\t\tTotal_Incurred = coalesce(Total_Paid,0)+ coalesce(Total_Reserve,0)) ~> DerivedFinancialCols\nFilterCarrier, CHAC join(ClaimTrans@RowID == CHAC@RowID,\n\tjoinType:'inner',\n\tbroadcast: 'auto')~> JoinCHAC\nJoinClaims select(mapColumn(\n\t\tClaimTransactionKey = ClaimTrans@ClaimTransactionKey,\n\t\tClientCode,\n\t\tValuationDate = ClaimTrans@ValuationDate,\n\t\tCarrierCode,\n\t\tClientCarrierGroupKey = ClaimTrans@ClientCarrierGroupKey,\n\t\t{Day of Week},\n\t\tClaimStatus,\n\t\tGender,\n\t\tMaritalStatus,\n\t\tOccupation,\n\t\tClaimTypeCode,\n\t\tCauseType,\n\t\tBodyPart,\n\t\tInjuryType,\n\t\tNAICS_Code,\n\t\tLitigation,\n\t\tLocation_Name,\n\t\tDepartment_Name,\n\t\tDivision_Name,\n\t\tTotal_Paid,\n\t\tTotal_Reserve,\n\t\tRecovery_Total,\n\t\tTotal_Incurred,\n\t\tNet_Incurred,\n\t\tExpense_Paid,\n\t\tExpense_Reserve,\n\t\tExpense_Recovery,\n\t\tRecovery_Total,\n\t\tTotal_Incurred,\n\t\tNet_Incurred,\n\t\tExpense_Paid,\n\t\tExpense_Reserve,\n\t\tExpense_Recovery,\n\t\tExpense_Incurred,\n\t\tMedical_BI_Paid,\n\t\tMedical_BI_Reserves,\n\t\tIndemnity_PD_Paid,\n\t\tIndemnity_PD_Reserves,\n\t\tIncurred_BI_Med,\n\t\tIncurred_PD_LT,\n\t\tRecovery_BI_Med,\n\t\tRecovery_PD_LT,\n\t\t{Account Name},\n\t\t{Insured Name},\n\t\t{Policy Number} = ClaimTrans@{Policy Number},\n\t\t{Location Code},\n\t\t{Location Name},\n\t\tClaimNumber,\n\t\tAge,\n\t\tTenure,\n\t\tDaysToClose = ClaimTrans@DaysToClose,\n\t\tClaimKey,\n\t\tLagTime,\n\t\tClientKey,\n\t\tRowID = ClaimTrans@RowID,\n\t\tSourceClaimType,\n\t\t{Cause of Loss Code}\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SelectTranFields\nComputeRollupPriority select(mapColumn(\n\t\tValuationDateKey = DateKey,\n\t\tClientCarrierGroupKey,\n\t\tClaimKey,\n\t\tClaimStatus,\n\t\tNAICS_Code,\n\t\tLitigation,\n\t\tCauseTypeKey,\n\t\tClaimTypeKey = DerivedKeyValues@ClaimTypeKey,\n\t\tBodyPartKey,\n\t\tInjuryTypeKey,\n\t\tOccupationKey,\n\t\tLocationKey,\n\t\tGenderKey,\n\t\tMaritalStatusKey,\n\t\tAgeRangeKey,\n\t\tClaimTenureRangeKey,\n\t\tClaimLagAmountRangeKey,\n\t\tClaimClosePeriodRangeKey,\n\t\tNetLossAmtRangeKey,\n\t\tTotalIncurredLossAmtRangeKey,\n\t\tTotal_Paid,\n\t\tTotal_Reserve,\n\t\tRecovery_Total,\n\t\tTotal_Incurred,\n\t\tNet_Incurred,\n\t\tExpense_Paid,\n\t\tExpense_Reserve,\n\t\tExpense_Recovery,\n\t\tExpense_Incurred,\n\t\tMedical_BI_Paid,\n\t\tMedical_BI_Reserves,\n\t\tIndemnity_PD_Paid,\n\t\tIndemnity_PD_Reserves,\n\t\tIncurred_BI_Med,\n\t\tIncurred_PD_LT,\n\t\tRecovery_BI_Med,\n\t\tRecovery_PD_LT,\n\t\tStatus_Priority,\n\t\tClaimType_Priority,\n\t\tLitigation_Priority,\n\t\tLastLoadTime,\n\t\tClientKey,\n\t\tSourceClaimType,\n\t\t{Cause of Loss Code}\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SelectTranColumns\nSelectTranFields, Gender lookup(SelectTranFields@Gender == Gender@Gender,\n\tmultiple: false,\n\tpickup: 'any',\n\tbroadcast: 'right')~> LookupGender\nLookupGender, MaritalStatus lookup(SelectTranFields@MaritalStatus == MaritalStatus@MaritalStatus,\n\tmultiple: false,\n\tpickup: 'any',\n\tbroadcast: 'right')~> LookupMaritalStatus\nLookupMaritalStatus, BodyPart lookup(SelectTranFields@BodyPart == BodyPart@BodyPart,\n\tmultiple: false,\n\tpickup: 'any',\n\tbroadcast: 'right')~> LookupBodyPart\nLookupBodyPart, InjuryType lookup(SelectTranFields@InjuryType == InjuryType@InjuryType,\n\tmultiple: false,\n\tpickup: 'any',\n\tbroadcast: 'right')~> LookupInjuryType\nLookupInjuryType, ClaimType lookup(SelectTranFields@ClaimTypeCode == ClaimType@ClaimTypeCode,\n\tmultiple: false,\n\tpickup: 'any',\n\tbroadcast: 'right')~> LookupClaimType\nLookupClaimType, CauseType lookup(SelectTranFields@CauseType == CauseType@CauseType,\n\tmultiple: false,\n\tpickup: 'any',\n\tbroadcast: 'right')~> LookupCauseType\nLookupCauseType, Occupation lookup(SelectTranFields@Occupation == Occupation@Occupation,\n\tmultiple: false,\n\tpickup: 'any',\n\tbroadcast: 'auto')~> LookupOccupation\nLookupOccupation derive(Total_Paid = iif(ClaimNumber=='47515025669' && Total_Paid<0,Expense_Paid,Total_Paid),\n\t\tNet_Incurred = iif(ClaimNumber=='47515025669' && Total_Paid<0,Expense_Paid,Net_Incurred),\n\t\tTotal_Incurred = iif(ClaimNumber=='47515025669' && Total_Paid<0,Expense_Paid,Total_Incurred),\n\t\tAgeRange = iif(!isNull(Age),\r\niif(Age >=0 && Age<20, '0-19',iif(Age >=20 && Age<30, '20-29',iif(Age >=30 && Age<40, '30-39',\r\niif(Age >=40 && Age<50, '40-49',iif(Age >=50 && Age<60, '50-59',\r\niif(Age >=60 && Age<70, '60-69',iif(Age >=70 && Age<80, '70-79',iif(Age >=80 && Age<90, '80-89',\r\niif(Age >=90 && Age<100, '90-99',iif(Age >=100 && Age<110, '100-109',iif(Age >=110 && Age<120, '110-119',\r\niif(Age >=120 && Age<130, '120-129',iif(Age >=130 && Age<140, '130-139',\r\niif(Age >=140 && Age<150, '140-149','Unknown'))))))))))\r\n)))\r\n),'Unknown'\r\n),\n\t\tTenureRange = iif(Tenure<0,'Unknown',\r\niif(Tenure >=0 && Tenure<90, '0-3 months',\r\niif(Tenure >=90 && Tenure< 90 * 2, '3-6 months',\r\niif(Tenure >=90 * 2 && Tenure< 90 * 3, '6-9 months',\r\niif(Tenure >=90 * 3 && Tenure<365, '9-12 months',\r\niif(Tenure >=365 && Tenure<365 * 5, '1-5 years',\r\niif(Tenure >=365 * 5 && Tenure<365 * 10, '5-10 years',\r\niif(Tenure >=365 * 10 && Tenure<365 * 15, '10-15 years',\r\niif(Tenure >=365 * 15 && Tenure<365 * 20, '15-20 years',\r\niif(Tenure >=365 * 20 && Tenure<365 * 25, '20-25 years',\r\niif(Tenure >=365 * 25 , '25+ years','Unknown'))))))))))\r\n),\n\t\tLagTimeRange = iif(!isNull(LagTime),\r\niif(toInteger(LagTime) <=3, '0-3',\r\niif(toInteger(LagTime) <= 7, '4-7',\r\niif(toInteger(LagTime) <= 13, '8-13',\r\niif(toInteger(LagTime) <= 20, '14-20',\r\niif(toInteger(LagTime) <=100, '21-100','101+')\r\n)))),'Unknown'),\n\t\tClosePeriodRange = iif(isNull(DaysToClose) || DaysToClose<0,'Unknown',\r\niif(DaysToClose <= 90, '0-90 Days',\r\niif(DaysToClose <= 180, '91-180 Days',\r\niif(DaysToClose <= 365, '180 Days-12 Months',\r\niif(DaysToClose >= 365 && DaysToClose <= 545, '12 Months-18 Months',\r\niif(DaysToClose >= 546 && DaysToClose <= 365*2, '18 Months-2 Years','2+ Years')\r\n))))),\n\t\tNetIncurredLossLevel = iif(isNull(Net_Incurred) || Net_Incurred<= 25000, '$0-25K',\r\niif(Net_Incurred <= 50000, '$25-50K',\r\niif(Net_Incurred <= 100000, '$50-100K',\r\niif(Net_Incurred <= 500000, '$100-500K',\r\niif(Net_Incurred <= 1000000, '$0.5-1M',\r\niif(Net_Incurred <= 2000000, '$1-2M',\r\niif(Net_Incurred > 2000000, '$2M+','Unknown'\r\n))))))),\n\t\tTotalIncurredLossLevel = iif(isNull(Total_Incurred) || Total_Incurred<= 25000, '$0-25K',\r\niif(Total_Incurred <= 50000, '$25-50K',\r\niif(Total_Incurred <= 100000, '$50-100K',\r\niif(Total_Incurred <= 500000, '$100-500K',\r\niif(Total_Incurred <= 1000000, '$0.5-1M',\r\niif(Total_Incurred <= 2000000, '$1-2M',\r\niif(Total_Incurred > 2000000, '$2M+','Unknown'\r\n)))))))) ~> DerivedColforClaimNumber\nDerivedFinancialCols, DimClaim join(ClaimTrans@ClaimTransactionKey == DimClaim@ClaimTransactionKey,\n\tjoinType:'inner',\n\tbroadcast: 'auto')~> JoinClaims\nDerivedColforClaimNumber, AgeRange lookup(DerivedColforClaimNumber@AgeRange == AgeRange@AgeRange,\n\tmultiple: false,\n\tpickup: 'any',\n\tbroadcast: 'right')~> LookupAgeRange\nLookupAgeRange, TenureRange lookup(TenureRange == ClaimTenureRange,\n\tmultiple: false,\n\tpickup: 'any',\n\tbroadcast: 'right')~> LookupTenureRange\nLookupTenureRange, LagAmountRange lookup(LagTimeRange == ClaimLagAmountRange,\n\tmultiple: false,\n\tpickup: 'any',\n\tbroadcast: 'right')~> LookupLagAmtRange\nLookupLagAmtRange, ClosePeriodRange lookup(ClosePeriodRange == ClaimClosePeriodRange,\n\tmultiple: false,\n\tpickup: 'any',\n\tbroadcast: 'right')~> LookupClosePeriodRange\nLookupClosePeriodRange, LossAmtRange lookup(NetIncurredLossLevel == ClaimLossAmtRange,\n\tmultiple: false,\n\tpickup: 'any',\n\tbroadcast: 'right')~> LookupLossLeveNetInc\nSelectCols, LossAmtRange lookup(TotalIncurredLossLevel == ClaimLossAmtRange,\n\tmultiple: false,\n\tpickup: 'any',\n\tbroadcast: 'right')~> LookupLossLevelTotalInc\nLookupLossLeveNetInc select(mapColumn(\n\t\tClaimTransactionKey,\n\t\tClientCode,\n\t\tValuationDate,\n\t\tCarrierCode,\n\t\tClientCarrierGroupKey,\n\t\tClaimStatus,\n\t\tLitigation,\n\t\tClientKey,\n\t\tCauseTypeKey,\n\t\tInjuryTypeKey,\n\t\tClaimTypeKey,\n\t\tBodyPartKey,\n\t\tOccupationKey,\n\t\tGenderKey,\n\t\tMaritalStatusKey,\n\t\tNAICS_Code,\n\t\tDayOfWeek = {Day of Week},\n\t\tLocation_Name,\n\t\tDivision_Name,\n\t\tDepartment_Name,\n\t\t{Account Name},\n\t\t{Insured Name},\n\t\t{Policy Number},\n\t\t{Location Code},\n\t\t{Location Name},\n\t\tClaimNumber,\n\t\tAgeRangeKey,\n\t\tClaimTenureRangeKey,\n\t\tClaimLagAmountRangeKey,\n\t\tClaimClosePeriodRangeKey,\n\t\tNetLossAmtRangeKey = ClaimLossAmtRangeKey,\n\t\tTotalIncurredLossLevel,\n\t\tTotal_Paid,\n\t\tTotal_Reserve,\n\t\tRecovery_Total,\n\t\tTotal_Incurred,\n\t\tNet_Incurred,\n\t\tExpense_Paid,\n\t\tExpense_Reserve,\n\t\tExpense_Recovery,\n\t\tExpense_Incurred,\n\t\tMedical_BI_Paid,\n\t\tMedical_BI_Reserves,\n\t\tIndemnity_PD_Paid,\n\t\tIndemnity_PD_Reserves,\n\t\tIncurred_BI_Med,\n\t\tIncurred_PD_LT,\n\t\tRecovery_BI_Med,\n\t\tRecovery_PD_LT,\n\t\tRowID,\n\t\tClaimKey,\n\t\tSourceClaimType,\n\t\t{Cause of Loss Code}\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SelectCols\nLookupLossLevelTotalInc, Date lookup(ValuationDate == Date,\n\tmultiple: false,\n\tpickup: 'any',\n\tbroadcast: 'auto')~> LookupValuationDate\nCHAC select(mapColumn(\n\t\tRowID,\n\t\t{Account Name},\n\t\t{Insured Name},\n\t\t{Policy Number},\n\t\t{Location Code},\n\t\t{Location Name},\n\t\tValuationDate\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SelectLocationFields\nSelectLocationFields split(!isNull({Insured Name}),\n\tdisjoint: false) ~> CLInsureName@(insurenamematch, insurenamenomatch)\nCLInsureName@insurenamematch, CHACLocationMap join({Insured Name} == InsuredName\n\t&& {Location Name} == CHACLocationName\n\t&& {Location Code} == LocationCode,\n\tjoinType:'left',\n\tbroadcast: 'right')~> JoinInsuredName\nJoinInsuredName derive(DerivedLocationName1 = LocationName,\n\t\tDerivedDepartmentName1 = DepartmentName,\n\t\tDerivedDivisionName1 = DivisionName) ~> DerivedLocationInsuredName\nCLInsureName@insurenamenomatch split((upper({Account Name})!='THE GRAHAM COMPANY' && ValuationDate<toDate('2017-06-30')),\n\tdisjoint: false) ~> CLGrahamCompanyName@(accnamematch, accnamenotmatch)\nCLGrahamCompanyName@accnamematch, CHACLocationMap join({Account Name} == AccountName\n\t&& {Location Name} == CHACLocationName\n\t&& {Location Code} == LocationCode,\n\tjoinType:'left',\n\tbroadcast: 'right')~> JoinAccountName\nJoinAccountName derive(DerivedLocationName2 = LocationName,\n\t\tDerivedDepartmentName2 = DepartmentName,\n\t\tDerivedDivisionName2 = DivisionName) ~> DerivedLocationNameOnAccName\nCLGrahamCompanyName@accnamenotmatch, CHACLocationMap join({Policy Number} == PolicyNumber\n\t&& {Location Code} == LocationCode\n\t&& {Location Name} == CHACLocationName,\n\tjoinType:'left',\n\tbroadcast: 'right')~> JoinPolicyNumber\nJoinPolicyNumber derive(DerivedLocationName3 = LocationName,\n\t\tDerivedDepartmentName3 = DepartmentName,\n\t\tDerivedDivisionName3 = DivisionName) ~> DerivedLocationOnPolicyNumber\nDerivedLocationNameOnAccName, SelectLocPolicyNumber join(CLGrahamCompanyName@accnamematch@RowID == SelectLocPolicyNumber@RowID,\n\tjoinType:'left',\n\tbroadcast: 'right')~> JoinLocAccAndPolicyNumber\nDerivedLocationOnPolicyNumber select(mapColumn(\n\t\tRowID,\n\t\t{Account Name},\n\t\t{Insured Name},\n\t\t{Policy Number},\n\t\t{Location Code},\n\t\t{Location Name},\n\t\tDerivedLocationName3,\n\t\tDerivedDepartmentName3,\n\t\tDerivedDivisionName3\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SelectLocPolicyNumber\nJoinLocAccAndPolicyNumber derive(AccPolicyLocationName = coalesce(DerivedLocationName2,DerivedLocationName3),\n\t\tAccPolicyDepartmentName = coalesce(DerivedDepartmentName2,DerivedDepartmentName3),\n\t\tAccPolicyDivisionName = coalesce(DerivedDivisionName2,DerivedDivisionName3)) ~> AccPolicyBasedLocations\nAccPolicyBasedLocations select(mapColumn(\n\t\tRowID = CLGrahamCompanyName@accnamematch@RowID,\n\t\t{Account Name} = CLGrahamCompanyName@accnamematch@{Account Name},\n\t\t{Insured Name} = CLGrahamCompanyName@accnamematch@{Insured Name},\n\t\t{Policy Number} = CLGrahamCompanyName@accnamematch@{Policy Number},\n\t\t{Location Code} = CLGrahamCompanyName@accnamematch@{Location Code},\n\t\t{Location Name} = CLGrahamCompanyName@accnamematch@{Location Name},\n\t\tAccPolicyLocationName,\n\t\tAccPolicyDepartmentName,\n\t\tAccPolicyDivisionName\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SelectAccPolicyLocationDetails\nDerivedLocationInsuredName, SelectAccPolicyLocationDetails join(CLInsureName@insurenamematch@RowID == SelectAccPolicyLocationDetails@RowID,\n\tjoinType:'left',\n\tbroadcast: 'right')~> JoinAccPolicyLocation\nJoinAccPolicyLocation derive(DerivedLocationName = coalesce(DerivedLocationName1,AccPolicyLocationName),\n\t\tDerivedDepartmentName = coalesce(DerivedDepartmentName1,AccPolicyDepartmentName),\n\t\tDerivedDivisionName = coalesce(DerivedDivisionName1,AccPolicyDivisionName),\n\t\tRowID = CLInsureName@insurenamematch@RowID) ~> FinalLocation\nFinalLocation select(mapColumn(\n\t\tRowID,\n\t\tDerivedLocationName,\n\t\tDerivedDepartmentName,\n\t\tDerivedDivisionName\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SelectLocationDetails\nSelectLocationDetails, Location join(DerivedLocationName == Location_Name\n\t&& DerivedDepartmentName == Department_Name\n\t&& DerivedDivisionName == Division_Name,\n\tjoinType:'left',\n\tbroadcast: 'right')~> JoinLocation\nLookupValuationDate, JoinLocation join(SelectCols@RowID == SelectLocationDetails@RowID,\n\tjoinType:'left',\n\tbroadcast: 'auto')~> JoinLocationKey\nJoinLocationKey derive(GenderKey = iif(isNull(GenderKey),99,GenderKey),\n\t\tMaritalStatusKey = iif(isNull(MaritalStatusKey),99,MaritalStatusKey),\n\t\tClaimTypeKey = iif(isNull(ClaimTypeKey),-99,toInteger(ClaimTypeKey)),\n\t\tBodyPartKey = iif(isNull(BodyPartKey),-99,toInteger(BodyPartKey)),\n\t\tInjuryTypeKey = iif(isNull(InjuryTypeKey),-99,InjuryTypeKey),\n\t\tCauseTypeKey = iif(isNull(CauseTypeKey),-99,toInteger(CauseTypeKey)),\n\t\tOccupationKey = iif(isNull(OccupationKey),-99,OccupationKey),\n\t\tClientKey = iif(isNull(ClientKey),-99,toInteger(ClientKey)),\n\t\tTotalIncurredLossAmtRangeKey = ClaimLossAmtRangeKey) ~> DerivedKeyValues\nDerivedKeyValues, ClaimTypeRollup join(DerivedKeyValues@ClaimTypeKey == ClaimTypeRollup@ClaimTypeKey,\n\tjoinType:'left',\n\tbroadcast: 'right')~> JoinClaimRollup\nJoinClaimRollup derive(Status_Priority = iif(ClaimStatus==\"Open\",1,iif(ClaimStatus=='Closed', 2, 99)),\n\t\tLitigation_Priority = iif(Litigation==\"Yes\",1,iif(Litigation=='No', 2, 99)),\n\t\tLastLoadTime = currentTimestamp(),\n\t\tLitigation = iif(Litigation==\"Yes\", 1, 0),\n\t\tClaimType_Priority = coalesce(Rollup_Priority,99)) ~> ComputeRollupPriority\nAggregateKeys alterRow(upsertIf(true())) ~> AlterRowTrans\nFilterClientKey aggregate(groupBy(ClaimKey,\n\t\tValuationDateKey,\n\t\tClaimTypeKey,\n\t\tLitigation,\n\t\tClaimTypeRank),\n\teach(match(!in(['ClaimKey','ValuationDateKey','ClaimTypeKey','Litigation','ClaimTypeRank'],name)), $$ = first($$))) ~> AggregateKeys\nSelectFinalCols filter(ClientKey!=-99 && !isNull(ClientKey)) ~> FilterClientKey\nSelectTranColumns window(over(ClaimKey,\n\t\tValuationDateKey,\n\t\tLitigation,\n\t\tClaimTypeKey),\n\tasc(SourceClaimType, true),\n\tasc({Cause of Loss Code}, true),\n\tClaimTypeRank = denseRank()) ~> GenerateClaimTypeRank\nGenerateClaimTypeRank select(mapColumn(\n\t\tValuationDateKey,\n\t\tClientCarrierGroupKey,\n\t\tClaimKey,\n\t\tClaimStatus,\n\t\tNAICS_Code,\n\t\tLitigation,\n\t\tCauseTypeKey,\n\t\tClaimTypeKey,\n\t\tBodyPartKey,\n\t\tInjuryTypeKey,\n\t\tOccupationKey,\n\t\tLocationKey,\n\t\tGenderKey,\n\t\tMaritalStatusKey,\n\t\tAgeRangeKey,\n\t\tClaimTenureRangeKey,\n\t\tClaimLagAmountRangeKey,\n\t\tClaimClosePeriodRangeKey,\n\t\tNetLossAmtRangeKey,\n\t\tTotalIncurredLossAmtRangeKey,\n\t\tTotal_Paid,\n\t\tTotal_Reserve,\n\t\tRecovery_Total,\n\t\tTotal_Incurred,\n\t\tNet_Incurred,\n\t\tExpense_Paid,\n\t\tExpense_Reserve,\n\t\tExpense_Recovery,\n\t\tExpense_Incurred,\n\t\tMedical_BI_Paid,\n\t\tMedical_BI_Reserves,\n\t\tIndemnity_PD_Paid,\n\t\tIndemnity_PD_Reserves,\n\t\tIncurred_BI_Med,\n\t\tIncurred_PD_LT,\n\t\tRecovery_BI_Med,\n\t\tRecovery_PD_LT,\n\t\tStatus_Priority,\n\t\tClaimType_Priority,\n\t\tLitigation_Priority,\n\t\tLastLoadTime,\n\t\tClientKey,\n\t\tClaimTypeRank\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SelectFinalCols\nAlterRowTrans sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinput(\n\t\tTransactionKey as long,\n\t\tClaimKey as long,\n\t\tValuationDateKey as integer,\n\t\tClientCarrierGroupKey as integer,\n\t\tCauseTypeKey as integer,\n\t\tClaimTypeKey as integer,\n\t\tInjuryTypeKey as integer,\n\t\tBodyPartKey as integer,\n\t\tGenderKey as integer,\n\t\tOccupationKey as integer,\n\t\tClaimStatus as string,\n\t\tMaritalStatusKey as integer,\n\t\tClientKey as integer,\n\t\tLitigation as boolean,\n\t\tNAICS_Code as string,\n\t\tAgeRangeKey as integer,\n\t\tClaimTenureRangeKey as integer,\n\t\tClaimLagAmountRangeKey as integer,\n\t\tClaimClosePeriodRangeKey as integer,\n\t\tNetLossAmtRangeKey as integer,\n\t\tTotalIncurredLossAmtRangeKey as integer,\n\t\tExpense_Paid as decimal(18,2),\n\t\tExpense_Reserve as decimal(18,2),\n\t\tExpense_Recovery as decimal(18,2),\n\t\tExpense_Incurred as decimal(18,2),\n\t\tMedical_BI_Paid as decimal(18,2),\n\t\tMedical_BI_Reserves as decimal(18,2),\n\t\tIndemnity_PD_Paid as decimal(18,2),\n\t\tIndemnity_PD_Reserves as decimal(18,2),\n\t\tIncurred_BI_Med as decimal(18,2),\n\t\tIncurred_PD_LT as decimal(18,2),\n\t\tRecovery_BI_Med as decimal(18,2),\n\t\tRecovery_PD_LT as decimal(18,2),\n\t\tTotal_Paid as decimal(18,2),\n\t\tTotal_Reserve as decimal(18,2),\n\t\tRecovery_Total as decimal(18,2),\n\t\tTotal_Incurred as decimal(18,2),\n\t\tNet_Incurred as decimal(18,2),\n\t\tLocationKey as integer,\n\t\tEmployeeCount as integer,\n\t\tStatus_Priority as integer,\n\t\tClaimType_Priority as integer,\n\t\tLitigation_Priority as integer,\n\t\tClaimTypeRank as integer,\n\t\tLastLoadTime as timestamp\n\t),\n\tdeletable:false,\n\tinsertable:false,\n\tupdateable:false,\n\tupsertable:true,\n\tkeys:['ClaimKey','ValuationDateKey','ClaimTypeKey','Litigation','ClaimTypeRank'],\n\tformat: 'table',\n\tstaged: false,\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError',\n\tmapColumn(\n\t\tValuationDateKey,\n\t\tClientCarrierGroupKey,\n\t\tClaimKey,\n\t\tClaimStatus,\n\t\tNAICS_Code,\n\t\tLitigation,\n\t\tCauseTypeKey,\n\t\tClaimTypeKey,\n\t\tBodyPartKey,\n\t\tInjuryTypeKey,\n\t\tOccupationKey,\n\t\tLocationKey,\n\t\tGenderKey,\n\t\tMaritalStatusKey,\n\t\tAgeRangeKey,\n\t\tClaimTenureRangeKey,\n\t\tClaimLagAmountRangeKey,\n\t\tClaimClosePeriodRangeKey,\n\t\tNetLossAmtRangeKey,\n\t\tTotalIncurredLossAmtRangeKey,\n\t\tTotal_Paid,\n\t\tTotal_Reserve,\n\t\tRecovery_Total,\n\t\tTotal_Incurred,\n\t\tNet_Incurred,\n\t\tExpense_Paid,\n\t\tExpense_Reserve,\n\t\tExpense_Recovery,\n\t\tExpense_Incurred,\n\t\tMedical_BI_Paid,\n\t\tMedical_BI_Reserves,\n\t\tIndemnity_PD_Paid,\n\t\tIndemnity_PD_Reserves,\n\t\tIncurred_BI_Med,\n\t\tIncurred_PD_LT,\n\t\tRecovery_BI_Med,\n\t\tRecovery_PD_LT,\n\t\tStatus_Priority,\n\t\tClaimType_Priority,\n\t\tLitigation_Priority,\n\t\tLastLoadTime,\n\t\tClientKey,\n\t\tClaimTypeRank\n\t)) ~> ClaimTransaction"
+		}
+	}
+}

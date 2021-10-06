@@ -1,0 +1,93 @@
+{
+	"name": "dsClosedNonZeroTotalReserve",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "GrahamDWHLinkedService",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "POC"
+		},
+		"annotations": [],
+		"type": "AzureSqlDWTable",
+		"schema": [
+			{
+				"name": "TransactionKey",
+				"type": "bigint",
+				"precision": 19
+			},
+			{
+				"name": "ValuationDateKey",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "ClientKey",
+				"type": "smallint",
+				"precision": 5
+			},
+			{
+				"name": "ClaimKey",
+				"type": "bigint",
+				"precision": 19
+			},
+			{
+				"name": "ClaimNumber",
+				"type": "varchar"
+			},
+			{
+				"name": "ValuationDate",
+				"type": "date"
+			},
+			{
+				"name": "ClientCode",
+				"type": "nvarchar"
+			},
+			{
+				"name": "CarrierCode",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Old_Total_Reserve",
+				"type": "decimal",
+				"precision": 18,
+				"scale": 2
+			},
+			{
+				"name": "Old_Total_Incurred",
+				"type": "decimal",
+				"precision": 18,
+				"scale": 2
+			},
+			{
+				"name": "Old_Net_Incurred",
+				"type": "decimal",
+				"precision": 18,
+				"scale": 2
+			},
+			{
+				"name": "New_Total_Reserve",
+				"type": "decimal",
+				"precision": 18,
+				"scale": 2
+			},
+			{
+				"name": "New_Total_Incurred",
+				"type": "decimal",
+				"precision": 18,
+				"scale": 2
+			},
+			{
+				"name": "New_Net_Incurred",
+				"type": "decimal",
+				"precision": 18,
+				"scale": 2
+			}
+		],
+		"typeProperties": {
+			"schema": "report",
+			"table": "NonZeroTotalReserve"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

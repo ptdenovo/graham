@@ -1,0 +1,46 @@
+{
+	"name": "TRA0ClaimProcess",
+	"properties": {
+		"activities": [
+			{
+				"name": "ExtractCarrierFiles",
+				"type": "ExecutePipeline",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "ValidateExtractCarrierFiles",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"CarrierName": {
+							"value": "@pipeline().parameters.CarrierCode",
+							"type": "Expression"
+						},
+						"ContainerName": {
+							"value": "@pipeline().parameters.ContainerName",
+							"type": "Expression"
+						}
+					}
+				}
+			}
+		],
+		"parameters": {
+			"CarrierCode": {
+				"type": "string",
+				"defaultValue": "TRA0"
+			},
+			"ContainerName": {
+				"type": "string",
+				"defaultValue": "carrier-source"
+			}
+		},
+		"folder": {
+			"name": "POC"
+		},
+		"annotations": [],
+		"lastPublishTime": "2021-09-28T16:40:31Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

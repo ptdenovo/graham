@@ -1,0 +1,110 @@
+{
+	"name": "ValidateExtractCarrierFiles",
+	"properties": {
+		"activities": [
+			{
+				"name": "ValidateCarrierAndFiles",
+				"type": "ExecutePipeline",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "ValidateCarrierAndFiles",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"CarrierName": {
+							"value": "@pipeline().parameters.CarrierName",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "CheckCarrierCode",
+				"type": "IfCondition",
+				"dependsOn": [
+					{
+						"activity": "ValidateCarrierAndFiles",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"expression": {
+						"value": "@equals(pipeline().parameters.CarrierName,'TRA0')",
+						"type": "Expression"
+					},
+					"ifFalseActivities": [
+						{
+							"name": "ExtractCarrierSourceFiles",
+							"type": "ExecutePipeline",
+							"dependsOn": [],
+							"userProperties": [],
+							"typeProperties": {
+								"pipeline": {
+									"referenceName": "ExtractSourceFiles",
+									"type": "PipelineReference"
+								},
+								"waitOnCompletion": true,
+								"parameters": {
+									"ContainerName": {
+										"value": "@pipeline().parameters.ContainerName",
+										"type": "Expression"
+									},
+									"CarrierCode": {
+										"value": "@pipeline().parameters.CarrierName",
+										"type": "Expression"
+									}
+								}
+							}
+						}
+					],
+					"ifTrueActivities": [
+						{
+							"name": "ExtractTRA0SourceClaimFiles",
+							"type": "ExecutePipeline",
+							"dependsOn": [],
+							"userProperties": [],
+							"typeProperties": {
+								"pipeline": {
+									"referenceName": "ExtractTRA0SourceClaimFiles",
+									"type": "PipelineReference"
+								},
+								"waitOnCompletion": true,
+								"parameters": {
+									"ContainerName": {
+										"value": "@pipeline().parameters.ContainerName",
+										"type": "Expression"
+									},
+									"CarrierCode": {
+										"value": "@pipeline().parameters.CarrierName",
+										"type": "Expression"
+									}
+								}
+							}
+						}
+					]
+				}
+			}
+		],
+		"parameters": {
+			"CarrierName": {
+				"type": "string"
+			},
+			"ContainerName": {
+				"type": "string",
+				"defaultValue": "carrier-source"
+			}
+		},
+		"folder": {
+			"name": "POC"
+		},
+		"annotations": [],
+		"lastPublishTime": "2021-09-28T13:41:11Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

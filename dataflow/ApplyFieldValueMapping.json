@@ -1,0 +1,54 @@
+{
+	"name": "ApplyFieldValueMapping",
+	"properties": {
+		"folder": {
+			"name": "Transform"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "dsgrahamDB",
+						"type": "DatasetReference"
+					},
+					"name": "FVM"
+				},
+				{
+					"dataset": {
+						"referenceName": "dsQuery",
+						"type": "DatasetReference"
+					},
+					"name": "stageClaimTransaction"
+				}
+			],
+			"sinks": [
+				{
+					"name": "CacheFVM"
+				},
+				{
+					"dataset": {
+						"referenceName": "dsClaimsTransaction",
+						"type": "DatasetReference"
+					},
+					"name": "UpdateStageClaimTransaction"
+				}
+			],
+			"transformations": [
+				{
+					"name": "FVNDerivedAttribute"
+				},
+				{
+					"name": "SetMappedColumnsSet01"
+				},
+				{
+					"name": "SetMappedColumnsSet02"
+				},
+				{
+					"name": "AlterTransactionRow"
+				}
+			],
+			"script": "parameters{\n\tCarrierCode as string\n}\nsource(output(\n\t\tFieldName as string,\n\t\tSourceValue as string,\n\t\tMappedValue as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_COMMITTED',\n\tquery: (concat('SELECT FieldName,SourceValue,MappedValue FROM FieldValueMap WHERE CarrierCode=',\"'\", $CarrierCode,\"'\")),\n\tformat: 'query',\n\tpartitionBy('hash', 1)) ~> FVM\nsource(output(\n\t\tClaimTransactionKey as long,\n\t\tCauseType as string,\n\t\tBodyPart as string,\n\t\tInjuryType as string,\n\t\tLOBCode as string,\n\t\tLitigation as string,\n\t\tAccident_Description as string,\n\t\tClaimant as string,\n\t\tOccupation as string,\n\t\tGender as string,\n\t\tMaritalStatus as string,\n\t\t{Policy Number} as string,\n\t\tClaimStatus as string,\n\t\tDriver as string,\n\t\tClaimTypeCode as string,\n\t\tCarrierCode as string,\n\t\tClientCode as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_COMMITTED',\n\tquery: (concat(\"SELECT ClaimTransactionKey,CauseType,BodyPart,InjuryType,LOBCode,Litigation,Accident_Description,Claimant,Occupation,Gender,MaritalStatus,[Policy Number],ClaimStatus,Driver,trim(ClaimTypeCode) as ClaimTypeCode,CarrierCode,ClientCode FROM stage.ClaimTransaction WHERE CarrierCode = '\", $CarrierCode,\"'\")),\n\tformat: 'query',\n\tstaged: false,\n\tpartitionColumn: 'ClaimTransactionKey',\n\tpartitionBy('external', 4)) ~> stageClaimTransaction\nFVM derive(FieldName = iif(FieldName=='Body Part', 'BodyPart', \r\niif(FieldName=='Cause Type', 'CauseType', \r\niif(FieldName=='Injury Type', 'InjuryType',\r\niif(FieldName=='Status', 'ClaimStatus', \r\niif(FieldName=='Coverage (Line of Business)', 'LOBCode', \r\niif(FieldName=='Gender', 'Gender', \r\niif(FieldName=='Marital Status', 'MaritalStatus', \r\niif(FieldName=='Accident Description', 'Accident_Description', \r\niif(FieldName=='Claim Type', 'ClaimTypeCode',FieldName\r\n))))\r\n))))),\n\t\tSourceValue = trim(SourceValue),\n\t\tMappedValue = trim(MappedValue)) ~> FVNDerivedAttribute\nstageClaimTransaction derive(CauseType = coalesce(CacheFVM#lookup('CauseType',trim(CauseType)).MappedValue,CauseType),\n\t\tBodyPart = coalesce(CacheFVM#lookup('BodyPart',trim(BodyPart)).MappedValue,BodyPart),\n\t\tInjuryType = coalesce(CacheFVM#lookup('InjuryType',trim(InjuryType)).MappedValue,InjuryType),\n\t\tClaimStatus = coalesce(CacheFVM#lookup('ClaimStatus',ClaimStatus).MappedValue,ClaimStatus),\n\t\t{Policy Number} = coalesce(CacheFVM#lookup('Policy Number',{Policy Number}).MappedValue,{Policy Number}),\n\t\tLOBCode = coalesce(CacheFVM#lookup('LOBCode',trim(LOBCode)).MappedValue,LOBCode),\n\t\tGender = coalesce(CacheFVM#lookup('Gender',Gender).MappedValue,Gender),\n\t\tOccupation = coalesce(CacheFVM#lookup('Occupation',trim(Occupation)).MappedValue,Occupation)) ~> SetMappedColumnsSet01\nSetMappedColumnsSet01 derive(ClaimTypeCode = coalesce(CacheFVM#lookup('ClaimTypeCode',trim(ClaimTypeCode)).MappedValue,ClaimTypeCode),\n\t\tLitigation = coalesce(CacheFVM#lookup('Litigation',Litigation).MappedValue,Litigation),\n\t\tClaimant = coalesce(CacheFVM#lookup('Claimant',trim(Claimant)).MappedValue,Claimant),\n\t\tAccident_Description = coalesce(CacheFVM#lookup('Accident_Description',trim(Accident_Description)).MappedValue,Accident_Description),\n\t\tMaritalStatus = coalesce(CacheFVM#lookup('MaritalStatus',trim(MaritalStatus)).MappedValue,MaritalStatus),\n\t\tDriver = coalesce(CacheFVM#lookup('Driver',trim(Driver)).MappedValue,Driver)) ~> SetMappedColumnsSet02\nSetMappedColumnsSet02 alterRow(updateIf(true())) ~> AlterTransactionRow\nFVNDerivedAttribute sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\tkeys:['FieldName','SourceValue'],\n\tstore: 'cache',\n\tformat: 'inline',\n\toutput: false,\n\tsaveOrder: 1,\n\tmapColumn(\n\t\tFieldName,\n\t\tSourceValue,\n\t\tMappedValue\n\t)) ~> CacheFVM\nAlterTransactionRow sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinput(\n\t\tClaimTransactionKey as long,\n\t\tCarrierCode as string,\n\t\tClientCode as string,\n\t\tValuationDate as date,\n\t\t{Policy Year} as integer,\n\t\t{Policy Effective Date} as date,\n\t\t{Policy Expiration Date} as date,\n\t\t{Policy Number} as string,\n\t\tAccident_Description as string,\n\t\tClaimant as string,\n\t\tClaimNumber as string,\n\t\t{Date of Loss} as date,\n\t\t{Lag Time} as string,\n\t\t{Date Reported} as date,\n\t\t{Day of Week} as string,\n\t\t{Closed Date} as date,\n\t\tDaysToClose as integer,\n\t\tClaimStatus as string,\n\t\tGender as string,\n\t\tMaritalStatus as string,\n\t\t{Date of Hire} as string,\n\t\tDriver as string,\n\t\tOccupation as string,\n\t\tLOBCode as string,\n\t\tClaimTypeCode as string,\n\t\tInjuryType as string,\n\t\tBodyPart as string,\n\t\tCauseType as string,\n\t\tNAICS_Code as string,\n\t\tLitigation as string,\n\t\tLocation_Name as string,\n\t\tDepartment_Name as string,\n\t\tDivision_Name as string,\n\t\tTotal_Paid as decimal(18,2),\n\t\tTotal_Reserve as decimal(18,2),\n\t\tRecovery_Total as decimal(18,2),\n\t\tTotal_Incurred as decimal(18,2),\n\t\tNet_Incurred as decimal(18,2),\n\t\tExpense_Paid as decimal(18,2),\n\t\tExpense_Reserve as decimal(18,2),\n\t\tExpense_Recovery as decimal(18,2),\n\t\tExpense_Incurred as decimal(18,2),\n\t\tMedical_BI_Paid as decimal(18,2),\n\t\tMedical_BI_Reserves as decimal(18,2),\n\t\tIndemnity_PD_Paid as decimal(18,2),\n\t\tIndemnity_PD_Reserves as decimal(18,2),\n\t\tIncurred_BI_Med as decimal(18,2),\n\t\tIncurred_PD_LT as decimal(18,2),\n\t\tRecovery_BI_Med as decimal(18,2),\n\t\tRecovery_PD_LT as decimal(18,2),\n\t\tOccurrance_State as string,\n\t\tBenefit_State as string,\n\t\tInsured_Identifier as string,\n\t\tRowID as long,\n\t\tAge as string,\n\t\tClientCarrierGroupKey as integer,\n\t\tClaimHashKey as string\n\t),\n\tdeletable:false,\n\tinsertable:false,\n\tupdateable:true,\n\tupsertable:false,\n\tkeys:['ClaimTransactionKey'],\n\tformat: 'table',\n\tstaged: false,\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\tsaveOrder: 2,\n\terrorHandlingOption: 'stopOnFirstError',\n\tmapColumn(\n\t\tClaimTransactionKey,\n\t\t{Policy Number},\n\t\tAccident_Description,\n\t\tClaimant,\n\t\tClaimStatus,\n\t\tGender,\n\t\tMaritalStatus,\n\t\tDriver,\n\t\tOccupation,\n\t\tLOBCode,\n\t\tClaimTypeCode,\n\t\tInjuryType,\n\t\tBodyPart,\n\t\tCauseType,\n\t\tLitigation\n\t),\n\tpartitionBy('hash', 4,\n\t\tClaimTransactionKey\n\t)) ~> UpdateStageClaimTransaction"
+		}
+	}
+}

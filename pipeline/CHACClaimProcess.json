@@ -1,0 +1,72 @@
+{
+	"name": "CHACClaimProcess",
+	"properties": {
+		"activities": [
+			{
+				"name": "ExtractCarrierFiles",
+				"type": "ExecutePipeline",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "ValidateExtractCarrierFiles",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"CarrierName": {
+							"value": "@pipeline().parameters.CarrierCode",
+							"type": "Expression"
+						},
+						"ContainerName": {
+							"value": "@pipeline().parameters.ContainerName",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "CHACTransform",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "ExtractCarrierFiles",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "CHACTransform",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"CarrierCode": {
+							"value": "@pipeline().parameters.CarrierCode",
+							"type": "Expression"
+						}
+					}
+				}
+			}
+		],
+		"parameters": {
+			"CarrierCode": {
+				"type": "string",
+				"defaultValue": "CHAC"
+			},
+			"ContainerName": {
+				"type": "string",
+				"defaultValue": "carrier-source"
+			}
+		},
+		"folder": {
+			"name": "POC"
+		},
+		"annotations": [],
+		"lastPublishTime": "2021-09-29T16:59:18Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

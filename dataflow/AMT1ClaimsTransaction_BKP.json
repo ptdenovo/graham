@@ -1,0 +1,377 @@
+{
+	"name": "AMT1ClaimsTransaction_BKP",
+	"properties": {
+		"folder": {
+			"name": "Copy"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "dsQuery",
+						"type": "DatasetReference"
+					},
+					"name": "Carrier"
+				},
+				{
+					"dataset": {
+						"referenceName": "dsQuery",
+						"type": "DatasetReference"
+					},
+					"name": "ClaimTransaction"
+				},
+				{
+					"dataset": {
+						"referenceName": "dsgrahamStageDB",
+						"type": "DatasetReference"
+					},
+					"name": "stageAMT1"
+				},
+				{
+					"dataset": {
+						"referenceName": "dsQuery",
+						"type": "DatasetReference"
+					},
+					"name": "DimClaim"
+				},
+				{
+					"dataset": {
+						"referenceName": "dsControlFiles",
+						"type": "DatasetReference"
+					},
+					"name": "AMT1LocationMapSheet1"
+				},
+				{
+					"dataset": {
+						"referenceName": "dsQuery",
+						"type": "DatasetReference"
+					},
+					"name": "DimLocation"
+				},
+				{
+					"dataset": {
+						"referenceName": "dsControlFilesParameterizedSheetIndex",
+						"type": "DatasetReference"
+					},
+					"name": "AMT1LocationMapClaimNo"
+				},
+				{
+					"dataset": {
+						"referenceName": "dsQuery",
+						"type": "DatasetReference"
+					},
+					"name": "DimClient"
+				},
+				{
+					"dataset": {
+						"referenceName": "dsQuery",
+						"type": "DatasetReference"
+					},
+					"name": "ClientClaimTransaction"
+				},
+				{
+					"dataset": {
+						"referenceName": "dsQuery",
+						"type": "DatasetReference"
+					},
+					"name": "Gender"
+				},
+				{
+					"dataset": {
+						"referenceName": "dsQuery",
+						"type": "DatasetReference"
+					},
+					"name": "MaritalStatus"
+				},
+				{
+					"dataset": {
+						"referenceName": "dsQuery",
+						"type": "DatasetReference"
+					},
+					"name": "BodyPart"
+				},
+				{
+					"dataset": {
+						"referenceName": "dsQuery",
+						"type": "DatasetReference"
+					},
+					"name": "InjuryType"
+				},
+				{
+					"dataset": {
+						"referenceName": "dsQuery",
+						"type": "DatasetReference"
+					},
+					"name": "ClaimType"
+				},
+				{
+					"dataset": {
+						"referenceName": "dsQuery",
+						"type": "DatasetReference"
+					},
+					"name": "CauseType"
+				},
+				{
+					"dataset": {
+						"referenceName": "dsQuery",
+						"type": "DatasetReference"
+					},
+					"name": "Occupation"
+				},
+				{
+					"dataset": {
+						"referenceName": "dsQuery",
+						"type": "DatasetReference"
+					},
+					"name": "AgeRange"
+				},
+				{
+					"dataset": {
+						"referenceName": "dsQuery",
+						"type": "DatasetReference"
+					},
+					"name": "TenureRange"
+				},
+				{
+					"dataset": {
+						"referenceName": "dsQuery",
+						"type": "DatasetReference"
+					},
+					"name": "LagAmountRange"
+				},
+				{
+					"dataset": {
+						"referenceName": "dsQuery",
+						"type": "DatasetReference"
+					},
+					"name": "ClosePeriodRange"
+				},
+				{
+					"dataset": {
+						"referenceName": "dsQuery",
+						"type": "DatasetReference"
+					},
+					"name": "LossAmtRange"
+				},
+				{
+					"dataset": {
+						"referenceName": "dsQuery",
+						"type": "DatasetReference"
+					},
+					"name": "Date"
+				},
+				{
+					"dataset": {
+						"referenceName": "dsQuery",
+						"type": "DatasetReference"
+					},
+					"name": "ClaimTypePriority"
+				},
+				{
+					"dataset": {
+						"referenceName": "dsQuery",
+						"type": "DatasetReference"
+					},
+					"name": "FactExisting"
+				},
+				{
+					"dataset": {
+						"referenceName": "dsgrahamStageDB",
+						"type": "DatasetReference"
+					},
+					"name": "ClientEmployeeCount"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "dsFactClaimTrans",
+						"type": "DatasetReference"
+					},
+					"name": "FactTransaction"
+				}
+			],
+			"transformations": [
+				{
+					"name": "JoinCarrier"
+				},
+				{
+					"name": "SelectColsToProcess"
+				},
+				{
+					"name": "JoinStage"
+				},
+				{
+					"name": "DerivedFinancialFields"
+				},
+				{
+					"name": "SelectLocationMapFields"
+				},
+				{
+					"name": "JoinClientBasedLocation"
+				},
+				{
+					"name": "ClientBasedLocationFields"
+				},
+				{
+					"name": "SelectClientBasedLocation"
+				},
+				{
+					"name": "DerivedLocationMapCols"
+				},
+				{
+					"name": "ClientBasedLocationMap"
+				},
+				{
+					"name": "JoinLocationKeySheet1"
+				},
+				{
+					"name": "FilterLocationMap"
+				},
+				{
+					"name": "JoinClient"
+				},
+				{
+					"name": "SelectClientKey"
+				},
+				{
+					"name": "JoinClientKeyInfo"
+				},
+				{
+					"name": "SelectClientKeyWithStage"
+				},
+				{
+					"name": "JoinLocationKeyClaimNo"
+				},
+				{
+					"name": "ClaimNoBasedLocationMap"
+				},
+				{
+					"name": "SelectLocationDetails"
+				},
+				{
+					"name": "SelectClientBasedLocationFields"
+				},
+				{
+					"name": "DerivedLocationKeyFromClaimNo"
+				},
+				{
+					"name": "DerivedClientClaimFields"
+				},
+				{
+					"name": "SelectClientClaimFields"
+				},
+				{
+					"name": "JoinClientClaim"
+				},
+				{
+					"name": "DeriveFinalLocation"
+				},
+				{
+					"name": "SelectClientMappedFields"
+				},
+				{
+					"name": "JoinDimLocation"
+				},
+				{
+					"name": "DerivedLocationKey"
+				},
+				{
+					"name": "SelectTranFieldsAfterLocationMapping"
+				},
+				{
+					"name": "JoinDimClaim"
+				},
+				{
+					"name": "SelectAfterClaimJoin"
+				},
+				{
+					"name": "LookupGender"
+				},
+				{
+					"name": "LookupMaritalStatus"
+				},
+				{
+					"name": "LookupClaimType"
+				},
+				{
+					"name": "LookupBodyPart"
+				},
+				{
+					"name": "LookupInjurType"
+				},
+				{
+					"name": "LookupCauseType"
+				},
+				{
+					"name": "LookupOccupation"
+				},
+				{
+					"name": "DerivedRangeFields"
+				},
+				{
+					"name": "LookupAge"
+				},
+				{
+					"name": "LookupTenureRange"
+				},
+				{
+					"name": "LookupLagTimeRange"
+				},
+				{
+					"name": "LookupClosePeriodRange"
+				},
+				{
+					"name": "LookupLossAmtRange"
+				},
+				{
+					"name": "SelectTransFieldswithKeys"
+				},
+				{
+					"name": "LookupTotalIncurredLossAmt"
+				},
+				{
+					"name": "DerivedKeyValues"
+				},
+				{
+					"name": "DerivedNetLossAmtRangeKey"
+				},
+				{
+					"name": "LookupDate"
+				},
+				{
+					"name": "JoinCalimTypeRollUp"
+				},
+				{
+					"name": "ComputeRollupPriority"
+				},
+				{
+					"name": "SelectFinalTransFields"
+				},
+				{
+					"name": "FilterClientKeys"
+				},
+				{
+					"name": "JoinFact"
+				},
+				{
+					"name": "SelectCols"
+				},
+				{
+					"name": "AlterFactRow"
+				},
+				{
+					"name": "JoinClientEmployeeCount"
+				},
+				{
+					"name": "SelectFiledsAfterClientDataProcessing"
+				},
+				{
+					"name": "AggregateFact"
+				}
+			],
+			"script": "parameters{\n\tCarrierCode as string ('AMT1')\n}\nsource(output(\n\t\tCarrierKey as short,\n\t\tCarrierCode as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_COMMITTED',\n\tquery: (concat('SELECT CarrierKey, CarrierCode From DimCarrier WHERE CarrierCode=', '\\'',$CarrierCode,'\\'')),\n\tformat: 'query',\n\tstaged: false) ~> Carrier\nsource(output(\n\t\tClaimNumber as string,\n\t\tClaimTransactionKey as long,\n\t\tRowID as long,\n\t\tCarrierCode as string,\n\t\tClientCode as string,\n\t\tValuationDate as date,\n\t\t{Policy Number} as string,\n\t\tClaimant as string,\n\t\tGender as string,\n\t\tLOBCode as string,\n\t\tClaimStatus as string,\n\t\tMaritalStatus as string,\n\t\tClaimTypeCode as string,\n\t\tOccupation as string,\n\t\tInjuryType as string,\n\t\tBodyPart as string,\n\t\tCauseType as string,\n\t\tLitigation as string,\n\t\tNAICS_Code as string,\n\t\tTotal_Paid as decimal(18,2),\n\t\tTotal_Reserve as decimal(18,2),\n\t\tRecovery_Total as decimal(18,2),\n\t\tTotal_Incurred as decimal(18,2),\n\t\tNet_Incurred as decimal(18,2),\n\t\tExpense_Paid as decimal(18,2),\n\t\tExpense_Reserve as decimal(18,2),\n\t\tExpense_Recovery as decimal(18,2),\n\t\tExpense_Incurred as decimal(18,2),\n\t\tMedical_BI_Paid as decimal(18,2),\n\t\tMedical_BI_Reserves as decimal(18,2),\n\t\tIndemnity_PD_Paid as decimal(18,2),\n\t\tIndemnity_PD_Reserves as decimal(18,2),\n\t\tIncurred_BI_Med as decimal(18,2),\n\t\tIncurred_PD_LT as decimal(18,2),\n\t\tRecovery_BI_Med as decimal(18,2),\n\t\tRecovery_PD_LT as decimal(18,2)\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tquery: (concat('SELECT ClaimNumber,ClaimTransactionKey,RowID,CarrierCode,ClientCode,ValuationDate,[Policy Number],Claimant,Gender,LOBCode,[ClaimStatus],MaritalStatus,ClaimTypeCode,Occupation,InjuryType,BodyPart,CauseType,Litigation,NAICS_Code, [Total_Paid], [Total_Reserve], [Recovery_Total], [Total_Incurred], [Net_Incurred], [Expense_Paid], [Expense_Reserve], [Expense_Recovery], [Expense_Incurred], [Medical_BI_Paid], [Medical_BI_Reserves], [Indemnity_PD_Paid], [Indemnity_PD_Reserves], [Incurred_BI_Med], [Incurred_PD_LT], [Recovery_BI_Med], [Recovery_PD_LT] FROM stage.ClaimTransaction WHERE CarrierCode =', \"'\",$CarrierCode,\"'\")),\n\tformat: 'query',\n\tstaged: false) ~> ClaimTransaction\nsource(output(\n\t\tSystemCode as string,\n\t\tTotalRecoveries as string,\n\t\tMedicalPayments as string,\n\t\tMedicalRecoveries as string,\n\t\tIndemnityPayments as string,\n\t\tIndemnityRecoveries as string,\n\t\tExpensePayments as string,\n\t\tOtherPayments as string,\n\t\tLegalPayments as string,\n\t\tALAEPayments as string,\n\t\tExpenseReserves as string,\n\t\tOtherReserves as string,\n\t\tLegalReserves as string,\n\t\tALAEReserves as string,\n\t\tExpenseRecoveries as string,\n\t\tOtherRecoveries as string,\n\t\tLegalRecoveries as string,\n\t\tALAERecoveries as string,\n\t\tExpenseIncurred as string,\n\t\tOtherIncurred as string,\n\t\tLegalIncurred as string,\n\t\tALAEIncurred as string,\n\t\tLossLocationId as string,\n\t\tLossLocation as string,\n\t\tLossAddress as string,\n\t\tLossSource as string,\n\t\tLOB as string,\n\t\tInsuredName as string,\n\t\tRowID as long\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_COMMITTED',\n\tquery: ('SELECT SystemCode,TotalRecoveries, MedicalPayments, MedicalRecoveries, IndemnityPayments, IndemnityRecoveries,ExpensePayments,OtherPayments,LegalPayments,ALAEPayments,ExpenseReserves,OtherReserves,LegalReserves,ALAEReserves,ExpenseRecoveries,OtherRecoveries,LegalRecoveries,ALAERecoveries,ExpenseIncurred,OtherIncurred,LegalIncurred,ALAEIncurred,[LossLocationId], [LossLocation],  [LossAddress],   [LossSource],  [LOB],  [InsuredName], RowID From stage.AMT1'),\n\tformat: 'query') ~> stageAMT1\nsource(output(\n\t\tClaimKey as long,\n\t\tClientCarrierGroupKey as integer,\n\t\tTenure as short,\n\t\tLagTime as string,\n\t\tDaysToClose as integer,\n\t\tAge as integer,\n\t\tClaimTransactionKey as long,\n\t\tClientKey as short\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_COMMITTED',\n\tquery: (concat('SELECT ClaimKey,dc.ClientCarrierGroupKey,Tenure,LagTime,dc.DaysToClose,dc.Age,ClaimTransactionKey,ClientKey FROM DimClaim dc INNER JOIN stage.ClaimTransaction c ON dc.ClaimNumber=c.ClaimNumber AND dc.Claimant=c.Claimant AND dc.ClientCarrierGroupKey=c.ClientCarrierGroupKey WHERE c.CarrierCode=','\\'',$CarrierCode,'\\' AND dc.ClientCarrierGroupKey<>-99')),\n\tformat: 'query',\n\tstaged: false) ~> DimClaim\nsource(output(\n\t\tInsuredName as string,\n\t\tLossLocationId as string,\n\t\tLossLocation as string,\n\t\tLossAddress as string,\n\t\t{Location Name} as string,\n\t\t{Department Name} as string,\n\t\t{Division Name} as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\twildcardPaths:['AMT1/AMT1 Location Mapping.xlsx']) ~> AMT1LocationMapSheet1\nsource(output(\n\t\tClientKey as short,\n\t\tLocationKey as integer,\n\t\tLocation_Name as string,\n\t\tDepartment_Name as string,\n\t\tDivision_Name as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_COMMITTED',\n\tquery: 'SELECT ClientKey,LocationKey,Location_Name,Department_Name,Division_Name FROM DimLocation',\n\tformat: 'query',\n\tstaged: false) ~> DimLocation\nsource(output(\n\t\t{Claim #} as integer,\n\t\t{Location Name} as string,\n\t\t{Department Name} as string,\n\t\t{Division Name} as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\twildcardPaths:['AMT1/AMT1 Location Mapping.xlsx']) ~> AMT1LocationMapClaimNo\nsource(output(\n\t\tClientKey as short,\n\t\tClientCode as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tquery: 'SELECT ClientKey,ClientCode FROM DimClient',\n\tformat: 'query',\n\tstaged: false) ~> DimClient\nsource(output(\n\t\tClaimNumber as string,\n\t\tValuationDate as date,\n\t\tLocation_Level1 as string,\n\t\tLocation_Level2 as string,\n\t\tLocation_Level3 as string,\n\t\tGender as string,\n\t\tOccupation as string,\n\t\tClientKey as short\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_COMMITTED',\n\tquery: 'SELECT ClaimNumber,ValuationDate,Location_Level1,Location_Level2,Location_Level3,Gender,Occupation,dc.ClientKey \\nFROM stage.ClientClaimTransaction sc\\nINNER JOIN DimClient dc ON sc.ClientCode=dc.ClientCode\\nWHERE dc.ClientCode=\\'KEYSHUM-01\\'',\n\tformat: 'query',\n\tstaged: false) ~> ClientClaimTransaction\nsource(output(\n\t\tGenderKey as integer,\n\t\tGender as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_COMMITTED',\n\tquery: 'SELECT GenderKey,Gender FROM DimGender',\n\tformat: 'query',\n\tstaged: false) ~> Gender\nsource(output(\n\t\tMaritalStatusKey as integer,\n\t\tMaritalStatus as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_COMMITTED',\n\tquery: 'SELECT MaritalStatusKey,MaritalStatus FROM DimMaritalStatus',\n\tformat: 'query',\n\tstaged: false) ~> MaritalStatus\nsource(output(\n\t\tBodyPartKey as short,\n\t\tBodyPart as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_COMMITTED',\n\tquery: 'SELECT BodyPartKey,BodyPart FROM DimBodyPart',\n\tformat: 'query',\n\tstaged: false) ~> BodyPart\nsource(output(\n\t\tInjuryTypeKey as integer,\n\t\tInjuryType as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_COMMITTED',\n\tquery: 'SELECT InjuryTypeKey,InjuryType FROM DimInjuryType',\n\tformat: 'query',\n\tstaged: false) ~> InjuryType\nsource(output(\n\t\tClaimTypeKey as short,\n\t\tClaimTypeCode as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_COMMITTED',\n\tquery: 'SELECT ClaimTypeKey,ClaimTypeCode FROM DimClaimType',\n\tformat: 'query',\n\tstaged: false) ~> ClaimType\nsource(output(\n\t\tCauseTypeKey as short,\n\t\tCauseType as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_COMMITTED',\n\tquery: 'SELECT CauseTypeKey,CauseType FROM DimCauseType',\n\tformat: 'query',\n\tstaged: false) ~> CauseType\nsource(output(\n\t\tOccupationKey as integer,\n\t\tOccupation as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_COMMITTED',\n\tquery: 'SELECT OccupationKey,Occupation FROM DimOccupation',\n\tformat: 'query',\n\tstaged: false) ~> Occupation\nsource(output(\n\t\tAgeRangeKey as integer,\n\t\tAgeRange as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_COMMITTED',\n\tquery: 'SELECT AgeRangeKey,AgeRange FROM DimAgeRange',\n\tformat: 'query',\n\tstaged: false) ~> AgeRange\nsource(output(\n\t\tClaimTenureRangeKey as integer,\n\t\tClaimTenureRange as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_COMMITTED',\n\tquery: 'SELECT ClaimTenureRangeKey,ClaimTenureRange FROM DimClaimTenureRange',\n\tformat: 'query',\n\tstaged: false) ~> TenureRange\nsource(output(\n\t\tClaimLagAmountRangeKey as integer,\n\t\tClaimLagAmountRange as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_COMMITTED',\n\tquery: 'SELECT ClaimLagAmountRangeKey,ClaimLagAmountRange FROM DimClaimLagAmountRange',\n\tformat: 'query',\n\tstaged: false) ~> LagAmountRange\nsource(output(\n\t\tClaimClosePeriodRangeKey as integer,\n\t\tClaimClosePeriodRange as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_COMMITTED',\n\tquery: 'SELECT ClaimClosePeriodRangeKey,ClaimClosePeriodRange FROM DimClaimClosePeriodRange',\n\tformat: 'query',\n\tstaged: false) ~> ClosePeriodRange\nsource(output(\n\t\tClaimLossAmtRangeKey as integer,\n\t\tClaimLossAmtRange as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_COMMITTED',\n\tquery: 'SELECT ClaimLossAmtRangeKey,ClaimLossAmtRange FROM DimClaimLossAmtRange',\n\tformat: 'query',\n\tstaged: false) ~> LossAmtRange\nsource(output(\n\t\tDate as date,\n\t\tDateKey as integer\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_COMMITTED',\n\tquery: (concat('select Date,DateKey FROM DimDate dd INNER JOIN stage.ClaimTransaction c ON dd.Date=c.ValuationDate WHERE c.CarrierCode =', '\\'',$CarrierCode,'\\'')),\n\tformat: 'query',\n\tstaged: false) ~> Date\nsource(output(\n\t\tClaimTypeKey as short,\n\t\tRollup_Priority as integer\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_COMMITTED',\n\tquery: (concat('SELECT ClaimTypeKey,Rollup_Priority FROM DimClaimTypeRollupPrority dp INNER JOIN DimCarrier dc ON dp.CarrierKey=dc.CarrierKey WHERE dc.CarrierCode=','\\'',$CarrierCode,'\\'')),\n\tformat: 'query',\n\tstaged: false) ~> ClaimTypePriority\nsource(output(\n\t\tClaimKey as long,\n\t\tValuationDateKey as integer,\n\t\tLitigation as boolean,\n\t\tClaimTypeKey as short,\n\t\tTransactionKey as long\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_COMMITTED',\n\tquery: 'SELECT fc.ClaimKey,ValuationDateKey,Litigation,ClaimTypeKey,TransactionKey FROM FactClaimTransaction fc\\nINNER JOIN DimClaim dc ON fc.ClaimKey=dc.ClaimKey\\nINNER JOIN DimCarrier c ON dc.CarrierKey=c.CarrierKey\\nWHERE CarrierCode=\\'AMT1\\'',\n\tformat: 'query',\n\tstaged: false) ~> FactExisting\nsource(output(\n\t\t{Client Code} as string,\n\t\t{Employee Count} as short,\n\t\tLocation as string,\n\t\t{Valuation Date} as date\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_COMMITTED',\n\tquery: 'SELECT [Client Code],[Employee Count], Location,[Valuation Date] FROM stage.EmployeeCount',\n\tformat: 'query') ~> ClientEmployeeCount\nClaimTransaction, Carrier join(ClaimTransaction@CarrierCode == Carrier@CarrierCode,\n\tjoinType:'inner',\n\tbroadcast: 'right')~> JoinCarrier\nDerivedFinancialFields select(mapColumn(\n\t\tClaimTransactionKey,\n\t\tRowID = ClaimTransaction@RowID,\n\t\tCarrierCode = ClaimTransaction@CarrierCode,\n\t\tClientCode,\n\t\tValuationDate,\n\t\t{Policy Number},\n\t\tClaimant,\n\t\tGender,\n\t\tLOBCode,\n\t\tClaimStatus,\n\t\tMaritalStatus,\n\t\tClaimTypeCode,\n\t\tOccupation,\n\t\tInjuryType,\n\t\tBodyPart,\n\t\tCauseType,\n\t\tLitigation,\n\t\tNAICS_Code,\n\t\tTotal_Paid,\n\t\tTotal_Reserve,\n\t\tRecovery_Total,\n\t\tTotal_Incurred,\n\t\tNet_Incurred,\n\t\tExpense_Paid,\n\t\tExpense_Reserve,\n\t\tExpense_Recovery,\n\t\tExpense_Incurred,\n\t\tMedical_BI_Paid,\n\t\tMedical_BI_Reserves,\n\t\tIndemnity_PD_Paid,\n\t\tIndemnity_PD_Reserves,\n\t\tIncurred_BI_Med,\n\t\tIncurred_PD_LT,\n\t\tRecovery_BI_Med,\n\t\tRecovery_PD_LT,\n\t\tCarrierKey,\n\t\tCarrierCode = Carrier@CarrierCode,\n\t\tSystemCode,\n\t\tTotalRecoveries,\n\t\tMedicalPayments,\n\t\tMedicalRecoveries,\n\t\tIndemnityPayments,\n\t\tIndemnityRecoveries,\n\t\tExpensePayments,\n\t\tOtherPayments,\n\t\tLegalPayments,\n\t\tALAEPayments,\n\t\tExpenseReserves,\n\t\tOtherReserves,\n\t\tLegalReserves,\n\t\tALAEReserves,\n\t\tExpenseRecoveries,\n\t\tOtherRecoveries,\n\t\tLegalRecoveries,\n\t\tALAERecoveries,\n\t\tExpenseIncurred,\n\t\tOtherIncurred,\n\t\tLegalIncurred,\n\t\tALAEIncurred,\n\t\tLossLocationId,\n\t\tLossLocation,\n\t\tLossAddress,\n\t\tLossSource,\n\t\tLOB,\n\t\tInsuredName,\n\t\tClaimNumber\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SelectColsToProcess\nJoinCarrier, stageAMT1 join(ClaimTransaction@RowID == stageAMT1@RowID,\n\tjoinType:'inner',\n\tbroadcast: 'auto')~> JoinStage\nJoinStage derive(Medical_BI_Paid = iif(SystemCode=='WC' || SystemCode=='WO',(coalesce(toDecimal(MedicalPayments),0.0) - coalesce(toDecimal(MedicalRecoveries),0.0)) , toDecimal(0)),\n\t\tIndemnity_PD_Paid = iif(SystemCode=='WC' || SystemCode=='WO',(coalesce(toDecimal(IndemnityPayments),0.0) - coalesce(toDecimal(IndemnityRecoveries),0.0)) , toDecimal(0)),\n\t\tExpense_Paid = iif(SystemCode=='WC' || SystemCode=='WO',(coalesce(toDecimal(ExpensePayments),0.0) + coalesce(toDecimal(OtherPayments),0.0) + coalesce(toDecimal(LegalPayments),0.0)), coalesce(toDecimal(ALAEPayments),0.0)),\n\t\tExpense_Reserve = iif(SystemCode=='WC' || SystemCode=='WO',(coalesce(toDecimal(ExpenseReserves),0.0) + coalesce(toDecimal(OtherReserves),0.0) + coalesce(toDecimal(LegalReserves),0.0)), coalesce(toDecimal(ALAEReserves),0.0)),\n\t\tExpense_Recovery = iif(SystemCode=='WC' || SystemCode=='WO',(coalesce(toDecimal(ExpenseRecoveries),0.0) + coalesce(toDecimal(OtherRecoveries),0.0) + coalesce(toDecimal(LegalRecoveries),0.0))*1, coalesce(toDecimal(ALAERecoveries),0.0)*1),\n\t\tExpense_Incurred = iif(SystemCode=='WC' || SystemCode=='WO',(coalesce(toDecimal(ExpenseIncurred),0.0) + coalesce(toDecimal(OtherIncurred),0.0) + coalesce(toDecimal(LegalIncurred),0.0)), coalesce(toDecimal(ALAEIncurred),0.0)),\n\t\tLitigation = iif(isNull(Litigation),false(),\r\niif(upper(Litigation)!='YES',false(),true())),\n\t\tRecovery_Total = toDecimal(TotalRecoveries)*-1) ~> DerivedFinancialFields\nstageAMT1 select(mapColumn(\n\t\tSystemCode,\n\t\tLossLocationId,\n\t\tLossLocation,\n\t\tLossAddress,\n\t\tLossSource,\n\t\tLOB,\n\t\tInsuredName,\n\t\tRowID\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SelectLocationMapFields\nSelectClientKeyWithStage, ClientBasedLocationMap join(SelectClientKeyWithStage@InsuredName == ClientBasedLocationMap@InsuredName\n\t&& SelectClientKeyWithStage@LossLocationId == AMT1LocationMapSheet1@LossLocationId\n\t&& SelectClientKeyWithStage@LossLocation == ClientBasedLocationMap@LossLocation\n\t&& SelectClientKeyWithStage@LossAddress == ClientBasedLocationMap@LossAddress,\n\tjoinType:'left',\n\tbroadcast: 'auto')~> JoinClientBasedLocation\nJoinClientBasedLocation derive(ClientBasedLocationName = {Location Name},\n\t\tClientBasedDepartmentName = {Department Name},\n\t\tClientBasedDivisionName = {Division Name}) ~> ClientBasedLocationFields\nClientBasedLocationFields select(mapColumn(\n\t\tClientKey,\n\t\tRowID,\n\t\tClientBasedLocationName,\n\t\tClientBasedDepartmentName,\n\t\tClientBasedDivisionName\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SelectClientBasedLocation\nSelectLocationMapFields derive(LossLocation = trim(lower(LossLocation)),\n\t\tLossAddress = trim(lower(LossAddress)),\n\t\tLossSource = trim(lower(LossSource)),\n\t\tInsuredName = trim(lower(InsuredName))) ~> DerivedLocationMapCols\nAMT1LocationMapSheet1 derive(InsuredName = trim(lower(InsuredName)),\n\t\tLossLocation = trim(lower(LossLocation)),\n\t\tLossAddress = trim(lower(LossAddress))) ~> ClientBasedLocationMap\nSelectColsToProcess, SelectClientBasedLocation join(SelectColsToProcess@RowID == SelectClientBasedLocation@RowID,\n\tjoinType:'left',\n\tbroadcast: 'auto')~> JoinLocationKeySheet1\nDimLocation filter(ClientKey==-99) ~> FilterLocationMap\nClaimTransaction, DimClient join(ClaimTransaction@ClientCode == DimClient@ClientCode,\n\tjoinType:'left',\n\tbroadcast: 'auto')~> JoinClient\nJoinClient select(mapColumn(\n\t\tClaimTransactionKey,\n\t\tRowID,\n\t\tClientKey\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SelectClientKey\nDerivedLocationMapCols, SelectClientKey join(SelectLocationMapFields@RowID == SelectClientKey@RowID,\n\tjoinType:'inner',\n\tbroadcast: 'auto')~> JoinClientKeyInfo\nJoinClientKeyInfo select(mapColumn(\n\t\tSystemCode,\n\t\tLossLocationId,\n\t\tLossLocation,\n\t\tLossAddress,\n\t\tLossSource,\n\t\tLOB,\n\t\tInsuredName,\n\t\tClaimTransactionKey,\n\t\tRowID = SelectLocationMapFields@RowID,\n\t\tClientKey\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SelectClientKeyWithStage\nSelectClientBasedLocationFields, ClaimNoBasedLocationMap join(ClaimNumber == {Claim #},\n\tjoinType:'left',\n\tbroadcast: 'auto')~> JoinLocationKeyClaimNo\nAMT1LocationMapClaimNo derive({Claim #} = toString({Claim #}),\n\t\tClaimNoLocationName = {Location Name},\n\t\tClaimNoDepartmentName = {Department Name},\n\t\tClaimNoDivisionName = {Division Name}) ~> ClaimNoBasedLocationMap\nDerivedLocationKeyFromClaimNo select(mapColumn(\n\t\tClaimTransactionKey,\n\t\tRowID,\n\t\tCarrierCode,\n\t\tClientCode,\n\t\tValuationDate,\n\t\t{Policy Number},\n\t\tClaimant,\n\t\tGender,\n\t\tLOBCode,\n\t\tClaimStatus,\n\t\tMaritalStatus,\n\t\tClaimTypeCode,\n\t\tOccupation,\n\t\tInjuryType,\n\t\tBodyPart,\n\t\tCauseType,\n\t\tLitigation,\n\t\tNAICS_Code,\n\t\tTotal_Paid,\n\t\tTotal_Reserve,\n\t\tRecovery_Total,\n\t\tTotal_Incurred,\n\t\tNet_Incurred,\n\t\tExpense_Paid,\n\t\tExpense_Reserve,\n\t\tExpense_Recovery,\n\t\tExpense_Incurred,\n\t\tMedical_BI_Paid,\n\t\tMedical_BI_Reserves,\n\t\tIndemnity_PD_Paid,\n\t\tIndemnity_PD_Reserves,\n\t\tIncurred_BI_Med,\n\t\tIncurred_PD_LT,\n\t\tRecovery_BI_Med,\n\t\tRecovery_PD_LT,\n\t\tCarrierKey,\n\t\tSystemCode,\n\t\tTotalRecoveries,\n\t\tMedicalPayments,\n\t\tMedicalRecoveries,\n\t\tIndemnityPayments,\n\t\tIndemnityRecoveries,\n\t\tExpensePayments,\n\t\tOtherPayments,\n\t\tLegalPayments,\n\t\tALAEPayments,\n\t\tExpenseReserves,\n\t\tOtherReserves,\n\t\tLegalReserves,\n\t\tALAEReserves,\n\t\tExpenseRecoveries,\n\t\tOtherRecoveries,\n\t\tLegalRecoveries,\n\t\tALAERecoveries,\n\t\tExpenseIncurred,\n\t\tOtherIncurred,\n\t\tLegalIncurred,\n\t\tALAEIncurred,\n\t\tClaimNumber,\n\t\tDerivedLocationName,\n\t\tDerivedDepartmentName,\n\t\tDerivedDivisionName,\n\t\tClientKey\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SelectLocationDetails\nJoinLocationKeySheet1 select(mapColumn(\n\t\tClaimTransactionKey,\n\t\tRowID = SelectColsToProcess@RowID,\n\t\tCarrierCode,\n\t\tClientCode,\n\t\tValuationDate,\n\t\t{Policy Number},\n\t\tClaimant,\n\t\tGender,\n\t\tLOBCode,\n\t\tClaimStatus,\n\t\tMaritalStatus,\n\t\tClaimTypeCode,\n\t\tOccupation,\n\t\tInjuryType,\n\t\tBodyPart,\n\t\tCauseType,\n\t\tLitigation,\n\t\tNAICS_Code,\n\t\tTotal_Paid,\n\t\tTotal_Reserve,\n\t\tRecovery_Total,\n\t\tTotal_Incurred,\n\t\tNet_Incurred,\n\t\tExpense_Paid,\n\t\tExpense_Reserve,\n\t\tExpense_Recovery,\n\t\tExpense_Incurred,\n\t\tMedical_BI_Paid,\n\t\tMedical_BI_Reserves,\n\t\tIndemnity_PD_Paid,\n\t\tIndemnity_PD_Reserves,\n\t\tIncurred_BI_Med,\n\t\tIncurred_PD_LT,\n\t\tRecovery_BI_Med,\n\t\tRecovery_PD_LT,\n\t\tCarrierKey,\n\t\tSystemCode,\n\t\tTotalRecoveries,\n\t\tMedicalPayments,\n\t\tMedicalRecoveries,\n\t\tIndemnityPayments,\n\t\tIndemnityRecoveries,\n\t\tExpensePayments,\n\t\tOtherPayments,\n\t\tLegalPayments,\n\t\tALAEPayments,\n\t\tExpenseReserves,\n\t\tOtherReserves,\n\t\tLegalReserves,\n\t\tALAEReserves,\n\t\tExpenseRecoveries,\n\t\tOtherRecoveries,\n\t\tLegalRecoveries,\n\t\tALAERecoveries,\n\t\tExpenseIncurred,\n\t\tOtherIncurred,\n\t\tLegalIncurred,\n\t\tALAEIncurred,\n\t\tInsuredName,\n\t\tClaimNumber,\n\t\tClientBasedLocationName,\n\t\tClientBasedDepartmentName,\n\t\tClientBasedDivisionName,\n\t\tClientKey\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SelectClientBasedLocationFields\nJoinLocationKeyClaimNo derive(DerivedLocationName = iif(!isNull({Claim #} )&& !isNull(ClaimNoLocationName),ClaimNoLocationName,ClientBasedLocationName),\n\t\tDerivedDepartmentName = iif(!isNull({Claim #} )&& !isNull(ClaimNoDepartmentName),ClaimNoDepartmentName,ClientBasedDepartmentName),\n\t\tDerivedDivisionName = iif(!isNull({Claim #} )&& !isNull(ClaimNoDivisionName),ClaimNoDivisionName,ClientBasedDivisionName),\n\t\tClientKey = iif(!isNull({Claim #} )&& !isNull(ClaimNoLocationName),-99,toInteger(ClientKey))) ~> DerivedLocationKeyFromClaimNo\nClientClaimTransaction derive(ClientGender = iif((isNull(Gender) || Gender !='Not Applicable'),Gender,'Unknown'),\n\t\tClientOccupation = iif((isNull(Occupation) || Occupation !='Not Applicable'),Occupation,'Unknown'),\n\t\tKeystoneClientKey = ClientKey) ~> DerivedClientClaimFields\nDerivedClientClaimFields select(mapColumn(\n\t\tClaimNumber,\n\t\tValuationDate,\n\t\tLocation_Level1,\n\t\tLocation_Level2,\n\t\tLocation_Level3,\n\t\tKeystoneClientKey,\n\t\tClientGender,\n\t\tClientOccupation\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SelectClientClaimFields\nSelectLocationDetails, SelectClientClaimFields join(SelectLocationDetails@ClaimNumber == SelectClientClaimFields@ClaimNumber\n\t&& SelectLocationDetails@ValuationDate == SelectClientClaimFields@ValuationDate,\n\tjoinType:'left',\n\tbroadcast: 'auto')~> JoinClientClaim\nJoinClientClaim derive(Location_Name = iif(!isNull(Location_Level1),Location_Level1,DerivedLocationName),\n\t\tDepartment_Name = iif(!isNull(Location_Level2),Location_Level2,DerivedDepartmentName),\n\t\tDivision_Name = iif(!isNull(Location_Level3),Location_Level3,DerivedDivisionName),\n\t\tOccupation = iif(!isNull(ClientOccupation),ClientOccupation,Occupation)) ~> DeriveFinalLocation\nDeriveFinalLocation select(mapColumn(\n\t\tClaimTransactionKey,\n\t\tRowID,\n\t\tCarrierCode,\n\t\tClientCode,\n\t\tValuationDate = SelectLocationDetails@ValuationDate,\n\t\t{Policy Number},\n\t\tClaimant,\n\t\tGender,\n\t\tLOBCode,\n\t\tClaimStatus,\n\t\tMaritalStatus,\n\t\tClaimTypeCode,\n\t\tOccupation,\n\t\tInjuryType,\n\t\tBodyPart,\n\t\tCauseType,\n\t\tLitigation,\n\t\tNAICS_Code,\n\t\tTotal_Paid,\n\t\tTotal_Reserve,\n\t\tRecovery_Total,\n\t\tTotal_Incurred,\n\t\tNet_Incurred,\n\t\tExpense_Paid,\n\t\tExpense_Reserve,\n\t\tExpense_Recovery,\n\t\tExpense_Incurred,\n\t\tMedical_BI_Paid,\n\t\tMedical_BI_Reserves,\n\t\tIndemnity_PD_Paid,\n\t\tIndemnity_PD_Reserves,\n\t\tIncurred_BI_Med,\n\t\tIncurred_PD_LT,\n\t\tRecovery_BI_Med,\n\t\tRecovery_PD_LT,\n\t\tCarrierKey,\n\t\tSystemCode,\n\t\tTotalRecoveries,\n\t\tMedicalPayments,\n\t\tMedicalRecoveries,\n\t\tIndemnityPayments,\n\t\tIndemnityRecoveries,\n\t\tExpensePayments,\n\t\tOtherPayments,\n\t\tLegalPayments,\n\t\tALAEPayments,\n\t\tExpenseReserves,\n\t\tOtherReserves,\n\t\tLegalReserves,\n\t\tALAEReserves,\n\t\tExpenseRecoveries,\n\t\tOtherRecoveries,\n\t\tLegalRecoveries,\n\t\tALAERecoveries,\n\t\tExpenseIncurred,\n\t\tOtherIncurred,\n\t\tLegalIncurred,\n\t\tALAEIncurred,\n\t\tClientKey,\n\t\tKeystoneClientKey,\n\t\tClientGender,\n\t\tClientOccupation,\n\t\tLocation_Name,\n\t\tDepartment_Name,\n\t\tDivision_Name\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SelectClientMappedFields\nSelectFiledsAfterClientDataProcessing, DimLocation join(SelectFiledsAfterClientDataProcessing@ClientKey == DimLocation@ClientKey\n\t&& SelectFiledsAfterClientDataProcessing@Location_Name == DimLocation@Location_Name\n\t&& SelectFiledsAfterClientDataProcessing@Department_Name == DimLocation@Department_Name\n\t&& SelectFiledsAfterClientDataProcessing@Division_Name == DimLocation@Division_Name,\n\tjoinType:'left',\n\tbroadcast: 'auto')~> JoinDimLocation\nJoinDimLocation derive(LocationKey = coalesce(LocationKey,-99)) ~> DerivedLocationKey\nDerivedLocationKey select(mapColumn(\n\t\tClaimTransactionKey,\n\t\tRowID,\n\t\tCarrierCode,\n\t\tClientCode,\n\t\tValuationDate,\n\t\t{Policy Number},\n\t\tClaimant,\n\t\tGender,\n\t\tLOBCode,\n\t\tClaimStatus,\n\t\tMaritalStatus,\n\t\tClaimTypeCode,\n\t\tOccupation,\n\t\tInjuryType,\n\t\tBodyPart,\n\t\tCauseType,\n\t\tLitigation,\n\t\tNAICS_Code,\n\t\tTotal_Paid,\n\t\tTotal_Reserve,\n\t\tRecovery_Total,\n\t\tTotal_Incurred,\n\t\tNet_Incurred,\n\t\tExpense_Paid,\n\t\tExpense_Reserve,\n\t\tExpense_Recovery,\n\t\tExpense_Incurred,\n\t\tMedical_BI_Paid,\n\t\tMedical_BI_Reserves,\n\t\tIndemnity_PD_Paid,\n\t\tIndemnity_PD_Reserves,\n\t\tIncurred_BI_Med,\n\t\tIncurred_PD_LT,\n\t\tRecovery_BI_Med,\n\t\tRecovery_PD_LT,\n\t\tCarrierKey,\n\t\tTotalRecoveries,\n\t\tMedicalPayments,\n\t\tMedicalRecoveries,\n\t\tIndemnityPayments,\n\t\tIndemnityRecoveries,\n\t\tExpensePayments,\n\t\tOtherPayments,\n\t\tLegalPayments,\n\t\tALAEPayments,\n\t\tExpenseReserves,\n\t\tOtherReserves,\n\t\tLegalReserves,\n\t\tALAEReserves,\n\t\tExpenseRecoveries,\n\t\tOtherRecoveries,\n\t\tLegalRecoveries,\n\t\tALAERecoveries,\n\t\tExpenseIncurred,\n\t\tOtherIncurred,\n\t\tLegalIncurred,\n\t\tALAEIncurred,\n\t\tLocationKey,\n\t\t{Employee Count}\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SelectTranFieldsAfterLocationMapping\nSelectTranFieldsAfterLocationMapping, DimClaim join(SelectTranFieldsAfterLocationMapping@ClaimTransactionKey == DimClaim@ClaimTransactionKey,\n\tjoinType:'inner',\n\tbroadcast: 'auto')~> JoinDimClaim\nJoinDimClaim select(mapColumn(\n\t\tClaimTransactionKey = SelectTranFieldsAfterLocationMapping@ClaimTransactionKey,\n\t\tRowID,\n\t\tCarrierCode,\n\t\tClientCode,\n\t\tValuationDate,\n\t\t{Policy Number},\n\t\tClaimant,\n\t\tGender,\n\t\tLOBCode,\n\t\tClaimStatus,\n\t\tMaritalStatus,\n\t\tClaimTypeCode,\n\t\tOccupation,\n\t\tInjuryType,\n\t\tBodyPart,\n\t\tCauseType,\n\t\tLitigation,\n\t\tNAICS_Code,\n\t\tTotal_Paid,\n\t\tTotal_Reserve,\n\t\tRecovery_Total,\n\t\tTotal_Incurred,\n\t\tNet_Incurred,\n\t\tExpense_Paid,\n\t\tExpense_Reserve,\n\t\tExpense_Recovery,\n\t\tExpense_Incurred,\n\t\tMedical_BI_Paid,\n\t\tMedical_BI_Reserves,\n\t\tIndemnity_PD_Paid,\n\t\tIndemnity_PD_Reserves,\n\t\tIncurred_BI_Med,\n\t\tIncurred_PD_LT,\n\t\tRecovery_BI_Med,\n\t\tRecovery_PD_LT,\n\t\tCarrierKey,\n\t\tTotalRecoveries,\n\t\tMedicalPayments,\n\t\tMedicalRecoveries,\n\t\tIndemnityPayments,\n\t\tIndemnityRecoveries,\n\t\tExpensePayments,\n\t\tOtherPayments,\n\t\tLegalPayments,\n\t\tALAEPayments,\n\t\tExpenseReserves,\n\t\tOtherReserves,\n\t\tLegalReserves,\n\t\tALAEReserves,\n\t\tExpenseRecoveries,\n\t\tOtherRecoveries,\n\t\tLegalRecoveries,\n\t\tALAERecoveries,\n\t\tExpenseIncurred,\n\t\tOtherIncurred,\n\t\tLegalIncurred,\n\t\tALAEIncurred,\n\t\tClientKey,\n\t\tLocationKey,\n\t\tClaimKey,\n\t\tClientCarrierGroupKey,\n\t\tTenure,\n\t\tLagTime,\n\t\tDaysToClose,\n\t\tAge,\n\t\t{Employee Count}\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SelectAfterClaimJoin\nSelectAfterClaimJoin, Gender lookup(SelectAfterClaimJoin@Gender == Gender@Gender,\n\tmultiple: false,\n\tpickup: 'any',\n\tbroadcast: 'auto')~> LookupGender\nLookupGender, MaritalStatus lookup(SelectAfterClaimJoin@MaritalStatus == MaritalStatus@MaritalStatus,\n\tmultiple: false,\n\tpickup: 'any',\n\tbroadcast: 'auto')~> LookupMaritalStatus\nLookupMaritalStatus, ClaimType lookup(SelectAfterClaimJoin@ClaimTypeCode == ClaimType@ClaimTypeCode,\n\tmultiple: false,\n\tpickup: 'any',\n\tbroadcast: 'auto')~> LookupClaimType\nLookupClaimType, BodyPart lookup(SelectAfterClaimJoin@BodyPart == BodyPart@BodyPart,\n\tmultiple: false,\n\tpickup: 'any',\n\tbroadcast: 'auto')~> LookupBodyPart\nLookupBodyPart, InjuryType lookup(SelectAfterClaimJoin@InjuryType == InjuryType@InjuryType,\n\tmultiple: false,\n\tpickup: 'any',\n\tbroadcast: 'auto')~> LookupInjurType\nLookupInjurType, CauseType lookup(SelectAfterClaimJoin@CauseType == CauseType@CauseType,\n\tmultiple: false,\n\tpickup: 'any',\n\tbroadcast: 'auto')~> LookupCauseType\nLookupCauseType, Occupation lookup(SelectAfterClaimJoin@Occupation == Occupation@Occupation,\n\tmultiple: false,\n\tpickup: 'any',\n\tbroadcast: 'auto')~> LookupOccupation\nLookupOccupation derive(AgeRange = iif(!isNull(Age),\r\niif(Age >=0 && Age<20, '0-19',iif(Age >=20 && Age<30, '20-29',iif(Age >=30 && Age<40, '30-39',\r\niif(Age >=40 && Age<50, '40-49',iif(Age >=50 && Age<60, '50-59',\r\niif(Age >=60 && Age<70, '60-69',iif(Age >=70 && Age<80, '70-79',iif(Age >=80 && Age<90, '80-89',\r\niif(Age >=90 && Age<100, '90-99',iif(Age >=100 && Age<110, '100-109',iif(Age >=110 && Age<120, '110-119',\r\niif(Age >=120 && Age<130, '120-129',iif(Age >=130 && Age<140, '130-139',\r\niif(Age >=140 && Age<150, '140-149','Unknown'))))))))))\r\n)))\r\n),'Unknown'\r\n),\n\t\tTenureRange = iif(Tenure<0,'Unknown',\r\niif(Tenure >=0 && Tenure<90, '0-3 months',\r\niif(Tenure >=90 && Tenure< 90 * 2, '3-6 months',\r\niif(Tenure >=90 * 2 && Tenure< 90 * 3, '6-9 months',\r\niif(Tenure >=90 * 3 && Tenure<365, '9-12 months',\r\niif(Tenure >=365 && Tenure<365 * 5, '1-5 years',\r\niif(Tenure >=365 * 5 && Tenure<365 * 10, '5-10 years',\r\niif(Tenure >=365 * 10 && Tenure<365 * 15, '10-15 years',\r\niif(Tenure >=365 * 15 && Tenure<365 * 20, '15-20 years',\r\niif(Tenure >=365 * 20 && Tenure<365 * 25, '20-25 years',\r\niif(Tenure >=365 * 25 , '25+ years','Unknown'))))))))))\r\n),\n\t\tLagTimeRange = iif(!isNull(LagTime),\r\niif(toInteger(LagTime) <=3, '0-3',\r\niif(toInteger(LagTime) <= 7, '4-7',\r\niif(toInteger(LagTime) <= 13, '8-13',\r\niif(toInteger(LagTime) <= 20, '14-20',\r\niif(toInteger(LagTime) <=100, '21-100','101+')\r\n)))),'Unknown'),\n\t\tClosePeriodRange = iif(isNull(DaysToClose) || DaysToClose<0,'Unknown',\r\niif(DaysToClose <= 90, '0-90 Days',\r\niif(DaysToClose <= 180, '91-180 Days',\r\niif(DaysToClose <= 365, '180 Days-12 Months',\r\niif(DaysToClose >= 365 && DaysToClose <= 545, '12 Months-18 Months',\r\niif(DaysToClose >= 546 && DaysToClose <= 365*2, '18 Months-2 Years','2+ Years')\r\n))))),\n\t\tNetIncurredLossLevel = iif(isNull(Net_Incurred) || Net_Incurred<= 25000, '$0-25K',\r\niif(Net_Incurred <= 50000, '$25-50K',\r\niif(Net_Incurred <= 100000, '$50-100K',\r\niif(Net_Incurred <= 500000, '$100-500K',\r\niif(Net_Incurred <= 1000000, '$0.5-1M',\r\niif(Net_Incurred <= 2000000, '$1-2M',\r\niif(Net_Incurred > 2000000, '$2M+','Unknown'\r\n))))))),\n\t\tTotalIncurredLossLevel = iif(isNull(Total_Incurred) || Total_Incurred<= 25000, '$0-25K',\r\niif(Total_Incurred <= 50000, '$25-50K',\r\niif(Total_Incurred <= 100000, '$50-100K',\r\niif(Total_Incurred <= 500000, '$100-500K',\r\niif(Total_Incurred <= 1000000, '$0.5-1M',\r\niif(Total_Incurred <= 2000000, '$1-2M',\r\niif(Total_Incurred > 2000000, '$2M+','Unknown'\r\n)))))))) ~> DerivedRangeFields\nDerivedRangeFields, AgeRange lookup(DerivedRangeFields@AgeRange == AgeRange@AgeRange,\n\tmultiple: false,\n\tpickup: 'any',\n\tbroadcast: 'auto')~> LookupAge\nLookupAge, TenureRange lookup(TenureRange == ClaimTenureRange,\n\tmultiple: false,\n\tpickup: 'any',\n\tbroadcast: 'auto')~> LookupTenureRange\nLookupTenureRange, LagAmountRange lookup(LagTimeRange == ClaimLagAmountRange,\n\tmultiple: false,\n\tpickup: 'any',\n\tbroadcast: 'auto')~> LookupLagTimeRange\nLookupLagTimeRange, ClosePeriodRange lookup(ClosePeriodRange == ClaimClosePeriodRange,\n\tmultiple: false,\n\tpickup: 'any',\n\tbroadcast: 'auto')~> LookupClosePeriodRange\nLookupClosePeriodRange, LossAmtRange lookup(NetIncurredLossLevel == ClaimLossAmtRange,\n\tmultiple: false,\n\tpickup: 'any',\n\tbroadcast: 'auto')~> LookupLossAmtRange\nDerivedNetLossAmtRangeKey select(mapColumn(\n\t\tClaimTransactionKey,\n\t\tRowID,\n\t\tClientCode,\n\t\tValuationDate,\n\t\t{Policy Number},\n\t\tClaimant,\n\t\tClaimStatus,\n\t\tLitigation,\n\t\tNAICS_Code,\n\t\tTotal_Paid,\n\t\tTotal_Reserve,\n\t\tRecovery_Total,\n\t\tTotal_Incurred,\n\t\tNet_Incurred,\n\t\tExpense_Paid,\n\t\tExpense_Reserve,\n\t\tExpense_Recovery,\n\t\tExpense_Incurred,\n\t\tMedical_BI_Paid,\n\t\tMedical_BI_Reserves,\n\t\tIndemnity_PD_Paid,\n\t\tIndemnity_PD_Reserves,\n\t\tIncurred_BI_Med,\n\t\tIncurred_PD_LT,\n\t\tRecovery_BI_Med,\n\t\tRecovery_PD_LT,\n\t\tCarrierKey,\n\t\tTotalRecoveries,\n\t\tMedicalPayments,\n\t\tMedicalRecoveries,\n\t\tIndemnityPayments,\n\t\tIndemnityRecoveries,\n\t\tExpensePayments,\n\t\tOtherPayments,\n\t\tLegalPayments,\n\t\tALAEPayments,\n\t\tExpenseReserves,\n\t\tOtherReserves,\n\t\tLegalReserves,\n\t\tALAEReserves,\n\t\tExpenseRecoveries,\n\t\tOtherRecoveries,\n\t\tLegalRecoveries,\n\t\tALAERecoveries,\n\t\tExpenseIncurred,\n\t\tOtherIncurred,\n\t\tLegalIncurred,\n\t\tALAEIncurred,\n\t\tClientKey,\n\t\tLocationKey,\n\t\tClaimKey,\n\t\tClientCarrierGroupKey,\n\t\tGenderKey,\n\t\tMaritalStatusKey,\n\t\tClaimTypeKey,\n\t\tBodyPartKey,\n\t\tInjuryTypeKey,\n\t\tCauseTypeKey,\n\t\tOccupationKey,\n\t\tTotalIncurredLossLevel,\n\t\tAgeRangeKey,\n\t\tClaimTenureRangeKey,\n\t\tClaimLagAmountRangeKey,\n\t\tClaimClosePeriodRangeKey,\n\t\tNetLossAmtRangeKey,\n\t\tClaimStatus,\n\t\t{Employee Count}\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SelectTransFieldswithKeys\nSelectTransFieldswithKeys, LossAmtRange lookup(TotalIncurredLossLevel == ClaimLossAmtRange,\n\tmultiple: false,\n\tpickup: 'any',\n\tbroadcast: 'auto')~> LookupTotalIncurredLossAmt\nLookupTotalIncurredLossAmt derive(GenderKey = iif(isNull(GenderKey),99,GenderKey),\n\t\tMaritalStatusKey = iif(isNull(MaritalStatusKey),99,MaritalStatusKey),\n\t\tClaimTypeKey = iif(isNull(ClaimTypeKey),-99,toInteger(ClaimTypeKey)),\n\t\tBodyPartKey = iif(isNull(BodyPartKey),-99,toInteger(BodyPartKey)),\n\t\tInjuryTypeKey = iif(isNull(InjuryTypeKey),-99,InjuryTypeKey),\n\t\tCauseTypeKey = iif(isNull(CauseTypeKey),-99,toInteger(CauseTypeKey)),\n\t\tOccupationKey = iif(isNull(OccupationKey),-99,OccupationKey),\n\t\tTotalIncurredLossRangeKey = coalesce(ClaimLossAmtRangeKey,99)) ~> DerivedKeyValues\nLookupLossAmtRange derive(NetLossAmtRangeKey = coalesce(ClaimLossAmtRangeKey,99),\n\t\tClaimLagAmountRangeKey = coalesce(ClaimLagAmountRangeKey,99),\n\t\tClaimTenureRangeKey = coalesce(ClaimTenureRangeKey,99),\n\t\tAgeRangeKey = coalesce(AgeRangeKey,99),\n\t\tClaimClosePeriodRangeKey = coalesce(ClaimClosePeriodRangeKey,99)) ~> DerivedNetLossAmtRangeKey\nDerivedKeyValues, Date lookup(ValuationDate == Date,\n\tmultiple: false,\n\tpickup: 'any',\n\tbroadcast: 'auto')~> LookupDate\nLookupDate, ClaimTypePriority join(DerivedKeyValues@ClaimTypeKey == ClaimTypePriority@ClaimTypeKey,\n\tjoinType:'left',\n\tbroadcast: 'auto')~> JoinCalimTypeRollUp\nJoinCalimTypeRollUp derive(Status_Priority = iif(ClaimStatus==\"Open\",1,iif(ClaimStatus=='Closed', 2, 99)),\n\t\tLitigation_Priority = iif(Litigation==true(),1,iif(Litigation==false(), 2, 99)),\n\t\tLastLoadTime = currentTimestamp(),\n\t\tClaimType_Priority = coalesce(Rollup_Priority,99),\n\t\tValuationDateKey = DateKey,\n\t\tClaimStatus = coalesce(ClaimStatus,'Open'),\n\t\tEmployeeCount = {Employee Count}) ~> ComputeRollupPriority\nComputeRollupPriority select(mapColumn(\n\t\tClaimStatus,\n\t\tLitigation,\n\t\tNAICS_Code,\n\t\tTotal_Paid,\n\t\tTotal_Reserve,\n\t\tRecovery_Total,\n\t\tTotal_Incurred,\n\t\tNet_Incurred,\n\t\tExpense_Paid,\n\t\tExpense_Reserve,\n\t\tExpense_Recovery,\n\t\tExpense_Incurred,\n\t\tMedical_BI_Paid,\n\t\tMedical_BI_Reserves,\n\t\tIndemnity_PD_Paid,\n\t\tIndemnity_PD_Reserves,\n\t\tIncurred_BI_Med,\n\t\tIncurred_PD_LT,\n\t\tRecovery_BI_Med,\n\t\tRecovery_PD_LT,\n\t\tClientKey,\n\t\tLocationKey,\n\t\tClaimKey,\n\t\tClientCarrierGroupKey,\n\t\tGenderKey,\n\t\tMaritalStatusKey,\n\t\tClaimTypeKey = DerivedKeyValues@ClaimTypeKey,\n\t\tBodyPartKey,\n\t\tInjuryTypeKey,\n\t\tCauseTypeKey,\n\t\tOccupationKey,\n\t\tAgeRangeKey,\n\t\tClaimTenureRangeKey,\n\t\tClaimLagAmountRangeKey,\n\t\tClaimClosePeriodRangeKey,\n\t\tNetLossAmtRangeKey,\n\t\tTotalIncurredLossRangeKey,\n\t\tRollup_Priority,\n\t\tStatus_Priority,\n\t\tLitigation_Priority,\n\t\tLastLoadTime,\n\t\tClaimType_Priority,\n\t\tValuationDateKey,\n\t\tEmployeeCount\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SelectFinalTransFields\nSelectFinalTransFields filter(ClientKey!=-99 && !isNull(ClientKey)) ~> FilterClientKeys\nFilterClientKeys, FactExisting join(SelectFinalTransFields@ClaimKey == FactExisting@ClaimKey\n\t&& SelectFinalTransFields@ValuationDateKey == FactExisting@ValuationDateKey\n\t&& SelectFinalTransFields@Litigation == FactExisting@Litigation\n\t&& SelectFinalTransFields@ClaimTypeKey == FactExisting@ClaimTypeKey,\n\tjoinType:'left',\n\tbroadcast: 'auto')~> JoinFact\nJoinFact select(mapColumn(\n\t\tClaimStatus,\n\t\tLitigation = SelectFinalTransFields@Litigation,\n\t\tNAICS_Code,\n\t\tTotal_Paid,\n\t\tTotal_Reserve,\n\t\tRecovery_Total,\n\t\tTotal_Incurred,\n\t\tNet_Incurred,\n\t\tExpense_Paid,\n\t\tExpense_Reserve,\n\t\tExpense_Recovery,\n\t\tExpense_Incurred,\n\t\tMedical_BI_Paid,\n\t\tMedical_BI_Reserves,\n\t\tIndemnity_PD_Paid,\n\t\tIndemnity_PD_Reserves,\n\t\tIncurred_BI_Med,\n\t\tIncurred_PD_LT,\n\t\tRecovery_BI_Med,\n\t\tRecovery_PD_LT,\n\t\tClientKey,\n\t\tLocationKey,\n\t\tClaimKey = SelectFinalTransFields@ClaimKey,\n\t\tClientCarrierGroupKey,\n\t\tGenderKey,\n\t\tMaritalStatusKey,\n\t\tClaimTypeKey = SelectFinalTransFields@ClaimTypeKey,\n\t\tBodyPartKey,\n\t\tInjuryTypeKey,\n\t\tCauseTypeKey,\n\t\tOccupationKey,\n\t\tAgeRangeKey,\n\t\tClaimTenureRangeKey,\n\t\tClaimLagAmountRangeKey,\n\t\tClaimClosePeriodRangeKey,\n\t\tNetLossAmtRangeKey,\n\t\tTotalIncurredLossRangeKey,\n\t\tRollup_Priority,\n\t\tStatus_Priority,\n\t\tLitigation_Priority,\n\t\tLastLoadTime,\n\t\tClaimType_Priority,\n\t\tValuationDateKey = SelectFinalTransFields@ValuationDateKey,\n\t\tTransactionKey,\n\t\tClaimKey = SelectFinalTransFields@ClaimKey,\n\t\tEmployeeCount\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SelectCols\nAggregateFact alterRow(updateIf(!isNull(TransactionKey))) ~> AlterFactRow\nSelectClientMappedFields, ClientEmployeeCount join(ClientCode == {Client Code}\n\t&& Location_Name == Location\n\t&& ValuationDate == {Valuation Date},\n\tjoinType:'left',\n\tbroadcast: 'auto')~> JoinClientEmployeeCount\nJoinClientEmployeeCount select(mapColumn(\n\t\tClaimTransactionKey,\n\t\tRowID,\n\t\tCarrierCode,\n\t\tClientCode,\n\t\tValuationDate,\n\t\t{Policy Number},\n\t\tClaimant,\n\t\tGender,\n\t\tLOBCode,\n\t\tClaimStatus,\n\t\tMaritalStatus,\n\t\tClaimTypeCode,\n\t\tOccupation,\n\t\tInjuryType,\n\t\tBodyPart,\n\t\tCauseType,\n\t\tLitigation,\n\t\tNAICS_Code,\n\t\tTotal_Paid,\n\t\tTotal_Reserve,\n\t\tRecovery_Total,\n\t\tTotal_Incurred,\n\t\tNet_Incurred,\n\t\tExpense_Paid,\n\t\tExpense_Reserve,\n\t\tExpense_Recovery,\n\t\tExpense_Incurred,\n\t\tMedical_BI_Paid,\n\t\tMedical_BI_Reserves,\n\t\tIndemnity_PD_Paid,\n\t\tIndemnity_PD_Reserves,\n\t\tIncurred_BI_Med,\n\t\tIncurred_PD_LT,\n\t\tRecovery_BI_Med,\n\t\tRecovery_PD_LT,\n\t\tCarrierKey,\n\t\tSystemCode,\n\t\tTotalRecoveries,\n\t\tMedicalPayments,\n\t\tMedicalRecoveries,\n\t\tIndemnityPayments,\n\t\tIndemnityRecoveries,\n\t\tExpensePayments,\n\t\tOtherPayments,\n\t\tLegalPayments,\n\t\tALAEPayments,\n\t\tExpenseReserves,\n\t\tOtherReserves,\n\t\tLegalReserves,\n\t\tALAEReserves,\n\t\tExpenseRecoveries,\n\t\tOtherRecoveries,\n\t\tLegalRecoveries,\n\t\tALAERecoveries,\n\t\tExpenseIncurred,\n\t\tOtherIncurred,\n\t\tLegalIncurred,\n\t\tALAEIncurred,\n\t\tClientKey,\n\t\tKeystoneClientKey,\n\t\tClientGender,\n\t\tClientOccupation,\n\t\tLocation_Name,\n\t\tDepartment_Name,\n\t\tDivision_Name,\n\t\t{Employee Count}\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SelectFiledsAfterClientDataProcessing\nSelectCols aggregate(groupBy(ClaimKey,\n\t\tValuationDateKey,\n\t\tLitigation,\n\t\tClaimTypeKey),\n\teach(match(!in(['ClaimKey','ValuationDateKey','Litigation','ClaimTypeKey'],name)), $$ = first($$))) ~> AggregateFact\nAlterFactRow sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:true,\n\tupsertable:false,\n\tkeys:['ClaimKey','ValuationDateKey','Litigation','ClaimTypeKey'],\n\tformat: 'table',\n\tstaged: false,\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError',\n\tmapColumn(\n\t\tClaimStatus,\n\t\tLitigation,\n\t\tNAICS_Code,\n\t\tTotal_Paid,\n\t\tTotal_Reserve,\n\t\tRecovery_Total,\n\t\tTotal_Incurred,\n\t\tNet_Incurred,\n\t\tExpense_Paid,\n\t\tExpense_Reserve,\n\t\tExpense_Recovery,\n\t\tExpense_Incurred,\n\t\tMedical_BI_Paid,\n\t\tMedical_BI_Reserves,\n\t\tIndemnity_PD_Paid,\n\t\tIndemnity_PD_Reserves,\n\t\tIncurred_BI_Med,\n\t\tIncurred_PD_LT,\n\t\tRecovery_BI_Med,\n\t\tRecovery_PD_LT,\n\t\tClientKey,\n\t\tLocationKey,\n\t\tClaimKey,\n\t\tClientCarrierGroupKey,\n\t\tGenderKey,\n\t\tMaritalStatusKey,\n\t\tClaimTypeKey,\n\t\tBodyPartKey,\n\t\tInjuryTypeKey,\n\t\tCauseTypeKey,\n\t\tOccupationKey,\n\t\tAgeRangeKey,\n\t\tClaimTenureRangeKey,\n\t\tClaimLagAmountRangeKey,\n\t\tClaimClosePeriodRangeKey,\n\t\tNetLossAmtRangeKey,\n\t\tTotalIncurredLossRangeKey,\n\t\tRollup_Priority,\n\t\tStatus_Priority,\n\t\tLitigation_Priority,\n\t\tLastLoadTime,\n\t\tClaimType_Priority,\n\t\tValuationDateKey,\n\t\tClaimKey,\n\t\tEmployeeCount\n\t)) ~> FactTransaction"
+		}
+	}
+}

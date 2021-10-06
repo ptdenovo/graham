@@ -1,0 +1,117 @@
+{
+	"name": "FieldValueMapping",
+	"properties": {
+		"activities": [
+			{
+				"name": "Copy FieldValueMapping",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "ExcelSource",
+						"storeSettings": {
+							"type": "AzureBlobFSReadSettings",
+							"recursive": true,
+							"wildcardFileName": "Field Value Mapping.xlsx",
+							"enablePartitionDiscovery": false
+						}
+					},
+					"sink": {
+						"type": "AzureSqlSink",
+						"preCopyScript": "Truncate Table FieldValueMap",
+						"disableMetricsCollection": false
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "Carrier Code",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "CarrierCode",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "Field Name",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "FieldName",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "Old Value",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "SourceValue",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "New Value",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "MappedValue",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							}
+						],
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "dsControlFiles",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "dsGrahamAnaDB",
+						"type": "DatasetReference",
+						"parameters": {
+							"SchemaName": "dbo",
+							"TableName": "FieldValueMap"
+						}
+					}
+				]
+			}
+		],
+		"folder": {
+			"name": "POC/Extract Mapping File Data"
+		},
+		"annotations": [],
+		"lastPublishTime": "2021-09-07T13:03:04Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

@@ -1,0 +1,117 @@
+{
+	"name": "FilterClaims",
+	"properties": {
+		"activities": [
+			{
+				"name": "FilterClaimExists",
+				"type": "GetMetadata",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataset": {
+						"referenceName": "dsBinaryStorageParameterized",
+						"type": "DatasetReference",
+						"parameters": {
+							"Container": "control-files",
+							"Directory": {
+								"value": "@pipeline().parameters.CarrierCode",
+								"type": "Expression"
+							},
+							"FileName": {
+								"value": "@concat(pipeline().parameters.CarrierCode, '  Claims Filter.xlsx')",
+								"type": "Expression"
+							}
+						}
+					},
+					"fieldList": [
+						"exists"
+					],
+					"storeSettings": {
+						"type": "AzureBlobFSReadSettings",
+						"recursive": true,
+						"enablePartitionDiscovery": false
+					},
+					"formatSettings": {
+						"type": "BinaryReadSettings"
+					}
+				}
+			},
+			{
+				"name": "If Claims Filter Exists",
+				"type": "IfCondition",
+				"dependsOn": [
+					{
+						"activity": "FilterClaimExists",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"expression": {
+						"value": "@activity('FilterClaimExists').output.exists\n",
+						"type": "Expression"
+					},
+					"ifTrueActivities": [
+						{
+							"name": "FilterClaims",
+							"type": "ExecuteDataFlow",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "1.00:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"dataflow": {
+									"referenceName": "FilterClaims",
+									"type": "DataFlowReference",
+									"parameters": {
+										"CarrierCode": {
+											"value": "@concat(concat('''',pipeline().parameters.CarrierCode),'''')",
+											"type": "Expression"
+										}
+									}
+								},
+								"staging": {
+									"linkedService": {
+										"referenceName": "InsuranceFilesLinkedService",
+										"type": "LinkedServiceReference"
+									},
+									"folderPath": "adf-logs"
+								},
+								"compute": {
+									"coreCount": 8,
+									"computeType": "General"
+								},
+								"traceLevel": "Fine"
+							}
+						}
+					]
+				}
+			}
+		],
+		"parameters": {
+			"CarrierCode": {
+				"type": "string"
+			}
+		},
+		"folder": {
+			"name": "POC/Transform"
+		},
+		"annotations": [],
+		"lastPublishTime": "2021-06-07T18:39:00Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

@@ -1,0 +1,140 @@
+{
+	"name": "dsDimClaim_Test",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "GrahamDWHLinkedService",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "POC"
+		},
+		"annotations": [],
+		"type": "AzureSqlDWTable",
+		"schema": [
+			{
+				"name": "ClaimKey",
+				"type": "bigint",
+				"precision": 19
+			},
+			{
+				"name": "ClaimNumber",
+				"type": "varchar"
+			},
+			{
+				"name": "PolicyNumber",
+				"type": "varchar"
+			},
+			{
+				"name": "PolicyEffectiveDate",
+				"type": "date"
+			},
+			{
+				"name": "PolicyExpirationDate",
+				"type": "date"
+			},
+			{
+				"name": "Claimant",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Accident_Description",
+				"type": "nvarchar"
+			},
+			{
+				"name": "DateofLoss",
+				"type": "date"
+			},
+			{
+				"name": "ReportedDate",
+				"type": "date"
+			},
+			{
+				"name": "ClosedDate",
+				"type": "date"
+			},
+			{
+				"name": "DateOfHire",
+				"type": "date"
+			},
+			{
+				"name": "Driver",
+				"type": "varchar"
+			},
+			{
+				"name": "PolicyYear",
+				"type": "smallint",
+				"precision": 5
+			},
+			{
+				"name": "PolicyPeriod",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Age",
+				"type": "tinyint",
+				"precision": 3
+			},
+			{
+				"name": "ClientCarrierGroupKey",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "TimeOfLoss",
+				"type": "varchar"
+			},
+			{
+				"name": "LagTime",
+				"type": "varchar"
+			},
+			{
+				"name": "DaysToClose",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "Tenure",
+				"type": "smallint",
+				"precision": 5
+			},
+			{
+				"name": "Occurrence_State",
+				"type": "varchar"
+			},
+			{
+				"name": "Benefit_State",
+				"type": "varchar"
+			},
+			{
+				"name": "ClientKey",
+				"type": "smallint",
+				"precision": 5
+			},
+			{
+				"name": "LastLoadTime",
+				"type": "smalldatetime",
+				"precision": 16,
+				"scale": 0
+			},
+			{
+				"name": "DayOfWeek",
+				"type": "varchar"
+			},
+			{
+				"name": "LineOfBusinessKey",
+				"type": "smallint",
+				"precision": 5
+			},
+			{
+				"name": "CarrierKey",
+				"type": "smallint",
+				"precision": 5
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "DimClaim_Tmp"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

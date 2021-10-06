@@ -1,0 +1,167 @@
+{
+	"name": "RecordExceptionsWithPolicyFilter",
+	"properties": {
+		"folder": {
+			"name": "Exceptions"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "dsQuery",
+						"type": "DatasetReference"
+					},
+					"name": "ClaimTransaction"
+				},
+				{
+					"dataset": {
+						"referenceName": "dsControlFiles",
+						"type": "DatasetReference"
+					},
+					"name": "ClaimFilters"
+				},
+				{
+					"dataset": {
+						"referenceName": "dsQuery",
+						"type": "DatasetReference"
+					},
+					"name": "FactTransaction"
+				},
+				{
+					"dataset": {
+						"referenceName": "dsControlFiles",
+						"type": "DatasetReference"
+					},
+					"name": "PolicyFilter"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "dsException",
+						"type": "DatasetReference"
+					},
+					"name": "Exception"
+				}
+			],
+			"transformations": [
+				{
+					"name": "FilterMissingClientCarrierGroupKey"
+				},
+				{
+					"name": "MissingClientCarrierGroupKey"
+				},
+				{
+					"name": "SelectCols"
+				},
+				{
+					"name": "JoinFilterClaim"
+				},
+				{
+					"name": "FilterClaims"
+				},
+				{
+					"name": "UnionClaimType"
+				},
+				{
+					"name": "SelectAfterFilterClaim"
+				},
+				{
+					"name": "FilterMissingClaimType"
+				},
+				{
+					"name": "DerivedMissingClaimType"
+				},
+				{
+					"name": "JoinFact"
+				},
+				{
+					"name": "FilterUndefinedClaimTypeKey"
+				},
+				{
+					"name": "DerivedMissingClaimTypeKey"
+				},
+				{
+					"name": "SelectClaimTypeFields"
+				},
+				{
+					"name": "UnionMissingClaimTypeKey"
+				},
+				{
+					"name": "FilterUndefinedCauseType"
+				},
+				{
+					"name": "DerivedMissingCauseTypeKey"
+				},
+				{
+					"name": "SelectAfterCauseTypeKey"
+				},
+				{
+					"name": "UnionMissingCauseTypeKey"
+				},
+				{
+					"name": "FilterClaimRowDuplicate"
+				},
+				{
+					"name": "AggregateClaimKey"
+				},
+				{
+					"name": "DuplicateClaimErrorMessage"
+				},
+				{
+					"name": "SelectClaimColumns"
+				},
+				{
+					"name": "JoinOriginalRows"
+				},
+				{
+					"name": "RemoveDuplicateColumns"
+				},
+				{
+					"name": "AggregateFactColumns"
+				},
+				{
+					"name": "FilterFactRowDuplicates"
+				},
+				{
+					"name": "JoinFactRows"
+				},
+				{
+					"name": "DerivedClaimIdentifier"
+				},
+				{
+					"name": "DerivedKey"
+				},
+				{
+					"name": "DerivedKey2"
+				},
+				{
+					"name": "Select1"
+				},
+				{
+					"name": "DuplicateFactRows"
+				},
+				{
+					"name": "UnionDuplicateFactKeys"
+				},
+				{
+					"name": "UnionDuplicateClaimKeys"
+				},
+				{
+					"name": "SelectPolicyFilterCols"
+				},
+				{
+					"name": "FilterPolicies"
+				},
+				{
+					"name": "JoinPolicyFilter"
+				},
+				{
+					"name": "FilterBasedOnYear"
+				}
+			],
+			"script": "parameters{\n\tCarrierCode as string\n}\nsource(output(\n\t\tClaimTransactionKey as long,\n\t\tCarrierCode as string,\n\t\tClientCode as string,\n\t\tValuationDate as date,\n\t\t{Policy Year} as integer,\n\t\t{Policy Effective Date} as date,\n\t\t{Policy Expiration Date} as date,\n\t\t{Policy Number} as string,\n\t\tAccident_Description as string,\n\t\tClaimant as string,\n\t\tClaimNumber as string,\n\t\t{Date of Loss} as date,\n\t\t{Lag Time} as string,\n\t\t{Date Reported} as date,\n\t\t{Day of Week} as string,\n\t\t{Closed Date} as date,\n\t\tDaysToClose as integer,\n\t\tClaimStatus as string,\n\t\tGender as string,\n\t\tMaritalStatus as string,\n\t\t{Date of Hire} as string,\n\t\tDriver as string,\n\t\tOccupation as string,\n\t\tLOBCode as string,\n\t\tClaimTypeCode as string,\n\t\tInjuryType as string,\n\t\tBodyPart as string,\n\t\tCauseType as string,\n\t\tNAICS_Code as string,\n\t\tLitigation as string,\n\t\tLocation_Name as string,\n\t\tDepartment_Name as string,\n\t\tDivision_Name as string,\n\t\tTotal_Paid as decimal(18,2),\n\t\tTotal_Reserve as decimal(18,2),\n\t\tRecovery_Total as decimal(18,2),\n\t\tTotal_Incurred as decimal(18,2),\n\t\tNet_Incurred as decimal(18,2),\n\t\tExpense_Paid as decimal(18,2),\n\t\tExpense_Reserve as decimal(18,2),\n\t\tExpense_Recovery as decimal(18,2),\n\t\tExpense_Incurred as decimal(18,2),\n\t\tMedical_BI_Paid as decimal(18,2),\n\t\tMedical_BI_Reserves as decimal(18,2),\n\t\tIndemnity_PD_Paid as decimal(18,2),\n\t\tIndemnity_PD_Reserves as decimal(18,2),\n\t\tIncurred_BI_Med as decimal(18,2),\n\t\tIncurred_PD_LT as decimal(18,2),\n\t\tRecovery_BI_Med as decimal(18,2),\n\t\tRecovery_PD_LT as decimal(18,2),\n\t\tOccurrance_State as string,\n\t\tBenefit_State as string,\n\t\tInsured_Identifier as string,\n\t\tRowID as long,\n\t\tAge as string,\n\t\tClientCarrierGroupKey as integer\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_COMMITTED',\n\tquery: (concat('SELECT * FROM stage.ClaimTransaction WHERE CarrierCode =', \"'\",$CarrierCode,\"'\")),\n\tformat: 'query',\n\tstaged: false,\n\tpartitionColumn: 'ClientCode',\n\tpartitionBy('external', 4)) ~> ClaimTransaction\nsource(output(\n\t\t{Claim #} as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\twildcardPaths:[(concat($CarrierCode, '/',$CarrierCode, ' Claims Filter.xlsx'))]) ~> ClaimFilters\nsource(output(\n\t\tClaimTransactionKey as long,\n\t\tClaimNumber as string,\n\t\tClaimant as string,\n\t\tPolicyEffectiveDate as date,\n\t\tLitigation as boolean,\n\t\tClaimTypeKey as short,\n\t\tCauseTypeKey as short,\n\t\tBodyPartKey as short,\n\t\tInjuryTypeKey as integer,\n\t\tOccupationKey as integer\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_COMMITTED',\n\tquery: (concat('SELECT  sc.ClaimTransactionKey,dc.ClaimNumber,dc.Claimant,dc.PolicyEffectiveDate,fc.Litigation,ClaimTypeKey,CauseTypeKey,BodyPartKey,InjuryTypeKey,OccupationKey FROM FactClaimTransaction fc INNER JOIN DimClaim dc ON fc.ClaimKey=dc.ClaimKey INNER JOIN DimCarrier d ON dc.CarrierKey=d.CarrierKey INNER JOIN stage.ClaimTransaction sc  ON dc.ClaimNumber=sc.ClaimNumber  AND dc.Claimant=sc.Claimant AND dc.ClientCarrierGroupKey=sc.ClientCarrierGroupKey WHERE d.CarrierCode=',\"'\",$CarrierCode,\"'\")),\n\tformat: 'query',\n\tstaged: false) ~> FactTransaction\nsource(output(\n\t\t{Client Code} as string,\n\t\t{Coverage (Line of Business)} as string,\n\t\t{Policy Start Year} as short\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\twildcardPaths:[(concat($CarrierCode, '/',$CarrierCode, ' Client Policy Filter.xlsx'))]) ~> PolicyFilter\nSelectAfterFilterClaim filter((!isNull(ClientCode) && upper(ClientCode)!='MULTI') && year({Policy Effective Date})>=2007 && ClientCarrierGroupKey ==-99) ~> FilterMissingClientCarrierGroupKey\nFilterMissingClientCarrierGroupKey derive(ErrorMessage = 'Unknow ClientCarrierGroupKey') ~> MissingClientCarrierGroupKey\nClaimFilters select(mapColumn(\n\t\tClaimNumber = {Claim #}\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SelectCols\nClaimTransaction, SelectCols join(ClaimTransaction@ClaimNumber == SelectCols@ClaimNumber,\n\tjoinType:'left',\n\tbroadcast: 'auto')~> JoinFilterClaim\nJoinFilterClaim filter(isNull(SelectCols@ClaimNumber)) ~> FilterClaims\nMissingClientCarrierGroupKey, DerivedMissingClaimType union(byName: true)~> UnionClaimType\nFilterBasedOnYear select(mapColumn(\n\t\tClaimTransactionKey,\n\t\tCarrierCode,\n\t\tClientCode,\n\t\tValuationDate,\n\t\t{Policy Year},\n\t\t{Policy Effective Date},\n\t\t{Policy Expiration Date},\n\t\t{Policy Number},\n\t\tAccident_Description,\n\t\tClaimant,\n\t\tClaimNumber = ClaimTransaction@ClaimNumber,\n\t\t{Date of Loss},\n\t\t{Lag Time},\n\t\t{Date Reported},\n\t\t{Day of Week},\n\t\t{Closed Date},\n\t\tDaysToClose,\n\t\tClaimStatus,\n\t\tGender,\n\t\tMaritalStatus,\n\t\t{Date of Hire},\n\t\tDriver,\n\t\tOccupation,\n\t\tLOBCode,\n\t\tClaimTypeCode,\n\t\tInjuryType,\n\t\tBodyPart,\n\t\tCauseType,\n\t\tNAICS_Code,\n\t\tLitigation,\n\t\tLocation_Name,\n\t\tDepartment_Name,\n\t\tDivision_Name,\n\t\tTotal_Paid,\n\t\tTotal_Reserve,\n\t\tRecovery_Total,\n\t\tTotal_Incurred,\n\t\tNet_Incurred,\n\t\tExpense_Paid,\n\t\tExpense_Reserve,\n\t\tExpense_Recovery,\n\t\tExpense_Incurred,\n\t\tMedical_BI_Paid,\n\t\tMedical_BI_Reserves,\n\t\tIndemnity_PD_Paid,\n\t\tIndemnity_PD_Reserves,\n\t\tIncurred_BI_Med,\n\t\tIncurred_PD_LT,\n\t\tRecovery_BI_Med,\n\t\tRecovery_PD_LT,\n\t\tOccurrance_State,\n\t\tBenefit_State,\n\t\tInsured_Identifier,\n\t\tRowID,\n\t\tAge,\n\t\tClientCarrierGroupKey\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SelectAfterFilterClaim\nSelectAfterFilterClaim filter((!isNull(ClientCode) && upper(ClientCode)!='MULTI') && year({Policy Effective Date})>=2007 && isNull(ClaimTypeCode)) ~> FilterMissingClaimType\nFilterMissingClaimType derive(ErrorMessage = 'ClaimType is NULL') ~> DerivedMissingClaimType\nSelectAfterFilterClaim, FactTransaction join(SelectAfterFilterClaim@ClaimTransactionKey == FactTransaction@ClaimTransactionKey,\n\tjoinType:'inner',\n\tbroadcast: 'auto')~> JoinFact\nJoinFact filter((!isNull(ClientCode) && upper(ClientCode)!='MULTI') && ClaimTypeKey==-99) ~> FilterUndefinedClaimTypeKey\nFilterUndefinedClaimTypeKey derive(ErrorMessage = 'Unknow ClaimType Key') ~> DerivedMissingClaimTypeKey\nDerivedMissingClaimTypeKey select(mapColumn(\n\t\tClaimTransactionKey = SelectAfterFilterClaim@ClaimTransactionKey,\n\t\tCarrierCode,\n\t\tClientCode,\n\t\tValuationDate,\n\t\t{Policy Year},\n\t\t{Policy Effective Date},\n\t\t{Policy Expiration Date},\n\t\t{Policy Number},\n\t\tAccident_Description,\n\t\tClaimant = SelectAfterFilterClaim@Claimant,\n\t\tClaimNumber = SelectAfterFilterClaim@ClaimNumber,\n\t\t{Date of Loss},\n\t\t{Lag Time},\n\t\t{Date Reported},\n\t\t{Day of Week},\n\t\t{Closed Date},\n\t\tDaysToClose,\n\t\tClaimStatus,\n\t\tGender,\n\t\tMaritalStatus,\n\t\t{Date of Hire},\n\t\tDriver,\n\t\tOccupation,\n\t\tLOBCode,\n\t\tClaimTypeCode,\n\t\tInjuryType,\n\t\tBodyPart,\n\t\tCauseType,\n\t\tNAICS_Code,\n\t\tLitigation = SelectAfterFilterClaim@Litigation,\n\t\tLocation_Name,\n\t\tDepartment_Name,\n\t\tDivision_Name,\n\t\tTotal_Paid,\n\t\tTotal_Reserve,\n\t\tRecovery_Total,\n\t\tTotal_Incurred,\n\t\tNet_Incurred,\n\t\tExpense_Paid,\n\t\tExpense_Reserve,\n\t\tExpense_Recovery,\n\t\tExpense_Incurred,\n\t\tMedical_BI_Paid,\n\t\tMedical_BI_Reserves,\n\t\tIndemnity_PD_Paid,\n\t\tIndemnity_PD_Reserves,\n\t\tIncurred_BI_Med,\n\t\tIncurred_PD_LT,\n\t\tRecovery_BI_Med,\n\t\tRecovery_PD_LT,\n\t\tOccurrance_State,\n\t\tBenefit_State,\n\t\tInsured_Identifier,\n\t\tRowID,\n\t\tAge,\n\t\tClientCarrierGroupKey,\n\t\tErrorMessage\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SelectClaimTypeFields\nUnionClaimType, SelectClaimTypeFields union(byName: true)~> UnionMissingClaimTypeKey\nJoinFact filter((!isNull(ClientCode) && upper(ClientCode)!='MULTI') && !isNull(CauseType) && CauseTypeKey==-99) ~> FilterUndefinedCauseType\nFilterUndefinedCauseType derive(ErrorMessage = 'Unknown Cause Type Key') ~> DerivedMissingCauseTypeKey\nDerivedMissingCauseTypeKey select(mapColumn(\n\t\tClaimTransactionKey = SelectAfterFilterClaim@ClaimTransactionKey,\n\t\tCarrierCode,\n\t\tClientCode,\n\t\tValuationDate,\n\t\t{Policy Year},\n\t\t{Policy Effective Date},\n\t\t{Policy Expiration Date},\n\t\t{Policy Number},\n\t\tAccident_Description,\n\t\tClaimant = SelectAfterFilterClaim@Claimant,\n\t\tClaimNumber = SelectAfterFilterClaim@ClaimNumber,\n\t\t{Date of Loss},\n\t\t{Lag Time},\n\t\t{Date Reported},\n\t\t{Day of Week},\n\t\t{Closed Date},\n\t\tDaysToClose,\n\t\tClaimStatus,\n\t\tGender,\n\t\tMaritalStatus,\n\t\t{Date of Hire},\n\t\tDriver,\n\t\tOccupation,\n\t\tLOBCode,\n\t\tClaimTypeCode,\n\t\tInjuryType,\n\t\tBodyPart,\n\t\tCauseType,\n\t\tNAICS_Code,\n\t\tLitigation = SelectAfterFilterClaim@Litigation,\n\t\tLocation_Name,\n\t\tDepartment_Name,\n\t\tDivision_Name,\n\t\tTotal_Paid,\n\t\tTotal_Reserve,\n\t\tRecovery_Total,\n\t\tTotal_Incurred,\n\t\tNet_Incurred,\n\t\tExpense_Paid,\n\t\tExpense_Reserve,\n\t\tExpense_Recovery,\n\t\tExpense_Incurred,\n\t\tMedical_BI_Paid,\n\t\tMedical_BI_Reserves,\n\t\tIndemnity_PD_Paid,\n\t\tIndemnity_PD_Reserves,\n\t\tIncurred_BI_Med,\n\t\tIncurred_PD_LT,\n\t\tRecovery_BI_Med,\n\t\tRecovery_PD_LT,\n\t\tOccurrance_State,\n\t\tBenefit_State,\n\t\tInsured_Identifier,\n\t\tRowID,\n\t\tAge,\n\t\tClientCarrierGroupKey,\n\t\tErrorMessage\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SelectAfterCauseTypeKey\nUnionMissingClaimTypeKey, SelectAfterCauseTypeKey union(byName: true)~> UnionMissingCauseTypeKey\nAggregateClaimKey filter(CountOf>1 && (!isNull(ClientCode) && upper(ClientCode)!='MULTI')) ~> FilterClaimRowDuplicate\nSelectAfterFilterClaim aggregate(groupBy(CarrierCode,\n\t\tClientCode,\n\t\tClaimNumber,\n\t\tClaimant,\n\t\tLOBCode,\n\t\t{Policy Effective Date}),\n\tCountOf = count()) ~> AggregateClaimKey\nRemoveDuplicateColumns derive(ErrorMessage = 'Claim Key Combination is Duplicated') ~> DuplicateClaimErrorMessage\nDerivedClaimIdentifier select(mapColumn(\n\t\teach(match(true()))\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SelectClaimColumns\nDerivedKey, SelectClaimColumns join(DerivedKey@ClaimID == SelectClaimColumns@ClaimID,\n\tjoinType:'inner',\n\tbroadcast: 'auto')~> JoinOriginalRows\nJoinOriginalRows select(mapColumn(\n\t\tClaimTransactionKey,\n\t\tCarrierCode = SelectClaimColumns@CarrierCode,\n\t\tClientCode = SelectClaimColumns@ClientCode,\n\t\tValuationDate,\n\t\t{Policy Year},\n\t\t{Policy Effective Date} = SelectClaimColumns@{Policy Effective Date},\n\t\t{Policy Expiration Date},\n\t\t{Policy Number},\n\t\tAccident_Description,\n\t\tClaimant = SelectClaimColumns@Claimant,\n\t\tClaimNumber = SelectClaimColumns@ClaimNumber,\n\t\t{Date of Loss},\n\t\t{Lag Time},\n\t\t{Date Reported},\n\t\t{Day of Week},\n\t\t{Closed Date},\n\t\tDaysToClose,\n\t\tClaimStatus,\n\t\tGender,\n\t\tMaritalStatus,\n\t\t{Date of Hire},\n\t\tDriver,\n\t\tOccupation,\n\t\tLOBCode = SelectClaimColumns@LOBCode,\n\t\tClaimTypeCode,\n\t\tInjuryType,\n\t\tBodyPart,\n\t\tCauseType,\n\t\tNAICS_Code,\n\t\tLitigation,\n\t\tLocation_Name,\n\t\tDepartment_Name,\n\t\tDivision_Name,\n\t\tTotal_Paid,\n\t\tTotal_Reserve,\n\t\tRecovery_Total,\n\t\tTotal_Incurred,\n\t\tNet_Incurred,\n\t\tExpense_Paid,\n\t\tExpense_Reserve,\n\t\tExpense_Recovery,\n\t\tExpense_Incurred,\n\t\tMedical_BI_Paid,\n\t\tMedical_BI_Reserves,\n\t\tIndemnity_PD_Paid,\n\t\tIndemnity_PD_Reserves,\n\t\tIncurred_BI_Med,\n\t\tIncurred_PD_LT,\n\t\tRecovery_BI_Med,\n\t\tRecovery_PD_LT,\n\t\tOccurrance_State,\n\t\tBenefit_State,\n\t\tInsured_Identifier,\n\t\tRowID,\n\t\tAge,\n\t\tClientCarrierGroupKey\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> RemoveDuplicateColumns\nSelectAfterFilterClaim aggregate(groupBy(CarrierCode,\n\t\tClientCode,\n\t\tClaimNumber,\n\t\tClaimant,\n\t\tLOBCode,\n\t\t{Policy Effective Date},\n\t\tValuationDate,\n\t\tLitigation,\n\t\tClaimTypeCode),\n\tCountOf = count()) ~> AggregateFactColumns\nAggregateFactColumns filter(CountOf>1 && (!isNull(ClientCode) && upper(ClientCode)!='MULTI')) ~> FilterFactRowDuplicates\nDerivedKey2, SelectClaimColumns join(DerivedKey2@ClaimID == SelectClaimColumns@ClaimID,\n\tjoinType:'inner',\n\tbroadcast: 'auto')~> JoinFactRows\nClaimTransaction derive(ClaimID = md5(CarrierCode,ClientCode,ClaimNumber,Claimant,LOBCode,{Policy Effective Date})) ~> DerivedClaimIdentifier\nFilterClaimRowDuplicate derive(ClaimID = md5(CarrierCode,ClientCode,ClaimNumber,Claimant,LOBCode,{Policy Effective Date})) ~> DerivedKey\nFilterFactRowDuplicates derive(ClaimID = md5(CarrierCode,ClientCode,ClaimNumber,Claimant,LOBCode,{Policy Effective Date})) ~> DerivedKey2\nJoinFactRows select(mapColumn(\n\t\tClaimTransactionKey,\n\t\tCarrierCode = SelectClaimColumns@CarrierCode,\n\t\tClientCode = SelectClaimColumns@ClientCode,\n\t\tValuationDate = SelectClaimColumns@ValuationDate,\n\t\t{Policy Year},\n\t\t{Policy Effective Date} = SelectClaimColumns@{Policy Effective Date},\n\t\t{Policy Expiration Date},\n\t\t{Policy Number},\n\t\tAccident_Description,\n\t\tClaimant = SelectClaimColumns@Claimant,\n\t\tClaimNumber = SelectClaimColumns@ClaimNumber,\n\t\t{Date of Loss},\n\t\t{Lag Time},\n\t\t{Date Reported},\n\t\t{Day of Week},\n\t\t{Closed Date},\n\t\tDaysToClose,\n\t\tClaimStatus,\n\t\tGender,\n\t\tMaritalStatus,\n\t\t{Date of Hire},\n\t\tDriver,\n\t\tOccupation,\n\t\tLOBCode = SelectClaimColumns@LOBCode,\n\t\tClaimTypeCode = SelectClaimColumns@ClaimTypeCode,\n\t\tInjuryType,\n\t\tBodyPart,\n\t\tCauseType,\n\t\tNAICS_Code,\n\t\tLitigation = SelectClaimColumns@Litigation,\n\t\tLocation_Name,\n\t\tDepartment_Name,\n\t\tDivision_Name,\n\t\tTotal_Paid,\n\t\tTotal_Reserve,\n\t\tRecovery_Total,\n\t\tTotal_Incurred,\n\t\tNet_Incurred,\n\t\tExpense_Paid,\n\t\tExpense_Reserve,\n\t\tExpense_Recovery,\n\t\tExpense_Incurred,\n\t\tMedical_BI_Paid,\n\t\tMedical_BI_Reserves,\n\t\tIndemnity_PD_Paid,\n\t\tIndemnity_PD_Reserves,\n\t\tIncurred_BI_Med,\n\t\tIncurred_PD_LT,\n\t\tRecovery_BI_Med,\n\t\tRecovery_PD_LT,\n\t\tOccurrance_State,\n\t\tBenefit_State,\n\t\tInsured_Identifier,\n\t\tRowID,\n\t\tAge,\n\t\tClientCarrierGroupKey\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> Select1\nSelect1 derive(ErrorMessage = 'Fact Key Combination Duplicated') ~> DuplicateFactRows\nUnionMissingCauseTypeKey, DuplicateFactRows union(byName: true)~> UnionDuplicateFactKeys\nUnionDuplicateFactKeys, DuplicateClaimErrorMessage union(byName: true)~> UnionDuplicateClaimKeys\nPolicyFilter select(mapColumn(\n\t\tPolicyFilterClientCode = {Client Code},\n\t\tPolicyFilterCoverage = {Coverage (Line of Business)},\n\t\tPolicyStartYear = {Policy Start Year}\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SelectPolicyFilterCols\nJoinPolicyFilter filter(isNull(PolicyFilterClientCode) && isNull(PolicyFilterCoverage)) ~> FilterPolicies\nFilterClaims, SelectPolicyFilterCols join(ClientCode == PolicyFilterClientCode\n\t&& LOBCode == PolicyFilterCoverage\n\t&& {Policy Year} == PolicyStartYear,\n\tjoinType:'left',\n\tbroadcast: 'auto')~> JoinPolicyFilter\nFilterPolicies filter({Policy Year}>=2007) ~> FilterBasedOnYear\nUnionDuplicateClaimKeys sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinput(\n\t\tCarrierCode as string,\n\t\tClientCode as string,\n\t\tValuationDate as date,\n\t\tPolicyYear as integer,\n\t\tPolicyEffectiveDate as date,\n\t\tPolicyExpirationDate as date,\n\t\tPolicyNumber as string,\n\t\tAccident_Description as string,\n\t\tClaimant as string,\n\t\tClaimNumber as string,\n\t\tDateofLoss as date,\n\t\tLagTime as string,\n\t\tDateReported as date,\n\t\tDayofWeek as string,\n\t\t{Closed Date} as date,\n\t\tDaysToClose as integer,\n\t\tClaimStatus as string,\n\t\tGender as string,\n\t\tMaritalStatus as string,\n\t\tDateofHire as string,\n\t\tDriver as string,\n\t\tOccupation as string,\n\t\tLOBCode as string,\n\t\tClaimTypeCode as string,\n\t\tInjuryType as string,\n\t\tBodyPart as string,\n\t\tCauseType as string,\n\t\tNAICS_Code as string,\n\t\tLitigation as string,\n\t\tLocation_Name as string,\n\t\tDepartment_Name as string,\n\t\tDivision_Name as string,\n\t\tTotal_Paid as decimal(18,2),\n\t\tTotal_Reserve as decimal(18,2),\n\t\tRecovery_Total as decimal(18,2),\n\t\tTotal_Incurred as decimal(18,2),\n\t\tNet_Incurred as decimal(18,2),\n\t\tExpense_Paid as decimal(18,2),\n\t\tExpense_Reserve as decimal(18,2),\n\t\tExpense_Recovery as decimal(18,2),\n\t\tExpense_Incurred as decimal(18,2),\n\t\tMedical_BI_Paid as decimal(18,2),\n\t\tMedical_BI_Reserves as decimal(18,2),\n\t\tIndemnity_PD_Paid as decimal(18,2),\n\t\tIndemnity_PD_Reserves as decimal(18,2),\n\t\tIncurred_BI_Med as decimal(18,2),\n\t\tIncurred_PD_LT as decimal(18,2),\n\t\tRecovery_BI_Med as decimal(18,2),\n\t\tRecovery_PD_LT as decimal(18,2),\n\t\tOccurrance_State as string,\n\t\tBenefit_State as string,\n\t\tInsured_Identifier as string,\n\t\tRowID as long,\n\t\tAge as string,\n\t\tClientCarrierGroupKey as integer,\n\t\tErrorMessage as string,\n\t\tClaimHashKey as string\n\t),\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tstaged: false,\n\tpreSQLs:[(concat('DELETE FROM stage.ClaimExceptions WHERE CarrierCode =',\"'\",$CarrierCode,\"'\"))],\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\tsaveOrder: 1,\n\terrorHandlingOption: 'stopOnFirstError',\n\tmapColumn(\n\t\tCarrierCode,\n\t\tClientCode,\n\t\tValuationDate,\n\t\tPolicyYear = {Policy Year},\n\t\tPolicyEffectiveDate = {Policy Effective Date},\n\t\tPolicyExpirationDate = {Policy Expiration Date},\n\t\tPolicyNumber = {Policy Number},\n\t\tAccident_Description,\n\t\tClaimant,\n\t\tClaimNumber,\n\t\tDateofLoss = {Date of Loss},\n\t\tLagTime = {Lag Time},\n\t\tDateReported = {Date Reported},\n\t\tDayofWeek = {Day of Week},\n\t\t{Closed Date},\n\t\tDaysToClose,\n\t\tClaimStatus,\n\t\tGender,\n\t\tMaritalStatus,\n\t\tDateofHire = {Date of Hire},\n\t\tDriver,\n\t\tOccupation,\n\t\tLOBCode,\n\t\tClaimTypeCode,\n\t\tInjuryType,\n\t\tBodyPart,\n\t\tCauseType,\n\t\tNAICS_Code,\n\t\tLitigation,\n\t\tLocation_Name,\n\t\tDepartment_Name,\n\t\tDivision_Name,\n\t\tTotal_Paid,\n\t\tTotal_Reserve,\n\t\tRecovery_Total,\n\t\tTotal_Incurred,\n\t\tNet_Incurred,\n\t\tExpense_Paid,\n\t\tExpense_Reserve,\n\t\tExpense_Recovery,\n\t\tExpense_Incurred,\n\t\tMedical_BI_Paid,\n\t\tMedical_BI_Reserves,\n\t\tIndemnity_PD_Paid,\n\t\tIndemnity_PD_Reserves,\n\t\tIncurred_BI_Med,\n\t\tIncurred_PD_LT,\n\t\tRecovery_BI_Med,\n\t\tRecovery_PD_LT,\n\t\tOccurrance_State,\n\t\tBenefit_State,\n\t\tInsured_Identifier,\n\t\tRowID,\n\t\tAge,\n\t\tClientCarrierGroupKey,\n\t\tErrorMessage\n\t),\n\tpartitionBy('hash', 4,\n\t\tClientCode,\n\t\tPolicyYear\n\t)) ~> Exception"
+		}
+	}
+}

@@ -1,0 +1,17 @@
+{
+	"name": "ClientClaimFileLocation",
+	"type": "Microsoft.DataFactory/factories/linkedservices",
+	"properties": {
+		"annotations": [],
+		"type": "FileServer",
+		"typeProperties": {
+			"host": "C:\\Grahamco\\ClientData\\",
+			"userId": "Admin",
+			"encryptedCredential": "eyJDcmVkZW50aWFsSWQiOiI1YTE4YWM5Mi0wNTA4LTQ5ZGQtODY5YS03M2M0YjQyNDY0ODAiLCJWZXJzaW9uIjoiMi4wIiwiQ2xhc3NUeXBlIjoiTWljcm9zb2Z0LkRhdGFQcm94eS5Db3JlLkludGVyU2VydmljZURhdGFDb250cmFjdC5DcmVkZW50aWFsU1UwNkNZMTQifQ=="
+		},
+		"connectVia": {
+			"referenceName": "SelfHosterIRClaims",
+			"type": "IntegrationRuntimeReference"
+		}
+	}
+}

@@ -1,0 +1,87 @@
+{
+	"name": "DimCarrier",
+	"properties": {
+		"folder": {
+			"name": "Dimesnion"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "dsExcelCarrierControl",
+						"type": "DatasetReference"
+					},
+					"name": "CarrierSource"
+				},
+				{
+					"dataset": {
+						"referenceName": "dsDimCarrier",
+						"type": "DatasetReference"
+					},
+					"name": "DimCarrierSource"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "dsDimCarrier",
+						"type": "DatasetReference"
+					},
+					"name": "DimCarrier"
+				}
+			],
+			"transformations": [
+				{
+					"name": "SelectColumns"
+				},
+				{
+					"name": "AlterCarrierRow"
+				},
+				{
+					"name": "DerivedCarrierFields"
+				},
+				{
+					"name": "AggregateCarrierKey"
+				},
+				{
+					"name": "DerivedKeyField"
+				},
+				{
+					"name": "SelectMaxKey"
+				},
+				{
+					"name": "JoinExisting"
+				},
+				{
+					"name": "ConditionalCarrierRows"
+				},
+				{
+					"name": "SelectColumnsToProcess"
+				},
+				{
+					"name": "SurrogateKeyCarrier"
+				},
+				{
+					"name": "DerivedTempKey"
+				},
+				{
+					"name": "JoinWithMax"
+				},
+				{
+					"name": "DerivedCarrierKey"
+				},
+				{
+					"name": "UnionForUpsert"
+				},
+				{
+					"name": "DerivedLoadTime"
+				},
+				{
+					"name": "FilterRows"
+				}
+			],
+			"script": "source(output(\n\t\t{Carrier Code} as string,\n\t\tEnabled as string,\n\t\t{Carrier Name} as string,\n\t\t{Spreadsheet Name} as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> CarrierSource\nsource(output(\n\t\tCarrierKey as integer,\n\t\tCarrierCode as string,\n\t\tCarrierName as string,\n\t\tEnabled as boolean,\n\t\tUnDeveloped as boolean,\n\t\tLastLoadTime as timestamp,\n\t\tDataStartRow as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_COMMITTED',\n\tformat: 'table',\n\tstaged: true) ~> DimCarrierSource\nDerivedCarrierFields select(mapColumn(\n\t\tEnabled,\n\t\tCarrierCode,\n\t\tCarrierName,\n\t\tUndeveloped,\n\t\tDataStartRow\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SelectColumns\nDerivedLoadTime alterRow(upsertIf(true())) ~> AlterCarrierRow\nCarrierSource derive(CarrierCode = trim({Carrier Code}),\n\t\tCarrierName = trim({Carrier Name}),\n\t\tEnabled = iif(upper(Enabled)=='YES',1,0),\n\t\tUndeveloped = \"0\",\n\t\tDataStartRow = \"A1\") ~> DerivedCarrierFields\nDimCarrierSource aggregate(CarrierKey = coalesce(max(CarrierKey), 0)) ~> AggregateCarrierKey\nAggregateCarrierKey derive(Key = 'MaxKey') ~> DerivedKeyField\nDerivedKeyField select(mapColumn(\n\t\tMaxCarrierKey = CarrierKey,\n\t\tKey\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SelectMaxKey\nSelectColumns, DimCarrierSource join(SelectColumns@CarrierCode == DimCarrierSource@CarrierCode,\n\tjoinType:'left',\n\tbroadcast: 'auto')~> JoinExisting\nSelectColumnsToProcess split(!isNull(CarrierKey),\n\tdisjoint: false) ~> ConditionalCarrierRows@(UpdateRows, InsertRows)\nFilterRows select(mapColumn(\n\t\tEnabled = SelectColumns@Enabled,\n\t\tCarrierCode = SelectColumns@CarrierCode,\n\t\tCarrierName = SelectColumns@CarrierName,\n\t\tUndeveloped = SelectColumns@Undeveloped,\n\t\tDataStartRow = SelectColumns@DataStartRow,\n\t\tCarrierKey,\n\t\tExistingUnDeveloped = DimCarrierSource@UnDeveloped,\n\t\tExistingDataStartRow = DimCarrierSource@DataStartRow\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SelectColumnsToProcess\nConditionalCarrierRows@InsertRows keyGenerate(output(SurrogateCarrierKey as long),\n\tstartAt: 1L) ~> SurrogateKeyCarrier\nSurrogateKeyCarrier derive(TempKey = 'MaxKey') ~> DerivedTempKey\nDerivedTempKey, SelectMaxKey join(TempKey == Key,\n\tjoinType:'inner',\n\tbroadcast: 'auto')~> JoinWithMax\nJoinWithMax derive(CarrierKey = SurrogateCarrierKey+MaxCarrierKey) ~> DerivedCarrierKey\nConditionalCarrierRows@UpdateRows, DerivedCarrierKey union(byName: true)~> UnionForUpsert\nUnionForUpsert derive(LoadTime = currentTimestamp(),\n\t\tUndeveloped = iif(isNull(CarrierKey),toBoolean(Undeveloped),ExistingUnDeveloped),\n\t\tDataStartRow = iif(isNull(CarrierKey),DataStartRow,ExistingDataStartRow)) ~> DerivedLoadTime\nJoinExisting filter(!isNull(SelectColumns@CarrierCode)) ~> FilterRows\nAlterCarrierRow sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinput(\n\t\tCarrierKey as integer,\n\t\tCarrierCode as string,\n\t\tCarrierName as string,\n\t\tEnabled as boolean,\n\t\tUnDeveloped as boolean,\n\t\tLastLoadTime as timestamp,\n\t\tDataStartRow as string\n\t),\n\tdeletable:false,\n\tinsertable:false,\n\tupdateable:false,\n\tupsertable:true,\n\tkeys:['CarrierKey'],\n\tformat: 'table',\n\tstaged: false,\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError',\n\tmapColumn(\n\t\tCarrierKey,\n\t\tCarrierCode,\n\t\tCarrierName,\n\t\tEnabled,\n\t\tUnDeveloped = Undeveloped,\n\t\tLastLoadTime = LoadTime,\n\t\tDataStartRow\n\t)) ~> DimCarrier"
+		}
+	}
+}

@@ -1,0 +1,16 @@
+{
+	"name": "dsgrahamDB",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "GrahamDBService",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "POC"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": []
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

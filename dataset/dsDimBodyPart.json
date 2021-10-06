@@ -1,0 +1,41 @@
+{
+	"name": "dsDimBodyPart",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "GrahamDWHLinkedService",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "POC"
+		},
+		"annotations": [],
+		"type": "AzureSqlDWTable",
+		"schema": [
+			{
+				"name": "BodyPartKey",
+				"type": "smallint",
+				"precision": 5
+			},
+			{
+				"name": "BodyPart",
+				"type": "nvarchar"
+			},
+			{
+				"name": "LastLoadTime",
+				"type": "smalldatetime",
+				"precision": 16,
+				"scale": 0
+			},
+			{
+				"name": "BodyPartID",
+				"type": "smallint",
+				"precision": 5
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "DimBodyPart"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

@@ -1,0 +1,213 @@
+{
+	"name": "FieldValueCombinedMap",
+	"properties": {
+		"activities": [
+			{
+				"name": "Copy FieldValueMapCombined",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "ExcelSource",
+						"storeSettings": {
+							"type": "AzureBlobFSReadSettings",
+							"recursive": true,
+							"wildcardFileName": "FieldValueMapsCombined.xlsx",
+							"enablePartitionDiscovery": false
+						}
+					},
+					"sink": {
+						"type": "AzureSqlSink",
+						"preCopyScript": "TRUNCATE TABLE dbo.FieldValueCombinedMap",
+						"disableMetricsCollection": false
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "AttributeName",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "FieldName",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "MappingFields",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "MappingFields",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "CC",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "CarrierCode",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "a",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "FieldValue1",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "b",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "FieldValue2",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "c",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "FieldValue3",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "d",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "FieldValue4",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "e",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "FieldValue5",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "f",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "FieldValue6",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "g",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "FieldValue7",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "h",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "FieldValue8",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "i",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "FieldValue9",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							}
+						],
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "dsControlFiles",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "dsGrahamAnaDB",
+						"type": "DatasetReference",
+						"parameters": {
+							"SchemaName": "dbo",
+							"TableName": "FieldValueCombinedMap"
+						}
+					}
+				]
+			}
+		],
+		"folder": {
+			"name": "POC/Extract Mapping File Data"
+		},
+		"annotations": [],
+		"lastPublishTime": "2021-09-07T13:03:04Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

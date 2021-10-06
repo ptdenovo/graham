@@ -1,0 +1,67 @@
+{
+	"name": "AMT1LocationUpdateFromSheet1",
+	"properties": {
+		"folder": {
+			"name": "Copy"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "dsControlFiles",
+						"type": "DatasetReference"
+					},
+					"name": "AMT1LocationMap"
+				},
+				{
+					"dataset": {
+						"referenceName": "dsgrahamDB",
+						"type": "DatasetReference"
+					},
+					"name": "InsuredIdentifier"
+				},
+				{
+					"dataset": {
+						"referenceName": "dsQuery",
+						"type": "DatasetReference"
+					},
+					"name": "DimClient"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "dsgrahamDWTables",
+						"type": "DatasetReference"
+					},
+					"name": "DimLocation"
+				}
+			],
+			"transformations": [
+				{
+					"name": "JoinDimClient"
+				},
+				{
+					"name": "SelectClientCols"
+				},
+				{
+					"name": "SelectLocationMapCols"
+				},
+				{
+					"name": "JoinInsuredIdentifier"
+				},
+				{
+					"name": "SelectDimLocationCols"
+				},
+				{
+					"name": "DerivedClientKey"
+				},
+				{
+					"name": "AlterRowLocation"
+				}
+			],
+			"script": "source(output(\n\t\tInsuredName as string,\n\t\tLossLocationId as string,\n\t\tLossLocation as string,\n\t\tLossAddress as string,\n\t\t{Location Name} as string,\n\t\t{Department Name} as string,\n\t\t{Division Name} as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\twildcardPaths:['AMT1/AMT1 Location Mapping.xlsx']) ~> AMT1LocationMap\nsource(output(\n\t\tInsuredIdentifierName as string,\n\t\tClientCode as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_COMMITTED',\n\tquery: 'select InsuredIdentifierName,ClientCode from [dbo].[InsuredIdentifier_Client_Carrier_Map] WHERE CarrierCode=\\'AMT1\\'',\n\tformat: 'query') ~> InsuredIdentifier\nsource(output(\n\t\tClientCode as string,\n\t\tClientKey as short,\n\t\tEnabled as boolean\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_COMMITTED',\n\tquery: 'Select ClientCode,ClientKey,Enabled From DimClient',\n\tformat: 'query',\n\tstaged: false) ~> DimClient\nInsuredIdentifier, DimClient join(InsuredIdentifier@ClientCode == DimClient@ClientCode,\n\tjoinType:'inner',\n\tbroadcast: 'auto')~> JoinDimClient\nJoinDimClient select(mapColumn(\n\t\tInsuredIdentifierName,\n\t\tClientCode = DimClient@ClientCode,\n\t\tClientKey,\n\t\tEnabled\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SelectClientCols\nAMT1LocationMap select(mapColumn(\n\t\tInsuredName,\n\t\t{Location Name},\n\t\t{Department Name},\n\t\t{Division Name}\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SelectLocationMapCols\nSelectLocationMapCols, SelectClientCols join(trim(InsuredName) == trim(InsuredIdentifierName),\n\tjoinType:'left',\n\tbroadcast: 'auto')~> JoinInsuredIdentifier\nDerivedClientKey select(mapColumn(\n\t\t{Location Name},\n\t\t{Department Name},\n\t\t{Division Name},\n\t\tClientKey\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SelectDimLocationCols\nJoinInsuredIdentifier derive(ClientKey = coalesce(ClientKey,-99)) ~> DerivedClientKey\nSelectDimLocationCols alterRow(upsertIf(true())) ~> AlterRowLocation\nAlterRowLocation sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:false,\n\tupdateable:false,\n\tupsertable:true,\n\tkeys:['ClientKey','Location_Name','Department_Name','Division_Name'],\n\tformat: 'table',\n\tstaged: false,\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError',\n\tmapColumn(\n\t\tLocation_Name = {Location Name},\n\t\tDepartment_Name = {Department Name},\n\t\tDivision_Name = {Division Name},\n\t\tClientKey\n\t)) ~> DimLocation"
+		}
+	}
+}

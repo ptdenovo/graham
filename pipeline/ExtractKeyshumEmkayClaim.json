@@ -1,0 +1,90 @@
+{
+	"name": "ExtractKeyshumEmkayClaim",
+	"properties": {
+		"activities": [
+			{
+				"name": "Get Keyshum Metadata",
+				"type": "GetMetadata",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataset": {
+						"referenceName": "dsBinaryStorageParameterized",
+						"type": "DatasetReference",
+						"parameters": {
+							"Container": "client-source",
+							"Directory": "KEYSHUM-01",
+							"FileName": "*"
+						}
+					},
+					"fieldList": [
+						"childItems"
+					],
+					"storeSettings": {
+						"type": "AzureBlobFSReadSettings",
+						"recursive": true,
+						"enablePartitionDiscovery": false
+					},
+					"formatSettings": {
+						"type": "BinaryReadSettings"
+					}
+				}
+			},
+			{
+				"name": "ForEach Keysham files",
+				"type": "ForEach",
+				"dependsOn": [
+					{
+						"activity": "Get Keyshum Metadata",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@activity('Get Keyshum Metadata').output.childItems",
+						"type": "Expression"
+					},
+					"isSequential": false,
+					"activities": [
+						{
+							"name": "ExtractClaimFile",
+							"type": "ExecutePipeline",
+							"dependsOn": [],
+							"userProperties": [],
+							"typeProperties": {
+								"pipeline": {
+									"referenceName": "ExtractClaimFile",
+									"type": "PipelineReference"
+								},
+								"waitOnCompletion": true,
+								"parameters": {
+									"ClientCode": "KEYSHUM-01",
+									"FileName": {
+										"value": "@item().name",
+										"type": "Expression"
+									}
+								}
+							}
+						}
+					]
+				}
+			}
+		],
+		"folder": {
+			"name": "ClientData"
+		},
+		"annotations": [],
+		"lastPublishTime": "2021-05-17T19:41:31Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

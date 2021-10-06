@@ -1,0 +1,67 @@
+{
+	"name": "DimLocation",
+	"properties": {
+		"folder": {
+			"name": "Dimesnion"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "dsQuery",
+						"type": "DatasetReference"
+					},
+					"name": "DimClient"
+				},
+				{
+					"dataset": {
+						"referenceName": "dsControlFiles",
+						"type": "DatasetReference"
+					},
+					"name": "LocationSource"
+				},
+				{
+					"dataset": {
+						"referenceName": "dsQuery",
+						"type": "DatasetReference"
+					},
+					"name": "DimCarrier"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "dsgrahamDWTables",
+						"type": "DatasetReference"
+					},
+					"name": "DimLocation"
+				}
+			],
+			"transformations": [
+				{
+					"name": "FilterCarrierCode"
+				},
+				{
+					"name": "LookupClient"
+				},
+				{
+					"name": "SelectColumns"
+				},
+				{
+					"name": "AlterLocationRow"
+				},
+				{
+					"name": "LookupCarrier"
+				},
+				{
+					"name": "FilterOutRowsWithNULL"
+				},
+				{
+					"name": "AggregateRows"
+				}
+			],
+			"script": "source(output(\n\t\tClientCode as string,\n\t\tClientKey as short\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_COMMITTED',\n\tquery: 'SELECT ClientCode,ClientKey FROM DimClient',\n\tformat: 'query',\n\tstaged: false) ~> DimClient\nsource(output(\n\t\t{Billing Carrier Code} as string,\n\t\t{Client Code} as string,\n\t\t{Location Name} as string,\n\t\t{Department Name} as string,\n\t\t{Division Name} as string,\n\t\t{Location Level 4} as string,\n\t\t{Location Level 5} as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\twildcardPaths:['Carrier-Client-Location Levels.xlsx']) ~> LocationSource\nsource(output(\n\t\tCarrierCode as string,\n\t\tCarrierKey as short\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_COMMITTED',\n\tquery: 'Select CarrierCode, CarrierKey FROM DimCarrier',\n\tformat: 'query',\n\tstaged: false) ~> DimCarrier\nLocationSource filter({Billing Carrier Code}=='PMAC') ~> FilterCarrierCode\nFilterOutRowsWithNULL, DimClient lookup({Client Code} == ClientCode,\n\tmultiple: false,\n\tpickup: 'any',\n\tbroadcast: 'auto')~> LookupClient\nLookupCarrier select(mapColumn(\n\t\tLocation_Name = {Location Name},\n\t\tDepartment_Name = {Department Name},\n\t\tDivision_Name = {Division Name},\n\t\tLocation4_Name = {Location Level 4},\n\t\tLocation5_Name = {Location Level 5},\n\t\tClientKey,\n\t\tCarrierKey\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SelectColumns\nAggregateRows alterRow(upsertIf(true())) ~> AlterLocationRow\nLookupClient, DimCarrier lookup(trim({Billing Carrier Code}) == CarrierCode,\n\tmultiple: false,\n\tpickup: 'any',\n\tbroadcast: 'auto')~> LookupCarrier\nFilterCarrierCode filter(!isNull({Location Name}) && !isNull({Department Name}) && !isNull({Division Name})) ~> FilterOutRowsWithNULL\nSelectColumns aggregate(groupBy(CarrierKey,\n\t\tClientKey,\n\t\tLocation_Name,\n\t\tDepartment_Name,\n\t\tDivision_Name,\n\t\tLocation4_Name,\n\t\tLocation5_Name),\n\teach(match(in(['CarrierKey,ClientKey,Location_Name,Department_Name,Division_Name,Location4_Name,Location5_Name'],name)), $$ = first($$))) ~> AggregateRows\nAlterLocationRow sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:false,\n\tupdateable:false,\n\tupsertable:true,\n\tkeys:['ClientKey','Location_Name','Department_Name','Division_Name','Location4_Name','Location5_Name','CarrierKey'],\n\tformat: 'table',\n\tstaged: false,\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError',\n\tmapColumn(\n\t\tCarrierKey,\n\t\tClientKey,\n\t\tLocation_Name,\n\t\tDepartment_Name,\n\t\tDivision_Name,\n\t\tLocation4_Name,\n\t\tLocation5_Name\n\t)) ~> DimLocation"
+		}
+	}
+}

@@ -1,0 +1,189 @@
+{
+	"name": "ValidateCarrierInputs",
+	"properties": {
+		"activities": [
+			{
+				"name": "Get Source Metadata",
+				"type": "GetMetadata",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataset": {
+						"referenceName": "dsContainerParametrized",
+						"type": "DatasetReference",
+						"parameters": {
+							"Container": {
+								"value": "@pipeline().parameters.ContainerName",
+								"type": "Expression"
+							}
+						}
+					},
+					"fieldList": [
+						"childItems"
+					],
+					"storeSettings": {
+						"type": "AzureBlobFSReadSettings",
+						"recursive": true,
+						"enablePartitionDiscovery": false
+					},
+					"formatSettings": {
+						"type": "BinaryReadSettings"
+					}
+				}
+			},
+			{
+				"name": "ForEachSourceItems",
+				"type": "ForEach",
+				"dependsOn": [
+					{
+						"activity": "Get Source Metadata",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@activity('Get Source Metadata').output.childitems",
+						"type": "Expression"
+					},
+					"activities": [
+						{
+							"name": "If Folder",
+							"type": "IfCondition",
+							"dependsOn": [],
+							"userProperties": [],
+							"typeProperties": {
+								"expression": {
+									"value": "@equals(item().type,'Folder')",
+									"type": "Expression"
+								},
+								"ifFalseActivities": [
+									{
+										"name": "Move General Control Files",
+										"type": "Copy",
+										"dependsOn": [],
+										"policy": {
+											"timeout": "7.00:00:00",
+											"retry": 0,
+											"retryIntervalInSeconds": 30,
+											"secureOutput": false,
+											"secureInput": false
+										},
+										"userProperties": [],
+										"typeProperties": {
+											"source": {
+												"type": "BinarySource",
+												"storeSettings": {
+													"type": "AzureBlobFSReadSettings",
+													"recursive": true,
+													"deleteFilesAfterCompletion": true
+												},
+												"formatSettings": {
+													"type": "BinaryReadSettings"
+												}
+											},
+											"sink": {
+												"type": "BinarySink",
+												"storeSettings": {
+													"type": "AzureBlobFSWriteSettings"
+												}
+											},
+											"enableStaging": false
+										},
+										"inputs": [
+											{
+												"referenceName": "dsContainerParametrized",
+												"type": "DatasetReference",
+												"parameters": {
+													"Container": {
+														"value": "@pipeline().parameters.ContainerName",
+														"type": "Expression"
+													}
+												}
+											}
+										],
+										"outputs": [
+											{
+												"referenceName": "dsContainerParametrized",
+												"type": "DatasetReference",
+												"parameters": {
+													"Container": "control-files"
+												}
+											}
+										]
+									}
+								],
+								"ifTrueActivities": [
+									{
+										"name": "Set variable1",
+										"type": "SetVariable",
+										"dependsOn": [],
+										"userProperties": [],
+										"typeProperties": {
+											"variableName": "itemname",
+											"value": {
+												"value": "@item().name",
+												"type": "Expression"
+											}
+										}
+									},
+									{
+										"name": "ValidateCarrierAndFiles",
+										"type": "ExecutePipeline",
+										"dependsOn": [
+											{
+												"activity": "Set variable1",
+												"dependencyConditions": [
+													"Succeeded"
+												]
+											}
+										],
+										"userProperties": [],
+										"typeProperties": {
+											"pipeline": {
+												"referenceName": "ValidateCarrierAndFiles",
+												"type": "PipelineReference"
+											},
+											"waitOnCompletion": true,
+											"parameters": {
+												"CarrierName": {
+													"value": "@item().name",
+													"type": "Expression"
+												}
+											}
+										}
+									}
+								]
+							}
+						}
+					]
+				}
+			}
+		],
+		"parameters": {
+			"ContainerName": {
+				"type": "string"
+			}
+		},
+		"variables": {
+			"itemname": {
+				"type": "String"
+			}
+		},
+		"folder": {
+			"name": "POC/IngestExtract"
+		},
+		"annotations": [],
+		"lastPublishTime": "2021-09-27T16:55:56Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

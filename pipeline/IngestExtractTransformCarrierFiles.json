@@ -1,0 +1,121 @@
+{
+	"name": "IngestExtractTransformCarrierFiles",
+	"properties": {
+		"activities": [
+			{
+				"name": "IngestModifiedFiles",
+				"type": "ExecutePipeline",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "IngestModifiedFiles",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"CarrierName": {
+							"value": "@pipeline().parameters.CarrierName",
+							"type": "Expression"
+						},
+						"ContainerName": {
+							"value": "@pipeline().parameters.ContainerName",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "ValidateCarrierInputs",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "IngestModifiedFiles",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "ValidateCarrierInputs",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"ContainerName": {
+							"value": "@pipeline().parameters.ContainerName",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "ExtractCarrierSourceFiles",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "ValidateCarrierInputs",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "ExtractSourceFiles",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"ContainerName": {
+							"value": "@pipeline().parameters.ContainerName",
+							"type": "Expression"
+						},
+						"CarrierCode": {
+							"value": "@pipeline().parameters.CarrierName",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "CHACTransform",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "ExtractCarrierSourceFiles",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "CHACTransform",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true
+				}
+			}
+		],
+		"parameters": {
+			"CarrierName": {
+				"type": "string"
+			},
+			"ContainerName": {
+				"type": "string",
+				"defaultValue": "carrier-source"
+			}
+		},
+		"folder": {
+			"name": "POC"
+		},
+		"annotations": [],
+		"lastPublishTime": "2021-06-10T18:43:24Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

@@ -1,0 +1,910 @@
+{
+	"name": "HAAVTransform",
+	"properties": {
+		"activities": [
+			{
+				"name": "Copy HAAV data to Transaction",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"sqlReaderStoredProcedureName": "[dbo].[GetFieldNameMappingDynamic]",
+						"storedProcedureParameters": {
+							"CarrierCode": {
+								"type": "String",
+								"value": {
+									"value": "@pipeline().parameters.CarrierCode",
+									"type": "Expression"
+								}
+							},
+							"SystemCode": {
+								"type": "String",
+								"value": null
+							}
+						},
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"sink": {
+						"type": "SqlDWSink",
+						"preCopyScript": "Delete from stage.ClaimTransaction WHERE CarrierCode='HAAV'",
+						"disableMetricsCollection": false
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "CarrierCode"
+								},
+								"sink": {
+									"name": "CarrierCode",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "ClientCode"
+								},
+								"sink": {
+									"name": "ClientCode",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "ValuationDate"
+								},
+								"sink": {
+									"name": "ValuationDate",
+									"type": "DateTime",
+									"physicalType": "date"
+								}
+							},
+							{
+								"source": {
+									"name": "Policy Year"
+								},
+								"sink": {
+									"name": "Policy Year",
+									"type": "Int32",
+									"physicalType": "int"
+								}
+							},
+							{
+								"source": {
+									"name": "Policy Number"
+								},
+								"sink": {
+									"name": "Policy Number",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "Accident Description"
+								},
+								"sink": {
+									"name": "Accident_Description",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "Claimant"
+								},
+								"sink": {
+									"name": "Claimant",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "Claim #"
+								},
+								"sink": {
+									"name": "ClaimNumber",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "Lag Time"
+								},
+								"sink": {
+									"name": "Lag Time",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "Date Reported"
+								},
+								"sink": {
+									"name": "Date Reported",
+									"type": "DateTime",
+									"physicalType": "date"
+								}
+							},
+							{
+								"source": {
+									"name": "Day of Week"
+								},
+								"sink": {
+									"name": "Day of Week",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "Closed Date"
+								},
+								"sink": {
+									"name": "Closed Date",
+									"type": "DateTime",
+									"physicalType": "date"
+								}
+							},
+							{
+								"source": {
+									"name": "Days to Close"
+								},
+								"sink": {
+									"name": "DaysToClose",
+									"type": "Int32",
+									"physicalType": "int"
+								}
+							},
+							{
+								"source": {
+									"name": "Status"
+								},
+								"sink": {
+									"name": "ClaimStatus",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "Gender"
+								},
+								"sink": {
+									"name": "Gender",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "Marital Status"
+								},
+								"sink": {
+									"name": "MaritalStatus",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "Date of Hire"
+								},
+								"sink": {
+									"name": "Date of Hire",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "Driver"
+								},
+								"sink": {
+									"name": "Driver",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "Occupation"
+								},
+								"sink": {
+									"name": "Occupation",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "Coverage (Line of Business)"
+								},
+								"sink": {
+									"name": "LOBCode",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "Claim Type"
+								},
+								"sink": {
+									"name": "ClaimTypeCode",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "Injury Type"
+								},
+								"sink": {
+									"name": "InjuryType",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "Body Part"
+								},
+								"sink": {
+									"name": "BodyPart",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "Cause Type"
+								},
+								"sink": {
+									"name": "CauseType",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "NCCI Code"
+								},
+								"sink": {
+									"name": "NAICS_Code",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "Litigation"
+								},
+								"sink": {
+									"name": "Litigation",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "Location Name"
+								},
+								"sink": {
+									"name": "Location_Name",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "Department Name"
+								},
+								"sink": {
+									"name": "Department_Name",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "Division Name"
+								},
+								"sink": {
+									"name": "Division_Name",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "Total Paid"
+								},
+								"sink": {
+									"name": "Total_Paid",
+									"type": "Decimal",
+									"physicalType": "decimal",
+									"scale": 2,
+									"precision": 18
+								}
+							},
+							{
+								"source": {
+									"name": "Total Reserve"
+								},
+								"sink": {
+									"name": "Total_Reserve",
+									"type": "Decimal",
+									"physicalType": "decimal",
+									"scale": 2,
+									"precision": 18
+								}
+							},
+							{
+								"source": {
+									"name": "Recovery Total"
+								},
+								"sink": {
+									"name": "Recovery_Total",
+									"type": "Decimal",
+									"physicalType": "decimal",
+									"scale": 2,
+									"precision": 18
+								}
+							},
+							{
+								"source": {
+									"name": "Total Incurred"
+								},
+								"sink": {
+									"name": "Total_Incurred",
+									"type": "Decimal",
+									"physicalType": "decimal",
+									"scale": 2,
+									"precision": 18
+								}
+							},
+							{
+								"source": {
+									"name": "Net Incurred"
+								},
+								"sink": {
+									"name": "Net_Incurred",
+									"type": "Decimal",
+									"physicalType": "decimal",
+									"scale": 2,
+									"precision": 18
+								}
+							},
+							{
+								"source": {
+									"name": "Paid Expense"
+								},
+								"sink": {
+									"name": "Expense_Paid",
+									"type": "Decimal",
+									"physicalType": "decimal",
+									"scale": 2,
+									"precision": 18
+								}
+							},
+							{
+								"source": {
+									"name": "Reserve Expense"
+								},
+								"sink": {
+									"name": "Expense_Reserve",
+									"type": "Decimal",
+									"physicalType": "decimal",
+									"scale": 2,
+									"precision": 18
+								}
+							},
+							{
+								"source": {
+									"name": "Recovery Expense"
+								},
+								"sink": {
+									"name": "Expense_Recovery",
+									"type": "Decimal",
+									"physicalType": "decimal",
+									"scale": 2,
+									"precision": 18
+								}
+							},
+							{
+								"source": {
+									"name": "Incurred Expense"
+								},
+								"sink": {
+									"name": "Expense_Incurred",
+									"type": "Decimal",
+									"physicalType": "decimal",
+									"scale": 2,
+									"precision": 18
+								}
+							},
+							{
+								"source": {
+									"name": "Medical/BI Paid"
+								},
+								"sink": {
+									"name": "Medical_BI_Paid",
+									"type": "Decimal",
+									"physicalType": "decimal",
+									"scale": 2,
+									"precision": 18
+								}
+							},
+							{
+								"source": {
+									"name": "Medical/BI Reserves"
+								},
+								"sink": {
+									"name": "Medical_BI_Reserves",
+									"type": "Decimal",
+									"physicalType": "decimal",
+									"scale": 2,
+									"precision": 18
+								}
+							},
+							{
+								"source": {
+									"name": "Indemnity/PD Paid"
+								},
+								"sink": {
+									"name": "Indemnity_PD_Paid",
+									"type": "Decimal",
+									"physicalType": "decimal",
+									"scale": 2,
+									"precision": 18
+								}
+							},
+							{
+								"source": {
+									"name": "Indemnity/PD Reserves"
+								},
+								"sink": {
+									"name": "Indemnity_PD_Reserves",
+									"type": "Decimal",
+									"physicalType": "decimal",
+									"scale": 2,
+									"precision": 18
+								}
+							},
+							{
+								"source": {
+									"name": "Incurred BI/Med"
+								},
+								"sink": {
+									"name": "Incurred_BI_Med",
+									"type": "Decimal",
+									"physicalType": "decimal",
+									"scale": 2,
+									"precision": 18
+								}
+							},
+							{
+								"source": {
+									"name": "Incurred PD/LT"
+								},
+								"sink": {
+									"name": "Incurred_PD_LT",
+									"type": "Decimal",
+									"physicalType": "decimal",
+									"scale": 2,
+									"precision": 18
+								}
+							},
+							{
+								"source": {
+									"name": "Recovery BI/Med"
+								},
+								"sink": {
+									"name": "Recovery_BI_Med",
+									"type": "Decimal",
+									"physicalType": "decimal",
+									"scale": 2,
+									"precision": 18
+								}
+							},
+							{
+								"source": {
+									"name": "Recovery PD/LT"
+								},
+								"sink": {
+									"name": "Recovery_PD_LT",
+									"type": "Decimal",
+									"physicalType": "decimal",
+									"scale": 2,
+									"precision": 18
+								}
+							},
+							{
+								"source": {
+									"name": "State - Risk (Occurrence)"
+								},
+								"sink": {
+									"name": "Occurrance_State",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "State - Benefits"
+								},
+								"sink": {
+									"name": "Benefit_State",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "Insured Identifier"
+								},
+								"sink": {
+									"name": "Insured_Identifier",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "RowID"
+								},
+								"sink": {
+									"name": "RowID",
+									"type": "Int64",
+									"physicalType": "bigint"
+								}
+							},
+							{
+								"source": {
+									"name": "Age"
+								},
+								"sink": {
+									"name": "Age",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "ClientCarrierGroupKey"
+								},
+								"sink": {
+									"name": "ClientCarrierGroupKey",
+									"type": "Int32",
+									"physicalType": "int"
+								}
+							},
+							{
+								"source": {
+									"name": "Policy Effective Date"
+								},
+								"sink": {
+									"name": "Policy Effective Date",
+									"type": "DateTime",
+									"physicalType": "date"
+								}
+							},
+							{
+								"source": {
+									"name": "Policy Expiration Date"
+								},
+								"sink": {
+									"name": "Policy Expiration Date",
+									"type": "DateTime",
+									"physicalType": "date"
+								}
+							},
+							{
+								"source": {
+									"name": "Date of Loss"
+								},
+								"sink": {
+									"name": "Date of Loss",
+									"type": "DateTime",
+									"physicalType": "date"
+								}
+							},
+							{
+								"source": {
+									"name": "ClaimHashKey"
+								},
+								"sink": {
+									"name": "ClaimHashKey"
+								}
+							}
+						],
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "dsgrahamStageDB",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "dsClaimsTransaction",
+						"type": "DatasetReference"
+					}
+				]
+			},
+			{
+				"name": "FieldValueMapping",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [
+					{
+						"activity": "Copy HAAV data to Transaction",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "1.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "FieldValueMapping",
+						"type": "DataFlowReference",
+						"parameters": {
+							"CarrierCode": {
+								"value": "'@{pipeline().parameters.CarrierCode}'",
+								"type": "Expression"
+							}
+						}
+					},
+					"integrationRuntime": {
+						"referenceName": "dataflowIR",
+						"type": "IntegrationRuntimeReference"
+					},
+					"traceLevel": "Fine"
+				}
+			},
+			{
+				"name": "HAAVClaims",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [
+					{
+						"activity": "FieldValueMapping",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "1.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "HAAVClaims",
+						"type": "DataFlowReference",
+						"parameters": {
+							"CarrierCode": "'HAAV'"
+						}
+					},
+					"integrationRuntime": {
+						"referenceName": "dataflowIR",
+						"type": "IntegrationRuntimeReference"
+					},
+					"traceLevel": "Fine"
+				}
+			},
+			{
+				"name": "HAAVClaimsTransaction",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [
+					{
+						"activity": "HAAVClaims",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "1.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "HAAVClaimsTransaction",
+						"type": "DataFlowReference",
+						"parameters": {
+							"CarrierCode": "'HAAV'"
+						},
+						"datasetParameters": {
+							"HAAVLocationMapSOSSECU": {
+								"SheetIndex": 1
+							},
+							"HAAVLocationMapYALEUNI": {
+								"SheetIndex": 2
+							},
+							"HAAVLocationMapClaimNumber": {
+								"SheetIndex": 3
+							},
+							"HAAVLocationMapCHIMES": {
+								"SheetIndex": 4
+							}
+						}
+					},
+					"integrationRuntime": {
+						"referenceName": "dataflowIR",
+						"type": "IntegrationRuntimeReference"
+					},
+					"traceLevel": "Fine"
+				}
+			},
+			{
+				"name": "FilterClaims",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [
+					{
+						"activity": "HAAVClaimsTransaction",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "1.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "FilterClaims",
+						"type": "DataFlowReference",
+						"parameters": {
+							"CarrierCode": {
+								"value": "'@{pipeline().parameters.CarrierCode}'",
+								"type": "Expression"
+							}
+						}
+					},
+					"staging": {
+						"linkedService": {
+							"referenceName": "InsuranceFilesLinkedService",
+							"type": "LinkedServiceReference"
+						},
+						"folderPath": "adf-logs"
+					},
+					"integrationRuntime": {
+						"referenceName": "dataflowIR",
+						"type": "IntegrationRuntimeReference"
+					},
+					"traceLevel": "Fine"
+				}
+			},
+			{
+				"name": "FillerClaimsProcess",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [
+					{
+						"activity": "FilterClaims",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "1.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "FillerClaimsProcess",
+						"type": "DataFlowReference",
+						"parameters": {
+							"CarrierCode": {
+								"value": "'@{pipeline().parameters.CarrierCode}'",
+								"type": "Expression"
+							}
+						}
+					},
+					"integrationRuntime": {
+						"referenceName": "dataflowIR",
+						"type": "IntegrationRuntimeReference"
+					},
+					"traceLevel": "Fine"
+				}
+			},
+			{
+				"name": "FinancialCorrections",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [
+					{
+						"activity": "FillerClaimsProcess",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "1.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "FinancialCorrections",
+						"type": "DataFlowReference",
+						"parameters": {
+							"CarrierCode": {
+								"value": "'@{pipeline().parameters.CarrierCode}'",
+								"type": "Expression"
+							}
+						}
+					},
+					"integrationRuntime": {
+						"referenceName": "dataflowIR",
+						"type": "IntegrationRuntimeReference"
+					},
+					"traceLevel": "Fine"
+				}
+			}
+		],
+		"parameters": {
+			"CarrierCode": {
+				"type": "string",
+				"defaultValue": "HAAV"
+			}
+		},
+		"folder": {
+			"name": "POC/Transform"
+		},
+		"annotations": [],
+		"lastPublishTime": "2021-09-20T20:57:40Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

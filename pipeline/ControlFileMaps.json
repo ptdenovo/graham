@@ -1,0 +1,259 @@
+{
+	"name": "ControlFileMaps",
+	"properties": {
+		"activities": [
+			{
+				"name": "Copy Client Info",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "ExcelSource",
+						"storeSettings": {
+							"type": "AzureBlobFSReadSettings",
+							"recursive": true,
+							"wildcardFileName": "Client Control.xlsx",
+							"enablePartitionDiscovery": false
+						}
+					},
+					"sink": {
+						"type": "AzureSqlSink"
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "Client Code",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "ClientCode",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "Client Name",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "ClientName",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "Enabled",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Enabled",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "Industry",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Industry",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "Location 1 Enabled",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Location1_Enabled",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "Location 2 Enabled",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Location2_Enabled",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "Location 3 Enabled",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Location3_Enabled",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "Location 4 Enabled",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Location4_Enabled",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "Location 5 Enabled",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Location5_Enabled",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "Location 6 Enabled",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Location6_Enabled",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "Location 7 Enabled",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Location7_Enabled",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "Location 8 Enabled",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Location8_Enabled",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "Location 9 Enabled",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Location9_Enabled",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "Location 10 Enabled",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Location10_Enabled",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "HQ State",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "HQ_State",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "NAICS Code",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "NAICS_Code",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							}
+						],
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "dsControlFiles",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "dsGrahamAnaDB",
+						"type": "DatasetReference",
+						"parameters": {
+							"SchemaName": "dbo",
+							"TableName": "Client"
+						}
+					}
+				]
+			}
+		],
+		"folder": {
+			"name": "POC/BKP"
+		},
+		"annotations": [],
+		"lastPublishTime": "2021-08-26T09:18:30Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

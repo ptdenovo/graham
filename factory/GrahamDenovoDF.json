@@ -1,0 +1,9 @@
+{
+	"name": "GrahamDenovoDF",
+	"location": "eastus",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "0624fa32-cb6b-4a18-8028-89c2875194e2",
+		"tenantId": "e926e2c0-0a91-41c5-8408-cf5fad1b719d"
+	}
+}

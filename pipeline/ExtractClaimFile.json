@@ -1,0 +1,55 @@
+{
+	"name": "ExtractClaimFile",
+	"properties": {
+		"activities": [
+			{
+				"name": "If not Claim File",
+				"type": "IfCondition",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"expression": {
+						"value": "@or(or(equals(pipeline().parameters.FileName,'KEYSHUM-01 Employee Counts.xlsx'),equals(pipeline().parameters.FileName,'KEYSHUM-01 Element Occupation Map.xlsx')),equals(pipeline().parameters.FileName,'KEYSHUM-01 Element Location Level Map.XLSX'))",
+						"type": "Expression"
+					},
+					"ifFalseActivities": [
+						{
+							"name": "ValidateClientClaimFileName",
+							"type": "ExecutePipeline",
+							"dependsOn": [],
+							"userProperties": [],
+							"typeProperties": {
+								"pipeline": {
+									"referenceName": "ValidateAndExtractClientClaimFile",
+									"type": "PipelineReference"
+								},
+								"waitOnCompletion": true,
+								"parameters": {
+									"ClientCode": "KEYSHUM-01",
+									"FileName": {
+										"value": "@pipeline().parameters.FileName",
+										"type": "Expression"
+									}
+								}
+							}
+						}
+					]
+				}
+			}
+		],
+		"parameters": {
+			"ClientCode": {
+				"type": "string"
+			},
+			"FileName": {
+				"type": "string"
+			}
+		},
+		"folder": {
+			"name": "ClientData"
+		},
+		"annotations": [],
+		"lastPublishTime": "2021-05-19T20:35:23Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

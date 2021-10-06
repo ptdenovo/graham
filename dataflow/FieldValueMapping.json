@@ -1,0 +1,180 @@
+{
+	"name": "FieldValueMapping",
+	"properties": {
+		"folder": {
+			"name": "Transform"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "dsgrahamDB",
+						"type": "DatasetReference"
+					},
+					"name": "FVM"
+				},
+				{
+					"dataset": {
+						"referenceName": "dsQuery",
+						"type": "DatasetReference"
+					},
+					"name": "ClaimTransaction"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "dsClaimsTransaction",
+						"type": "DatasetReference"
+					},
+					"name": "UpdateClaimTransTemp"
+				}
+			],
+			"transformations": [
+				{
+					"name": "FVNDerivedAttribute"
+				},
+				{
+					"name": "JoinCauseType"
+				},
+				{
+					"name": "DerivedBodyPart"
+				},
+				{
+					"name": "JoinBodyPart"
+				},
+				{
+					"name": "SelectCauseTypeMapped"
+				},
+				{
+					"name": "DerivedCauseType"
+				},
+				{
+					"name": "AlterRowTranRow"
+				},
+				{
+					"name": "SelectBodyPartMapped"
+				},
+				{
+					"name": "JoinClaimant"
+				},
+				{
+					"name": "DerivedColumnClaimant"
+				},
+				{
+					"name": "SelectClaimant"
+				},
+				{
+					"name": "JoinLOB"
+				},
+				{
+					"name": "DerivedLOB"
+				},
+				{
+					"name": "SelectLOB"
+				},
+				{
+					"name": "JoinGender"
+				},
+				{
+					"name": "DerivedColumnGender"
+				},
+				{
+					"name": "SelectGender"
+				},
+				{
+					"name": "JoinInjuryType"
+				},
+				{
+					"name": "DerivedInjuryType"
+				},
+				{
+					"name": "SelectInjuryType"
+				},
+				{
+					"name": "JoinOccupation"
+				},
+				{
+					"name": "DerivedOccupation"
+				},
+				{
+					"name": "SelectOccupation"
+				},
+				{
+					"name": "JoinLitigation"
+				},
+				{
+					"name": "DerivedLitigation"
+				},
+				{
+					"name": "SelectLitigation"
+				},
+				{
+					"name": "JoinClaimStatus"
+				},
+				{
+					"name": "DerivedClaimStatus"
+				},
+				{
+					"name": "JoinPolicyNumber"
+				},
+				{
+					"name": "SelectDerivedClaimStatus"
+				},
+				{
+					"name": "DerivedPolicyNumber"
+				},
+				{
+					"name": "SelectAfterPolicyNumber"
+				},
+				{
+					"name": "JoinClaimType"
+				},
+				{
+					"name": "DerivedClaimType"
+				},
+				{
+					"name": "FilterAccidentDescription"
+				},
+				{
+					"name": "JoinAccidentDescription"
+				},
+				{
+					"name": "DerivedAccidentDescription"
+				},
+				{
+					"name": "SelectAfterClaimTypeMap"
+				},
+				{
+					"name": "AggregateApply"
+				},
+				{
+					"name": "SelectAfterAccidentDesc"
+				},
+				{
+					"name": "JoinMarutalStatus"
+				},
+				{
+					"name": "FilterMaritalStatus"
+				},
+				{
+					"name": "DerivedMaritalStatus"
+				},
+				{
+					"name": "JoinDriver"
+				},
+				{
+					"name": "DerivedDriver"
+				},
+				{
+					"name": "SelectAfterMaritalStatus"
+				},
+				{
+					"name": "DerivedTrimedColumns"
+				}
+			],
+			"script": "parameters{\n\tCarrierCode as string\n}\nsource(output(\n\t\tFieldName as string,\n\t\tSourceValue as string,\n\t\tMappedValue as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_COMMITTED',\n\tquery: (concat('SELECT FieldName,SourceValue,MappedValue FROM FieldValueMap WHERE CarrierCode=',\"'\", $CarrierCode,\"'\")),\n\tformat: 'query',\n\tpartitionBy('hash', 1)) ~> FVM\nsource(output(\n\t\tClaimTransactionKey as long,\n\t\tCauseType as string,\n\t\tBodyPart as string,\n\t\tInjuryType as string,\n\t\tLOBCode as string,\n\t\tLitigation as string,\n\t\tAccident_Description as string,\n\t\tClaimant as string,\n\t\tOccupation as string,\n\t\tGender as string,\n\t\tMaritalStatus as string,\n\t\t{Policy Number} as string,\n\t\tClaimStatus as string,\n\t\tDriver as string,\n\t\tClaimTypeCode as string,\n\t\tCarrierCode as string,\n\t\tClientCode as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_COMMITTED',\n\tquery: (concat(\"SELECT ClaimTransactionKey,CauseType,BodyPart,InjuryType,LOBCode,Litigation,Accident_Description,Claimant,Occupation,Gender,MaritalStatus,[Policy Number],ClaimStatus,Driver,ClaimTypeCode,CarrierCode,ClientCode FROM stage.ClaimTransaction WHERE CarrierCode = '\", $CarrierCode,\"'\")),\n\tformat: 'query',\n\tstaged: false) ~> ClaimTransaction\nFVM derive(FieldName = iif(FieldName=='Body Part', 'BodyPart', \r\niif(FieldName=='Cause Type', 'CauseType', \r\niif(FieldName=='Injury Type', 'InjuryType',\r\niif(FieldName=='Status', 'ClaimStatus', \r\niif(FieldName=='Coverage (Line of Business)', 'LOBCode', \r\niif(FieldName=='Gender', 'Gender', \r\niif(FieldName=='Claim Type', 'ClaimTypeCode',FieldName\r\n)))\r\n)))),\n\t\tSourceValue = SourceValue,\n\t\tMappedValue = trim(MappedValue)) ~> FVNDerivedAttribute\nDerivedTrimedColumns, FVNDerivedAttribute join(CauseType == iif(FieldName=='CauseType', SourceValue, FieldName),\n\tjoinType:'left',\n\tbroadcast: 'right')~> JoinCauseType\nJoinBodyPart derive(BodyPart = iif(FieldName=='BodyPart' && !isNull(SourceValue) , MappedValue, BodyPart)) ~> DerivedBodyPart\nSelectCauseTypeMapped, FVNDerivedAttribute join(BodyPart == iif(FieldName=='BodyPart', SourceValue, FieldName),\n\tjoinType:'left',\n\tbroadcast: 'right')~> JoinBodyPart\nDerivedCauseType select(mapColumn(\n\t\tClaimTransactionKey,\n\t\tCarrierCode,\n\t\tClientCode,\n\t\tBodyPart,\n\t\tCauseType,\n\t\tClaimTypeCode,\n\t\tClaimant,\n\t\tLOBCode,\n\t\tDriver,\n\t\tGender,\n\t\tMaritalStatus,\n\t\tInjuryType,\n\t\tLitigation,\n\t\tClaimStatus,\n\t\tOccupation,\n\t\t{Policy Number},\n\t\tAccident_Description\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SelectCauseTypeMapped\nJoinCauseType derive(CauseType = iif(FieldName=='CauseType' && !isNull(SourceValue) , MappedValue, CauseType)) ~> DerivedCauseType\nAggregateApply alterRow(updateIf(true())) ~> AlterRowTranRow\nDerivedBodyPart select(mapColumn(\n\t\tClaimTransactionKey,\n\t\tCarrierCode,\n\t\tClientCode,\n\t\tBodyPart,\n\t\tCauseType,\n\t\tClaimTypeCode,\n\t\tClaimant,\n\t\tLOBCode,\n\t\tDriver,\n\t\tGender,\n\t\tMaritalStatus,\n\t\tInjuryType,\n\t\tLitigation,\n\t\tClaimStatus,\n\t\tOccupation,\n\t\t{Policy Number},\n\t\tAccident_Description\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SelectBodyPartMapped\nSelectBodyPartMapped, FVNDerivedAttribute join(Claimant == iif(FieldName=='Claimant', SourceValue, FieldName),\n\tjoinType:'left',\n\tbroadcast: 'auto')~> JoinClaimant\nJoinClaimant derive(Claimant = iif(FieldName=='Claimant' && !isNull(SourceValue) , MappedValue, Claimant)) ~> DerivedColumnClaimant\nDerivedColumnClaimant select(mapColumn(\n\t\tClaimTransactionKey,\n\t\tCarrierCode,\n\t\tClientCode,\n\t\tBodyPart,\n\t\tCauseType,\n\t\tClaimTypeCode,\n\t\tClaimant,\n\t\tLOBCode,\n\t\tDriver,\n\t\tGender,\n\t\tMaritalStatus,\n\t\tInjuryType,\n\t\tLitigation,\n\t\tClaimStatus,\n\t\tOccupation,\n\t\t{Policy Number},\n\t\tAccident_Description\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SelectClaimant\nSelectClaimant, FVNDerivedAttribute join(LOBCode == iif(FieldName=='LOBCode', SourceValue, FieldName),\n\tjoinType:'left',\n\tbroadcast: 'right')~> JoinLOB\nJoinLOB derive(LOBCode = iif(FieldName=='LOBCode' && !isNull(SourceValue) , MappedValue, LOBCode)) ~> DerivedLOB\nDerivedLOB select(mapColumn(\n\t\tClaimTransactionKey,\n\t\tCarrierCode,\n\t\tClientCode,\n\t\tBodyPart,\n\t\tCauseType,\n\t\tClaimTypeCode,\n\t\tClaimant,\n\t\tLOBCode,\n\t\tDriver,\n\t\tGender,\n\t\tMaritalStatus,\n\t\tInjuryType,\n\t\tLitigation,\n\t\tClaimStatus,\n\t\tOccupation,\n\t\t{Policy Number},\n\t\tAccident_Description\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SelectLOB\nSelectLOB, FVNDerivedAttribute join(Gender == iif(FieldName=='Gender', SourceValue, FieldName),\n\tjoinType:'left',\n\tpartitionBy('hash', 1),\n\tbroadcast: 'right')~> JoinGender\nJoinGender derive(Gender = iif(FieldName=='Gender' && !isNull(SourceValue) , MappedValue, Gender)) ~> DerivedColumnGender\nDerivedColumnGender select(mapColumn(\n\t\tClaimTransactionKey,\n\t\tCarrierCode,\n\t\tClientCode,\n\t\tBodyPart,\n\t\tCauseType,\n\t\tClaimTypeCode,\n\t\tClaimant,\n\t\tLOBCode,\n\t\tDriver,\n\t\tGender,\n\t\tMaritalStatus,\n\t\tInjuryType,\n\t\tLitigation,\n\t\tClaimStatus,\n\t\tOccupation,\n\t\t{Policy Number},\n\t\tAccident_Description\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SelectGender\nSelectGender, FVNDerivedAttribute join(InjuryType == iif(FieldName=='InjuryType', SourceValue, FieldName),\n\tjoinType:'left',\n\tbroadcast: 'right')~> JoinInjuryType\nJoinInjuryType derive(InjuryType = iif(FieldName=='InjuryType' && !isNull(SourceValue) , MappedValue, InjuryType)) ~> DerivedInjuryType\nDerivedInjuryType select(mapColumn(\n\t\tClaimTransactionKey,\n\t\tCarrierCode,\n\t\tClientCode,\n\t\tBodyPart,\n\t\tCauseType,\n\t\tClaimTypeCode,\n\t\tClaimant,\n\t\tLOBCode,\n\t\tDriver,\n\t\tGender,\n\t\tMaritalStatus,\n\t\tInjuryType,\n\t\tLitigation,\n\t\tClaimStatus,\n\t\tOccupation,\n\t\t{Policy Number},\n\t\tAccident_Description\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SelectInjuryType\nSelectInjuryType, FVNDerivedAttribute join(Occupation == iif(FieldName=='Occupation', trim(SourceValue), FieldName),\n\tjoinType:'left',\n\tbroadcast: 'right')~> JoinOccupation\nJoinOccupation derive(Occupation = iif(FieldName=='Occupation' && !isNull(SourceValue) , MappedValue, Occupation)) ~> DerivedOccupation\nDerivedOccupation select(mapColumn(\n\t\tClaimTransactionKey,\n\t\tCarrierCode,\n\t\tClientCode,\n\t\tBodyPart,\n\t\tCauseType,\n\t\tClaimTypeCode,\n\t\tClaimant,\n\t\tLOBCode,\n\t\tDriver,\n\t\tGender,\n\t\tMaritalStatus,\n\t\tInjuryType,\n\t\tLitigation,\n\t\tClaimStatus,\n\t\tOccupation,\n\t\t{Policy Number},\n\t\tAccident_Description\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SelectOccupation\nSelectOccupation, FVNDerivedAttribute join(Litigation == iif(FieldName=='Litigation', SourceValue, FieldName),\n\tjoinType:'left',\n\tbroadcast: 'auto')~> JoinLitigation\nJoinLitigation derive(Litigation = iif(FieldName=='Litigation' && !isNull(SourceValue) , MappedValue, Litigation)) ~> DerivedLitigation\nDerivedLitigation select(mapColumn(\n\t\tClaimTransactionKey,\n\t\tCarrierCode,\n\t\tClientCode,\n\t\tBodyPart,\n\t\tCauseType,\n\t\tClaimTypeCode,\n\t\tClaimant,\n\t\tLOBCode,\n\t\tDriver,\n\t\tGender,\n\t\tMaritalStatus,\n\t\tInjuryType,\n\t\tLitigation,\n\t\tClaimStatus,\n\t\tOccupation,\n\t\t{Policy Number},\n\t\tAccident_Description\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SelectLitigation\nSelectLitigation, FVNDerivedAttribute join(ClaimStatus == iif(FieldName=='ClaimStatus', SourceValue, FieldName),\n\tjoinType:'left',\n\tbroadcast: 'auto')~> JoinClaimStatus\nJoinClaimStatus derive(ClaimStatus = iif(FieldName=='ClaimStatus' && !isNull(SourceValue) , MappedValue, ClaimStatus)) ~> DerivedClaimStatus\nSelectDerivedClaimStatus, FVNDerivedAttribute join({Policy Number} == iif(FieldName=='Policy Number', SourceValue, FieldName),\n\tjoinType:'left',\n\tbroadcast: 'auto')~> JoinPolicyNumber\nDerivedClaimStatus select(mapColumn(\n\t\tClaimTransactionKey,\n\t\tCarrierCode,\n\t\tClientCode,\n\t\tBodyPart,\n\t\tCauseType,\n\t\tClaimTypeCode,\n\t\tClaimant,\n\t\tLOBCode,\n\t\tDriver,\n\t\tGender,\n\t\tMaritalStatus,\n\t\tInjuryType,\n\t\tLitigation,\n\t\tClaimStatus,\n\t\tOccupation,\n\t\t{Policy Number},\n\t\tAccident_Description\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SelectDerivedClaimStatus\nJoinPolicyNumber derive({Policy Number} = iif(FieldName=='Policy Number' && !isNull(SourceValue) , MappedValue, {Policy Number})) ~> DerivedPolicyNumber\nDerivedPolicyNumber select(mapColumn(\n\t\tClaimTransactionKey,\n\t\tCarrierCode,\n\t\tClientCode,\n\t\tBodyPart,\n\t\tCauseType,\n\t\tClaimTypeCode,\n\t\tClaimant,\n\t\tLOBCode,\n\t\tDriver,\n\t\tGender,\n\t\tMaritalStatus,\n\t\tInjuryType,\n\t\tLitigation,\n\t\tClaimStatus,\n\t\tOccupation,\n\t\t{Policy Number},\n\t\tAccident_Description\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SelectAfterPolicyNumber\nSelectAfterPolicyNumber, FVNDerivedAttribute join(ClaimTypeCode == iif(FieldName=='ClaimTypeCode', SourceValue, FieldName),\n\tjoinType:'left',\n\tbroadcast: 'right')~> JoinClaimType\nJoinClaimType derive(ClaimTypeCode = iif(FieldName=='ClaimTypeCode' && !isNull(SourceValue) , MappedValue, ClaimTypeCode)) ~> DerivedClaimType\nFVM filter(FieldName=='Accident Description') ~> FilterAccidentDescription\nSelectAfterClaimTypeMap, FilterAccidentDescription join(Accident_Description == iif(FieldName=='Accident Description', SourceValue, FieldName),\n\tjoinType:'left',\n\tbroadcast: 'right')~> JoinAccidentDescription\nJoinAccidentDescription derive(Accident_Description = iif(FieldName=='Accident Description' && !isNull(SourceValue) , MappedValue, Accident_Description)) ~> DerivedAccidentDescription\nDerivedClaimType select(mapColumn(\n\t\tClaimTransactionKey,\n\t\tCarrierCode,\n\t\tClientCode,\n\t\tBodyPart,\n\t\tCauseType,\n\t\tClaimTypeCode,\n\t\tClaimant,\n\t\tLOBCode,\n\t\tDriver,\n\t\tGender,\n\t\tMaritalStatus,\n\t\tInjuryType,\n\t\tLitigation,\n\t\tClaimStatus,\n\t\tOccupation,\n\t\t{Policy Number},\n\t\tAccident_Description\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SelectAfterClaimTypeMap\nDerivedDriver aggregate(groupBy(ClaimTransactionKey),\n\teach(match(!in(['ClaimTransactionKey'],name)), $$ = first($$))) ~> AggregateApply\nDerivedAccidentDescription select(mapColumn(\n\t\tClaimTransactionKey,\n\t\tCarrierCode,\n\t\tClientCode,\n\t\tBodyPart,\n\t\tCauseType,\n\t\tClaimTypeCode,\n\t\tClaimant,\n\t\tLOBCode,\n\t\tDriver,\n\t\tGender,\n\t\tMaritalStatus,\n\t\tInjuryType,\n\t\tLitigation,\n\t\tClaimStatus,\n\t\tOccupation,\n\t\t{Policy Number},\n\t\tAccident_Description\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SelectAfterAccidentDesc\nSelectAfterAccidentDesc, FilterMaritalStatus join(MaritalStatus == SourceValue,\n\tjoinType:'left',\n\tbroadcast: 'right')~> JoinMarutalStatus\nFVM filter(FieldName=='Marital Status') ~> FilterMaritalStatus\nJoinMarutalStatus derive(MaritalStatus = iif(FieldName=='Marital Status' && !isNull(SourceValue) , MappedValue, MaritalStatus)) ~> DerivedMaritalStatus\nSelectAfterMaritalStatus, FVNDerivedAttribute join(Driver == iif(FieldName=='ClaimTypeCode', SourceValue, MappedValue),\n\tjoinType:'left',\n\tbroadcast: 'auto')~> JoinDriver\nJoinDriver derive(Driver = iif(FieldName=='Driver' && !isNull(SourceValue) , MappedValue, Driver)) ~> DerivedDriver\nDerivedMaritalStatus select(mapColumn(\n\t\tClaimTransactionKey,\n\t\tCarrierCode,\n\t\tClientCode,\n\t\tBodyPart,\n\t\tCauseType,\n\t\tClaimTypeCode,\n\t\tClaimant,\n\t\tLOBCode,\n\t\tDriver,\n\t\tGender,\n\t\tMaritalStatus,\n\t\tInjuryType,\n\t\tLitigation,\n\t\tClaimStatus,\n\t\tOccupation,\n\t\t{Policy Number},\n\t\tAccident_Description\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SelectAfterMaritalStatus\nClaimTransaction derive(Occupation = trim(Occupation)) ~> DerivedTrimedColumns\nAlterRowTranRow sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinput(\n\t\tClaimTransactionKey as long,\n\t\tCarrierCode as string,\n\t\tClientCode as string,\n\t\tValuationDate as date,\n\t\t{Policy Year} as integer,\n\t\t{Policy Effective Date} as date,\n\t\t{Policy Expiration Date} as date,\n\t\t{Policy Number} as string,\n\t\tAccident_Description as string,\n\t\tClaimant as string,\n\t\tClaimNumber as string,\n\t\t{Date of Loss} as date,\n\t\t{Lag Time} as string,\n\t\t{Date Reported} as date,\n\t\t{Day of Week} as string,\n\t\t{Closed Date} as date,\n\t\tDaysToClose as integer,\n\t\tClaimStatus as string,\n\t\tGender as string,\n\t\tMaritalStatus as string,\n\t\t{Date of Hire} as string,\n\t\tDriver as string,\n\t\tOccupation as string,\n\t\tLOBCode as string,\n\t\tClaimTypeCode as string,\n\t\tInjuryType as string,\n\t\tBodyPart as string,\n\t\tCauseType as string,\n\t\tNAICS_Code as string,\n\t\tLitigation as string,\n\t\tLocation_Name as string,\n\t\tDepartment_Name as string,\n\t\tDivision_Name as string,\n\t\tTotal_Paid as decimal(18,2),\n\t\tTotal_Reserve as decimal(18,2),\n\t\tRecovery_Total as decimal(18,2),\n\t\tTotal_Incurred as decimal(18,2),\n\t\tNet_Incurred as decimal(18,2),\n\t\tExpense_Paid as decimal(18,2),\n\t\tExpense_Reserve as decimal(18,2),\n\t\tExpense_Recovery as decimal(18,2),\n\t\tExpense_Incurred as decimal(18,2),\n\t\tMedical_BI_Paid as decimal(18,2),\n\t\tMedical_BI_Reserves as decimal(18,2),\n\t\tIndemnity_PD_Paid as decimal(18,2),\n\t\tIndemnity_PD_Reserves as decimal(18,2),\n\t\tIncurred_BI_Med as decimal(18,2),\n\t\tIncurred_PD_LT as decimal(18,2),\n\t\tRecovery_BI_Med as decimal(18,2),\n\t\tRecovery_PD_LT as decimal(18,2),\n\t\tOccurrance_State as string,\n\t\tBenefit_State as string,\n\t\tInsured_Identifier as string,\n\t\tRowID as long,\n\t\tAge as string,\n\t\tClientCarrierGroupKey as integer,\n\t\tClaimHashKey as string\n\t),\n\tdeletable:false,\n\tinsertable:false,\n\tupdateable:true,\n\tupsertable:false,\n\tkeys:['ClaimTransactionKey'],\n\tformat: 'table',\n\tstaged: false,\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError',\n\tmapColumn(\n\t\tCauseType,\n\t\tBodyPart,\n\t\tClaimant,\n\t\tClaimTransactionKey,\n\t\tLOBCode,\n\t\tGender,\n\t\tMaritalStatus,\n\t\tInjuryType,\n\t\tLitigation,\n\t\tClaimStatus,\n\t\t{Policy Number},\n\t\tOccupation\n\t),\n\tpartitionBy('hash', 4,\n\t\tClaimTransactionKey\n\t)) ~> UpdateClaimTransTemp"
+		}
+	}
+}

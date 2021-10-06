@@ -1,0 +1,100 @@
+{
+	"name": "CHACClaims02",
+	"properties": {
+		"folder": {
+			"name": "Copy"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "dsgrahamDWTables",
+						"type": "DatasetReference"
+					},
+					"name": "Carrier"
+				},
+				{
+					"dataset": {
+						"referenceName": "dsClaimsTransaction",
+						"type": "DatasetReference"
+					},
+					"name": "ClaimsTransaction"
+				},
+				{
+					"dataset": {
+						"referenceName": "dsQuery",
+						"type": "DatasetReference"
+					},
+					"name": "FiledValueMap"
+				},
+				{
+					"dataset": {
+						"referenceName": "dsgrahamDWTables",
+						"type": "DatasetReference"
+					},
+					"name": "StageCHAC"
+				},
+				{
+					"dataset": {
+						"referenceName": "dsQuery",
+						"type": "DatasetReference"
+					},
+					"name": "ClaimCorrectionMap"
+				},
+				{
+					"dataset": {
+						"referenceName": "dsQuery",
+						"type": "DatasetReference"
+					},
+					"name": "ClientCarrierMap"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "dsDimClaim",
+						"type": "DatasetReference"
+					},
+					"name": "DimClaim"
+				}
+			],
+			"transformations": [
+				{
+					"name": "FilterCarrier"
+				},
+				{
+					"name": "JoinTranClaim"
+				},
+				{
+					"name": "SelectClaim"
+				},
+				{
+					"name": "JoinCarrier"
+				},
+				{
+					"name": "SelectFVM"
+				},
+				{
+					"name": "JoinCHAC"
+				},
+				{
+					"name": "DerivedFields"
+				},
+				{
+					"name": "Select1"
+				},
+				{
+					"name": "DerivedColsFVM"
+				},
+				{
+					"name": "LookupClientCarrierKey"
+				},
+				{
+					"name": "AlteClaims"
+				}
+			],
+			"script": "parameters{\n\tCarrierCode as string ('CHAC')\n}\nsource(output(\n\t\tCarrierKey as short,\n\t\tCarrierCode as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_COMMITTED',\n\tquery: 'SELECT CarrierKey, CarrierCode From DimCarrier',\n\tformat: 'query',\n\tstaged: false,\n\tpartitionBy('hash', 1)) ~> Carrier\nsource(output(\n\t\tClaimTransactionKey as long,\n\t\tCarrierCode as string,\n\t\tClientCode as string,\n\t\tValuationDate as date,\n\t\t{Policy Year} as integer,\n\t\t{Policy Effective Date} as date,\n\t\t{Policy Expiration Date} as date,\n\t\t{Policy Number} as string,\n\t\tAccident_Description as string,\n\t\tClaimant as string,\n\t\tClaimNumber as string,\n\t\t{Date of Loss} as date,\n\t\t{Lag Time} as string,\n\t\t{Date Reported} as date,\n\t\t{Day of Week} as string,\n\t\t{Closed Date} as date,\n\t\tDaysToClose as integer,\n\t\tClaimStatus as string,\n\t\tGender as string,\n\t\tMaritalStatus as string,\n\t\t{Date of Hire} as string,\n\t\tDriver as string,\n\t\tOccupation as string,\n\t\tLOBCode as string,\n\t\tClaimTypeCode as string,\n\t\tInjuryType as string,\n\t\tBodyPart as string,\n\t\tCauseType as string,\n\t\tNAICS_Code as string,\n\t\tLitigation as string,\n\t\tLocation_Name as string,\n\t\tDepartment_Name as string,\n\t\tDivision_Name as string,\n\t\tTotal_Paid as decimal(18,2),\n\t\tTotal_Reserve as decimal(18,2),\n\t\tRecovery_Total as decimal(18,2),\n\t\tTotal_Incurred as decimal(18,2),\n\t\tNet_Incurred as decimal(18,2),\n\t\tExpense_Paid as decimal(18,2),\n\t\tExpense_Reserve as decimal(18,2),\n\t\tExpense_Recovery as decimal(18,2),\n\t\tExpense_Incurred as decimal(18,2),\n\t\tMedical_BI_Paid as decimal(18,2),\n\t\tMedical_BI_Reserves as decimal(18,2),\n\t\tIndemnity_PD_Paid as decimal(18,2),\n\t\tIndemnity_PD_Reserves as decimal(18,2),\n\t\tIncurred_BI_Med as decimal(18,2),\n\t\tIncurred_PD_LT as decimal(18,2),\n\t\tRecovery_BI_Med as decimal(18,2),\n\t\tRecovery_PD_LT as decimal(18,2),\n\t\tOccurrance_State as string,\n\t\tBenefit_State as string,\n\t\tInsured_Identifier as string,\n\t\tRowID as long,\n\t\tAge as integer,\n\t\tClientCarrierGroupKey as integer\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_COMMITTED',\n\tformat: 'table',\n\tstaged: false) ~> ClaimsTransaction\nsource(output(\n\t\tFieldName as string,\n\t\tSourceValue as string,\n\t\tMappedValue as string,\n\t\tCarrierCode as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tquery: 'SELECT * FROM FieldValueMap WHERE CarrierCode=\\'CHAC\\'',\n\tformat: 'query',\n\tstaged: false,\n\twildcardPaths:[('Field Value Mapping.xlsx')]) ~> FiledValueMap\nsource(output(\n\t\tRowID as integer,\n\t\tPolicyType as string,\n\t\tMedicalPaid as decimal(18,2),\n\t\tBI as decimal(18,2),\n\t\tIndemnityPaid as decimal(18,2),\n\t\tPropertyDamage as decimal(18,2)\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_COMMITTED',\n\tquery: 'SELECT RowID, [Policy Type] AS PolicyType, [Medical Paid] AS MedicalPaid,[BI],[Indemnity Paid] AS IndemnityPaid,[Property Damage] AS PropertyDamage FROM stage.CHAC',\n\tformat: 'query',\n\tstaged: false) ~> StageCHAC\nsource(output(\n\t\tFieldName as string,\n\t\tKey1 as string,\n\t\tValue1 as string,\n\t\tKey2 as string,\n\t\tValue2 as string,\n\t\tKey3 as string,\n\t\tValue3 as string,\n\t\tResultValue as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tquery: 'select FieldName,Key1,Value1,Key2,Value2,Key3,Value3,ResultValue\\nFROM [dbo].[ClaimCorrectionMaps] WHERE CarrierCode=\\'CHAC\\'',\n\tformat: 'query',\n\tstaged: false,\n\tpartitionBy('hash', 1)) ~> ClaimCorrectionMap\nsource(output(\n\t\tClientCarrierGroupKey as integer,\n\t\tClientKey as short,\n\t\tClientCode as string,\n\t\tLOBCode as string,\n\t\tPolicyEffectiveDate as date\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_COMMITTED',\n\tquery: (concat('SELECT ClientCarrierGroupKey,ClientKey,ClientCode,LOBCode,PolicyEffectiveDate FROM DimClientCarrierGroup WHERE CarrierCode=',\"'\", $CarrierCode,\"'\")),\n\tformat: 'query',\n\tstaged: false) ~> ClientCarrierMap\nCarrier filter(CarrierCode==$CarrierCode) ~> FilterCarrier\nClaimsTransaction, FilterCarrier join(ClaimsTransaction@CarrierCode == Carrier@CarrierCode,\n\tjoinType:'inner',\n\tbroadcast: 'auto')~> JoinTranClaim\nJoinTranClaim select(mapColumn(\n\t\tClientCode,\n\t\t{Policy Year},\n\t\t{Policy Effective Date},\n\t\t{Policy Expiration Date},\n\t\tClaimant,\n\t\tClaimNumber,\n\t\t{Policy Number},\n\t\tAccident_Description,\n\t\t{Date of Loss},\n\t\t{Date Reported},\n\t\t{Closed Date},\n\t\t{Date of Hire},\n\t\tDriver,\n\t\t{Lag Time},\n\t\tOccurrance_State,\n\t\tBenefit_State,\n\t\tRowID,\n\t\tLOBCode,\n\t\tCarrierCode = Carrier@CarrierCode,\n\t\tAge\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SelectClaim\nFiledValueMap, FilterCarrier join(FiledValueMap@CarrierCode == Carrier@CarrierCode,\n\tjoinType:'inner',\n\tbroadcast: 'auto')~> JoinCarrier\nJoinCarrier select(mapColumn(\n\t\tFieldName,\n\t\tSourceValue,\n\t\tMappedValue,\n\t\tCarrierCode = FiledValueMap@CarrierCode,\n\t\tCarrierKey\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SelectFVM\nSelectClaim, StageCHAC join(SelectClaim@RowID == StageCHAC@RowID,\n\tjoinType:'inner',\n\tbroadcast: 'auto')~> JoinCHAC\nLookupClientCarrierKey derive({Lag Time} = iif(!isNull({Date Reported}),toString({Date Reported}-{Date of Loss}),'Unknown'),\n\t\tDaystoClose = iif(!isNull({Date Reported}) && !isNull({Closed Date}), {Closed Date}-{Date Reported},-99),\n\t\tTenure = iif(!(isNull({Date of Loss}) || isNull({Date of Hire}))&&(SelectClaim@LOBCode=='AU'||SelectClaim@LOBCode=='WC'),({Date of Loss}-toDate({Date of Hire})),-99),\n\t\tPolicyPeriod = concat(toString(year({Policy Effective Date})),'-',toString(year({Policy Effective Date})+1))) ~> DerivedFields\nClaimCorrectionMap select(mapColumn(\n\t\tFieldName,\n\t\tKey1,\n\t\tValue1,\n\t\tKey2,\n\t\tValue2,\n\t\tKey3,\n\t\tValue3,\n\t\tResultValue\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> Select1\nSelectFVM derive(FieldName = iif(FieldName=='Cause Type', 'CauseType',iif(FieldName=='Injury Type', 'InjuryType', iif(FieldName=='Body Part', 'BodyPart', iif(FieldName=='Status', 'ClaimStatus', iif(FieldName=='Coverage (Line of Business)', 'LOBCode', FieldName)))))) ~> DerivedColsFVM\nJoinCHAC, ClientCarrierMap lookup(SelectClaim@ClientCode == ClientCarrierMap@ClientCode\n\t&& SelectClaim@LOBCode == ClientCarrierMap@LOBCode\n\t&& {Policy Effective Date} == PolicyEffectiveDate,\n\tmultiple: false,\n\tpickup: 'first',\n\tasc(PolicyEffectiveDate, true),\n\tpartitionBy('hash', 1),\n\tbroadcast: 'auto')~> LookupClientCarrierKey\nDerivedFields alterRow(deleteIf(isNull(ClientCarrierGroupKey)),\n\tupsertIf(true())) ~> AlteClaims\nAlteClaims sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinput(\n\t\tClaimKey as long,\n\t\tClaimNumber as string,\n\t\tPolicyNumber as string,\n\t\tPolicyEffectiveDate as date,\n\t\tPolicyExpirationDate as date,\n\t\tClaimant as string,\n\t\tAccident_Description as string,\n\t\tDateofLoss as date,\n\t\tReportedDate as date,\n\t\tClosedDate as date,\n\t\tDateOfHire as date,\n\t\tDriver as string,\n\t\tPolicyYear as integer,\n\t\tPolicyPeriod as string,\n\t\tAge as integer,\n\t\tClientCarrierGroupKey as integer,\n\t\tTimeOfLoss as string,\n\t\tLagTime as string,\n\t\tDaysToClose as integer,\n\t\tTenure as integer,\n\t\tOccurrence_State as string,\n\t\tBenefit_State as string,\n\t\tClientKey as integer,\n\t\tLastLoadTime as timestamp,\n\t\tDayOfWeek as string,\n\t\tLineOfBusinessKey as integer,\n\t\tCarrierKey as integer,\n\t\tClaimHashKey as string,\n\t\tFillerClaim as boolean\n\t),\n\tdeletable:true,\n\tinsertable:false,\n\tupdateable:false,\n\tupsertable:true,\n\tkeys:['ClaimNumber','ClientCarrierGroupKey','Claimant'],\n\tformat: 'table',\n\tstaged: false,\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError',\n\tmapColumn(\n\t\tClaimNumber,\n\t\tPolicyYear = {Policy Year},\n\t\tPolicyEffectiveDate = {Policy Effective Date},\n\t\tPolicyExpirationDate = {Policy Expiration Date},\n\t\tClaimant,\n\t\tAccident_Description,\n\t\tDateofLoss = {Date of Loss},\n\t\tReportedDate = {Date Reported},\n\t\tClosedDate = {Closed Date},\n\t\tDateOfHire = {Date of Hire},\n\t\tDriver,\n\t\tPolicyPeriod,\n\t\tOccurrence_State = Occurrance_State,\n\t\tBenefit_State,\n\t\tClientKey,\n\t\tClientCarrierGroupKey,\n\t\tLagTime = {Lag Time},\n\t\tTenure,\n\t\tDaysToClose = DaystoClose,\n\t\tAge,\n\t\tPolicyNumber = {Policy Number}\n\t)) ~> DimClaim"
+		}
+	}
+}

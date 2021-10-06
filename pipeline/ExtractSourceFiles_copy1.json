@@ -1,0 +1,470 @@
+{
+	"name": "ExtractSourceFiles_copy1",
+	"properties": {
+		"activities": [
+			{
+				"name": "Get Files Metadata",
+				"type": "GetMetadata",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataset": {
+						"referenceName": "dsBinaryStorageParameterized",
+						"type": "DatasetReference",
+						"parameters": {
+							"Container": {
+								"value": "@pipeline().parameters.ContainerName",
+								"type": "Expression"
+							},
+							"Directory": {
+								"value": "@pipeline().parameters.CarrierCode",
+								"type": "Expression"
+							},
+							"FileName": "*"
+						}
+					},
+					"fieldList": [
+						"childItems"
+					],
+					"storeSettings": {
+						"type": "AzureBlobFSReadSettings",
+						"recursive": true,
+						"enablePartitionDiscovery": false
+					},
+					"formatSettings": {
+						"type": "BinaryReadSettings"
+					}
+				}
+			},
+			{
+				"name": "CopyDataOfCarriers",
+				"type": "ForEach",
+				"dependsOn": [
+					{
+						"activity": "Preparing Staging For Carriers",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@activity('Get Files Metadata').output.childItems",
+						"type": "Expression"
+					},
+					"activities": [
+						{
+							"name": "Copy to staging",
+							"type": "Copy",
+							"dependsOn": [
+								{
+									"activity": "Set ValuationDate",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"policy": {
+								"timeout": "7.00:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"source": {
+									"type": "ExcelSource",
+									"additionalColumns": [
+										{
+											"name": "ProcessedOn",
+											"value": {
+												"value": "@utcnow()",
+												"type": "Expression"
+											}
+										},
+										{
+											"name": "ValuationDate",
+											"value": {
+												"value": "@variables('FileValuationDate')",
+												"type": "Expression"
+											}
+										},
+										{
+											"name": "ClientCode",
+											"value": {
+												"value": "@variables('ClientCode')",
+												"type": "Expression"
+											}
+										}
+									],
+									"storeSettings": {
+										"type": "AzureBlobFSReadSettings",
+										"recursive": true,
+										"wildcardFolderPath": {
+											"value": "@pipeline().parameters.CarrierCode",
+											"type": "Expression"
+										},
+										"wildcardFileName": {
+											"value": "@item().name",
+											"type": "Expression"
+										},
+										"enablePartitionDiscovery": false
+									}
+								},
+								"sink": {
+									"type": "SqlDWSink",
+									"preCopyScript": {
+										"value": "@{concat('TRUNCATE TABLE stage.',pipeline().parameters.CarrierCode)}",
+										"type": "Expression"
+									},
+									"disableMetricsCollection": false
+								},
+								"enableStaging": false,
+								"translator": {
+									"type": "TabularTranslator",
+									"typeConversion": true,
+									"typeConversionSettings": {
+										"allowDataTruncation": true,
+										"treatBooleanAsNumber": false
+									}
+								}
+							},
+							"inputs": [
+								{
+									"referenceName": "dsExcelFiles",
+									"type": "DatasetReference",
+									"parameters": {
+										"ContainerName": {
+											"value": "@pipeline().parameters.ContainerName",
+											"type": "Expression"
+										},
+										"CarrierCode": {
+											"value": "@pipeline().parameters.CarrierCode",
+											"type": "Expression"
+										},
+										"DataStartRange": {
+											"value": "@pipeline().parameters.DataStartRange",
+											"type": "Expression"
+										},
+										"SheetIndex": 0,
+										"FirstRowHeader": "True"
+									}
+								}
+							],
+							"outputs": [
+								{
+									"referenceName": "dsgrahamDWTables",
+									"type": "DatasetReference",
+									"parameters": {
+										"SchemaName": "stage",
+										"TableName": {
+											"value": "@pipeline().parameters.CarrierCode",
+											"type": "Expression"
+										}
+									}
+								}
+							]
+						},
+						{
+							"name": "Set FileNameWithout Extension",
+							"type": "SetVariable",
+							"dependsOn": [],
+							"userProperties": [],
+							"typeProperties": {
+								"variableName": "FileNameWithoutExtension",
+								"value": {
+									"value": "@substring(item().name,0,add(sub(lastindexof(item().name,'.'),1),1))",
+									"type": "Expression"
+								}
+							}
+						},
+						{
+							"name": "Set File Name Substrings",
+							"type": "SetVariable",
+							"dependsOn": [
+								{
+									"activity": "Set FileNameWithout Extension",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"userProperties": [],
+							"typeProperties": {
+								"variableName": "FileNameParts",
+								"value": {
+									"value": "@split(variables('FileNameWithoutExtension'),'_')",
+									"type": "Expression"
+								}
+							}
+						},
+						{
+							"name": "Set ClientCode",
+							"type": "SetVariable",
+							"dependsOn": [
+								{
+									"activity": "Set File Name Substrings",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"userProperties": [],
+							"typeProperties": {
+								"variableName": "ClientCode",
+								"value": {
+									"value": "@variables('FileNameParts')[0]",
+									"type": "Expression"
+								}
+							}
+						},
+						{
+							"name": "Set ValuationDate",
+							"type": "SetVariable",
+							"dependsOn": [
+								{
+									"activity": "Set ClientCode",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"userProperties": [],
+							"typeProperties": {
+								"variableName": "FileValuationDate",
+								"value": {
+									"value": "@formatdatetime(variables('FileNameParts')[2],'yyyy-MM-dd')",
+									"type": "Expression"
+								}
+							}
+						},
+						{
+							"name": "Create Copy Activity Log",
+							"type": "Copy",
+							"dependsOn": [
+								{
+									"activity": "Copy to staging",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"policy": {
+								"timeout": "7.00:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"source": {
+									"type": "SqlDWSource",
+									"sqlReaderQuery": {
+										"value": "SELECT '@{pipeline().DataFactory}' as DataFactory_Name,\n'@{pipeline().Pipeline}' as Pipeline_Name,\n'@{pipeline().RunId}' as RunId,\n'@{pipeline().TriggerName}' as TriggerName,\n'@{pipeline().TriggerTime}' as TriggerTime,\n'@{item().name}' as FileName,\n'@{activity('Copy to staging').output.rowsCopied}' as rowsCopied,\n'@{activity('Copy to staging').output.rowsRead}' as RowsRead,\n'@{activity('Copy to staging').output.copyDuration}' as copyDuration_in_secs,\n'@{activity('Copy to staging').output.effectiveIntegrationRuntime}' as effectiveIntegrationRuntime,\n'@{activity('Copy to staging').output.executionDetails[0].status}' as Execution_Status,\n'@{activity('Copy to staging').output.executionDetails[0].start}' as CopyActivity_Start_Time,\n'@{utcnow()}' as CopyActivity_End_Time",
+										"type": "Expression"
+									},
+									"queryTimeout": "02:00:00",
+									"partitionOption": "None"
+								},
+								"sink": {
+									"type": "DelimitedTextSink",
+									"storeSettings": {
+										"type": "AzureBlobFSWriteSettings"
+									},
+									"formatSettings": {
+										"type": "DelimitedTextWriteSettings",
+										"quoteAllText": true,
+										"fileExtension": ".txt"
+									}
+								},
+								"enableStaging": false,
+								"translator": {
+									"type": "TabularTranslator",
+									"typeConversion": true,
+									"typeConversionSettings": {
+										"allowDataTruncation": true,
+										"treatBooleanAsNumber": false
+									}
+								}
+							},
+							"inputs": [
+								{
+									"referenceName": "dsgrahamDW",
+									"type": "DatasetReference"
+								}
+							],
+							"outputs": [
+								{
+									"referenceName": "dsLogs",
+									"type": "DatasetReference",
+									"parameters": {
+										"CarrierCode": {
+											"value": "@pipeline().parameters.CarrierCode",
+											"type": "Expression"
+										}
+									}
+								}
+							]
+						},
+						{
+							"name": "Create Copy Activity Error Log",
+							"type": "Copy",
+							"dependsOn": [
+								{
+									"activity": "Copy to staging",
+									"dependencyConditions": [
+										"Failed"
+									]
+								}
+							],
+							"policy": {
+								"timeout": "7.00:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"source": {
+									"type": "SqlDWSource",
+									"sqlReaderQuery": {
+										"value": "SELECT '@{pipeline().DataFactory}' as DataFactory_Name,\n'@{pipeline().Pipeline}' as Pipeline_Name,\n'@{pipeline().RunId}' as RunId,\n'@{pipeline().TriggerName}' as TriggerName,\n'@{pipeline().TriggerTime}' as TriggerTime,\n'@{item().name}' as FileName,\n'@{activity('Copy to staging').output.rowsCopied}' as rowsCopied,\n'@{activity('Copy to staging').output.rowsRead}' as RowsRead,\n'@{activity('Copy to staging').output.copyDuration}' as copyDuration_in_secs,\n'@{activity('Copy to staging').output.effectiveIntegrationRuntime}' as effectiveIntegrationRuntime,\n'@{activity('Copy to staging').output.executionDetails[0].status}' as Execution_Status,\n'@{activity('Copy to staging').output.executionDetails[0].start}' as CopyActivity_Start_Time,\n'@{utcnow()}' as ",
+										"type": "Expression"
+									},
+									"queryTimeout": "02:00:00",
+									"partitionOption": "None"
+								},
+								"sink": {
+									"type": "DelimitedTextSink",
+									"storeSettings": {
+										"type": "AzureBlobFSWriteSettings"
+									},
+									"formatSettings": {
+										"type": "DelimitedTextWriteSettings",
+										"quoteAllText": true,
+										"fileExtension": ".txt"
+									}
+								},
+								"enableStaging": false,
+								"translator": {
+									"type": "TabularTranslator",
+									"typeConversion": true,
+									"typeConversionSettings": {
+										"allowDataTruncation": true,
+										"treatBooleanAsNumber": false
+									}
+								}
+							},
+							"inputs": [
+								{
+									"referenceName": "dsgrahamDW",
+									"type": "DatasetReference"
+								}
+							],
+							"outputs": [
+								{
+									"referenceName": "dsLogs",
+									"type": "DatasetReference",
+									"parameters": {
+										"CarrierCode": {
+											"value": "@pipeline().parameters.CarrierCode",
+											"type": "Expression"
+										}
+									}
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"name": "Preparing Staging For Carriers",
+				"type": "ForEach",
+				"dependsOn": [
+					{
+						"activity": "Get Files Metadata",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@activity('Get Files Metadata').output.childItems",
+						"type": "Expression"
+					},
+					"isSequential": false,
+					"activities": [
+						{
+							"name": "PrepareSourceFields",
+							"type": "ExecutePipeline",
+							"dependsOn": [],
+							"userProperties": [],
+							"typeProperties": {
+								"pipeline": {
+									"referenceName": "PrepareSourceFields",
+									"type": "PipelineReference"
+								},
+								"waitOnCompletion": true,
+								"parameters": {
+									"CarrierCode": {
+										"value": "@pipeline().parameters.CarrierCode",
+										"type": "Expression"
+									},
+									"ContainerName": {
+										"value": "@pipeline().parameters.ContainerName",
+										"type": "Expression"
+									}
+								}
+							}
+						}
+					]
+				}
+			}
+		],
+		"parameters": {
+			"ContainerName": {
+				"type": "string"
+			},
+			"CarrierCode": {
+				"type": "string"
+			},
+			"DataStartRange": {
+				"type": "string",
+				"defaultValue": "A1"
+			}
+		},
+		"variables": {
+			"FileValuationDate": {
+				"type": "String"
+			},
+			"ClientCode": {
+				"type": "String"
+			},
+			"FileNameWithoutExtension": {
+				"type": "String"
+			},
+			"FileNameParts": {
+				"type": "Array"
+			}
+		},
+		"folder": {
+			"name": "POC/BKP"
+		},
+		"annotations": [],
+		"lastPublishTime": "2021-05-06T11:54:43Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

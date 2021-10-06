@@ -1,0 +1,157 @@
+{
+	"name": "FillerClaimsProcess",
+	"properties": {
+		"folder": {
+			"name": "FillerClaims"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "dsFillerClaim",
+						"type": "DatasetReference"
+					},
+					"name": "FillerClaimFile"
+				},
+				{
+					"dataset": {
+						"referenceName": "dsQuery",
+						"type": "DatasetReference"
+					},
+					"name": "ClientCarrierGroup"
+				},
+				{
+					"dataset": {
+						"referenceName": "dsFactClaimTrans",
+						"type": "DatasetReference"
+					},
+					"name": "srcFactClaimTransaction"
+				},
+				{
+					"dataset": {
+						"referenceName": "dsDimDate",
+						"type": "DatasetReference"
+					},
+					"name": "srcDimDate"
+				},
+				{
+					"dataset": {
+						"referenceName": "dsFillerClaimsTransactionTable",
+						"type": "DatasetReference"
+					},
+					"name": "srcFactFillerClaimTransaction"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "dsFillerClaimsTransactionTable",
+						"type": "DatasetReference"
+					},
+					"name": "snkFillerClaimTransaction"
+				},
+				{
+					"dataset": {
+						"referenceName": "dsFillerClaimsMissingClientCarrier",
+						"type": "DatasetReference"
+					},
+					"name": "sinkException"
+				}
+			],
+			"transformations": [
+				{
+					"name": "FilterTest"
+				},
+				{
+					"name": "JoinClientCarrierGroup"
+				},
+				{
+					"name": "DerivedPolicyNumber"
+				},
+				{
+					"name": "JoinClientCarrierGroupKey"
+				},
+				{
+					"name": "JoinValuationDate"
+				},
+				{
+					"name": "SelectDates"
+				},
+				{
+					"name": "SelectFactColumns"
+				},
+				{
+					"name": "JoinMaxDateOfEachClientCarriergroupKey"
+				},
+				{
+					"name": "DerivedDateRange"
+				},
+				{
+					"name": "SelectClientCarrierGroup"
+				},
+				{
+					"name": "SelectColumns"
+				},
+				{
+					"name": "MaxValuationDateInFactClaimsTrans"
+				},
+				{
+					"name": "JoinMaxCarrierValuationDate"
+				},
+				{
+					"name": "Select2"
+				},
+				{
+					"name": "FilterLastDateOfMonth"
+				},
+				{
+					"name": "JoinMonthEndDates"
+				},
+				{
+					"name": "NotExistInFact"
+				},
+				{
+					"name": "SortFactTransactions"
+				},
+				{
+					"name": "DerivedFinancialColumns"
+				},
+				{
+					"name": "JoinFactFilleClientCarriergroup"
+				},
+				{
+					"name": "JoinFactFillerValuationDate"
+				},
+				{
+					"name": "MaxValuationDateFactFiller"
+				},
+				{
+					"name": "SelectFillerFactCols"
+				},
+				{
+					"name": "JoinFillerClaimRow"
+				},
+				{
+					"name": "JoinValuationDateForFillerClaims"
+				},
+				{
+					"name": "DerivedClaimFields"
+				},
+				{
+					"name": "Aggregate1"
+				},
+				{
+					"name": "FilterRowsWithValidClientCarrierGroupKey"
+				},
+				{
+					"name": "FilterRowsWithoutValidClientCarrierKey"
+				},
+				{
+					"name": "SortColumns"
+				}
+			],
+			"script": "parameters{\n\tCarrierCode as string\n}\nsource(output(\n\t\t{Client Code} as string,\n\t\t{Coverage (Line of Business)} as string,\n\t\t{Policy Effective Date} as date,\n\t\t{Carrier Code} as string,\n\t\t{Policy Number} as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\twildcardPaths:[(concat($CarrierCode, '/',$CarrierCode, ' Filler Claims.xlsx'))]) ~> FillerClaimFile\nsource(output(\n\t\tClientCarrierGroupKey as integer,\n\t\tClientKey as short,\n\t\tClientCode as string,\n\t\tLOBCode as string,\n\t\tPolicyEffectiveDate as date,\n\t\tLineOfBusinessKey as short,\n\t\tCarrierKey as short\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_COMMITTED',\n\tquery: (concat('SELECT ClientCarrierGroupKey,ClientKey,ClientCode,LOBCode,PolicyEffectiveDate,LineOfBusinessKey,CarrierKey FROM DimClientCarrierGroup WHERE CarrierCode=',\"'\", $CarrierCode,\"'\")),\n\tformat: 'query',\n\tstaged: false) ~> ClientCarrierGroup\nsource(output(\n\t\tTransactionKey as long,\n\t\tClaimKey as long,\n\t\tValuationDateKey as integer,\n\t\tClientCarrierGroupKey as integer,\n\t\tCauseTypeKey as short,\n\t\tClaimTypeKey as short,\n\t\tInjuryTypeKey as integer,\n\t\tBodyPartKey as short,\n\t\tGenderKey as integer,\n\t\tOccupationKey as integer,\n\t\tClaimStatus as string,\n\t\tMaritalStatusKey as integer,\n\t\tClientKey as short,\n\t\tLitigation as boolean,\n\t\tNAICS_Code as string,\n\t\tAgeRangeKey as integer,\n\t\tClaimTenureRangeKey as integer,\n\t\tClaimLagAmountRangeKey as integer,\n\t\tClaimClosePeriodRangeKey as integer,\n\t\tNetLossAmtRangeKey as integer,\n\t\tTotalIncurredLossAmtRangeKey as integer,\n\t\tExpense_Paid as decimal(18,2),\n\t\tExpense_Reserve as decimal(18,2),\n\t\tExpense_Recovery as decimal(18,2),\n\t\tExpense_Incurred as decimal(18,2),\n\t\tMedical_BI_Paid as decimal(18,2),\n\t\tMedical_BI_Reserves as decimal(18,2),\n\t\tIndemnity_PD_Paid as decimal(18,2),\n\t\tIndemnity_PD_Reserves as decimal(18,2),\n\t\tIncurred_BI_Med as decimal(18,2),\n\t\tIncurred_PD_LT as decimal(18,2),\n\t\tRecovery_BI_Med as decimal(18,2),\n\t\tRecovery_PD_LT as decimal(18,2),\n\t\tTotal_Paid as decimal(18,2),\n\t\tTotal_Reserve as decimal(18,2),\n\t\tRecovery_Total as decimal(18,2),\n\t\tTotal_Incurred as decimal(18,2),\n\t\tNet_Incurred as decimal(18,2),\n\t\tLocationKey as integer,\n\t\tEmployeeCount as integer,\n\t\tStatus_Priority as integer,\n\t\tClaimType_Priority as integer,\n\t\tLitigation_Priority as integer,\n\t\tLastLoadTime as timestamp,\n\t\tClaim_Incurred as decimal(18,2),\n\t\tIncurred_Expense as decimal(18,2),\n\t\tClaim_Recovery as decimal(18,2),\n\t\tClaim_Net_Incurred as decimal(18,2),\n\t\tExpense_Net_Incurred as decimal(18,2),\n\t\tClaim_Paid as decimal(18,2)\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_COMMITTED',\n\tformat: 'table',\n\tstaged: false) ~> srcFactClaimTransaction\nsource(output(\n\t\tDateKey as integer,\n\t\tDate as date,\n\t\tYear as integer,\n\t\tMonthKey as integer,\n\t\tDayOfMonth as integer,\n\t\tDayName as string,\n\t\tDayOfWeekInMonth as integer,\n\t\tDayOfWeekInYear as integer,\n\t\tDayOfQuarter as integer,\n\t\tDayOfYear as integer,\n\t\tWeekOfMonth as integer,\n\t\tDayOfWeek as string,\n\t\tWeekOfQuarter as integer,\n\t\tWeekOfYear as integer,\n\t\tMonth as integer,\n\t\tMonthName as string,\n\t\tQuarter as integer,\n\t\tQuarterName as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_COMMITTED',\n\tformat: 'table',\n\tstaged: false) ~> srcDimDate\nsource(output(\n\t\tFillerClaimTransactionkey as long,\n\t\tValuationDateKey as integer,\n\t\tClientCarrierGroupKey as integer,\n\t\tClaimNumber as string,\n\t\tPolicyNumber as string,\n\t\tPolicyEffectiveDate as date,\n\t\tPolicyExpirationDate as date,\n\t\tCarrierKey as integer,\n\t\tClaimant as string,\n\t\tAccident_Description as string,\n\t\tDayOfWeek as string,\n\t\tDateofLoss as date,\n\t\tReportedDate as date,\n\t\tClosedDate as date,\n\t\tDateOfHire as date,\n\t\tDriver as string,\n\t\tPolicyYear as integer,\n\t\tPolicyPeriod as string,\n\t\tAge as integer,\n\t\tLagTime as string,\n\t\tDaysToClose as integer,\n\t\tTenure as integer,\n\t\tOccurrence_State as string,\n\t\tBenefit_State as string,\n\t\tLOBCode as string,\n\t\tCauseTypeKey as integer,\n\t\tClaimTypeKey as integer,\n\t\tInjuryTypeKey as integer,\n\t\tBodyPartKey as integer,\n\t\tGenderKey as integer,\n\t\tOccupationKey as integer,\n\t\tClaimStatus as string,\n\t\tMaritalStatusKey as integer,\n\t\tClientKey as integer,\n\t\tLitigation as boolean,\n\t\tNAICS_Code as string,\n\t\tAgeRangeKey as integer,\n\t\tClaimTenureRangeKey as integer,\n\t\tClaimLagAmountRangeKey as integer,\n\t\tClaimClosePeriodRangeKey as integer,\n\t\tNetLossAmtRangeKey as integer,\n\t\tTotalIncurredLossAmtRangeKey as integer,\n\t\tExpense_Paid as decimal(18,2),\n\t\tExpense_Reserve as decimal(18,2),\n\t\tExpense_Recovery as decimal(18,2),\n\t\tExpense_Incurred as decimal(18,2),\n\t\tMedical_BI_Paid as decimal(18,2),\n\t\tMedical_BI_Reserves as decimal(18,2),\n\t\tIndemnity_PD_Paid as decimal(18,2),\n\t\tIndemnity_PD_Reserves as decimal(18,2),\n\t\tIncurred_BI_Med as decimal(18,2),\n\t\tIncurred_PD_LT as decimal(18,2),\n\t\tRecovery_BI_Med as decimal(18,2),\n\t\tRecovery_PD_LT as decimal(18,2),\n\t\tTotal_Paid as decimal(18,2),\n\t\tTotal_Reserve as decimal(18,2),\n\t\tRecovery_Total as decimal(18,2),\n\t\tTotal_Incurred as decimal(18,2),\n\t\tNet_Incurred as decimal(18,2),\n\t\tLocationKey as integer,\n\t\tEmployeeCount as integer,\n\t\tStatus_Priority as integer,\n\t\tClaimType_Priority as integer,\n\t\tLitigation_Priority as integer,\n\t\tLastLoadTime as timestamp,\n\t\tClaim_Incurred as decimal(18,2),\n\t\tIncurred_Expense as decimal(18,2),\n\t\tClaim_Recovery as decimal(18,2),\n\t\tClaim_Net_Incurred as decimal(18,2),\n\t\tExpense_Net_Incurred as decimal(18,2),\n\t\tClaim_Paid as decimal(18,2)\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_COMMITTED',\n\tformat: 'table',\n\tstaged: false) ~> srcFactFillerClaimTransaction\nFillerClaimFile filter(!isNull({Client Code})) ~> FilterTest\nDerivedPolicyNumber, ClientCarrierGroup join({Coverage (Line of Business)} == LOBCode\n\t&& {Client Code} == ClientCode\n\t&& {Policy Effective Date} == PolicyEffectiveDate,\n\tjoinType:'left',\n\tbroadcast: 'left')~> JoinClientCarrierGroup\nFilterTest derive(PolicyNumber = coalesce({Policy Number},'N/A'),\n\t\t{Client Code} = trim({Client Code}),\n\t\t{Coverage (Line of Business)} = trim({Coverage (Line of Business)})) ~> DerivedPolicyNumber\nSelectColumns, ClientCarrierGroup join(SelectColumns@ClientCarrierGroupKey == ClientCarrierGroup@ClientCarrierGroupKey,\n\tjoinType:'inner',\n\tbroadcast: 'auto')~> JoinClientCarrierGroupKey\nJoinClientCarrierGroupKey, SelectDates join(ValuationDateKey == DateKey,\n\tjoinType:'inner',\n\tbroadcast: 'auto')~> JoinValuationDate\nFilterLastDateOfMonth select(mapColumn(\n\t\tDateKey,\n\t\tDate\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SelectDates\nJoinValuationDate select(mapColumn(\n\t\tValuationDateKey,\n\t\tClientCarrierGroupKey = SelectColumns@ClientCarrierGroupKey,\n\t\tValuationDate = Date\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SelectFactColumns\nSelectClientCarrierGroup, MaxValuationDateFactFiller join(SelectClientCarrierGroup@ClientCarrierGroupKey == MaxValuationDateFactFiller@ClientCarrierGroupKey,\n\tjoinType:'left',\n\tbroadcast: 'right')~> JoinMaxDateOfEachClientCarriergroupKey\nSelect2 derive(StartDate = :local_lastDayOfMonth,\n\t\tEndDate = MaxValuationDateForCarrier,\n\t\tlocal_StartEffectiveDate := iif(isNull(MaxValuationDate), {Policy Effective Date}, iif(isNull(MaxValuationDate),MaxValuationDate,addMonths(MaxValuationDate, 1))),\n\t\tlocal_lastDayOfMonth := lastDayOfMonth(:local_StartEffectiveDate)) ~> DerivedDateRange\nAggregate1 select(mapColumn(\n\t\t{Client Code},\n\t\t{Coverage (Line of Business)},\n\t\t{Policy Effective Date},\n\t\t{Carrier Code},\n\t\t{Policy Number},\n\t\tPolicyNumber,\n\t\tClientCarrierGroupKey,\n\t\tClientKey,\n\t\tClientCode,\n\t\tLOBCode,\n\t\tPolicyEffectiveDate,\n\t\tLineOfBusinessKey,\n\t\tCarrierKey\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SelectClientCarrierGroup\nsrcFactClaimTransaction select(mapColumn(\n\t\tTransactionKey,\n\t\tClaimKey,\n\t\tValuationDateKey,\n\t\tClientCarrierGroupKey,\n\t\tCauseTypeKey,\n\t\tClaimTypeKey,\n\t\tInjuryTypeKey,\n\t\tBodyPartKey,\n\t\tGenderKey,\n\t\tOccupationKey,\n\t\tClaimStatus,\n\t\tMaritalStatusKey,\n\t\tClientKey,\n\t\tLitigation,\n\t\tNAICS_Code,\n\t\tAgeRangeKey,\n\t\tClaimTenureRangeKey,\n\t\tClaimLagAmountRangeKey,\n\t\tClaimClosePeriodRangeKey,\n\t\tNetLossAmtRangeKey,\n\t\tTotalIncurredLossAmtRangeKey,\n\t\tExpense_Paid,\n\t\tExpense_Reserve,\n\t\tExpense_Recovery,\n\t\tExpense_Incurred,\n\t\tMedical_BI_Paid,\n\t\tMedical_BI_Reserves,\n\t\tIndemnity_PD_Paid,\n\t\tIndemnity_PD_Reserves,\n\t\tIncurred_BI_Med,\n\t\tIncurred_PD_LT,\n\t\tRecovery_BI_Med,\n\t\tRecovery_PD_LT,\n\t\tTotal_Paid,\n\t\tTotal_Reserve,\n\t\tRecovery_Total,\n\t\tTotal_Incurred,\n\t\tNet_Incurred,\n\t\tLocationKey,\n\t\tEmployeeCount,\n\t\tStatus_Priority,\n\t\tClaimType_Priority,\n\t\tLitigation_Priority,\n\t\tLastLoadTime,\n\t\tClaim_Incurred,\n\t\tIncurred_Expense,\n\t\tClaim_Recovery,\n\t\tClaim_Net_Incurred,\n\t\tExpense_Net_Incurred,\n\t\tClaim_Paid\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SelectColumns\nJoinValuationDate aggregate(groupBy(CarrierKey),\n\tMaxValuationDateForCarrier = max(Date)) ~> MaxValuationDateInFactClaimsTrans\nJoinMaxDateOfEachClientCarriergroupKey, MaxValuationDateInFactClaimsTrans join(SelectClientCarrierGroup@CarrierKey == MaxValuationDateInFactClaimsTrans@CarrierKey,\n\tjoinType:'left',\n\tbroadcast: 'right')~> JoinMaxCarrierValuationDate\nJoinMaxCarrierValuationDate select(mapColumn(\n\t\t{Policy Effective Date},\n\t\t{Carrier Code},\n\t\tPolicyNumber,\n\t\tClientCarrierGroupKey = SelectClientCarrierGroup@ClientCarrierGroupKey,\n\t\tClientKey,\n\t\tClientCode,\n\t\tLOBCode,\n\t\tPolicyEffectiveDate,\n\t\tLineOfBusinessKey,\n\t\tCarrierKey = SelectClientCarrierGroup@CarrierKey,\n\t\tMaxValuationDate,\n\t\tClientCarrierGroupKey = MaxValuationDateInFactClaimsTrans@CarrierKey,\n\t\tMaxValuationDateForCarrier\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> Select2\nsrcDimDate filter(Date==lastDayOfMonth(Date)) ~> FilterLastDateOfMonth\nDerivedDateRange, SelectDates join(StartDate <= Date\n\t&& EndDate >= Date,\n\tjoinType:'inner',\n\tbroadcast: 'both')~> JoinMonthEndDates\nJoinMonthEndDates, SelectFactColumns exists(Date == ValuationDate && Select2@ClientCarrierGroupKey==SelectFactColumns@ClientCarrierGroupKey,\n\tnegate:true,\n\tbroadcast: 'left')~> NotExistInFact\nNotExistInFact sort(asc(ClientCode, true),\n\tasc(LOBCode, true),\n\tasc(Date, true)) ~> SortFactTransactions\nDerivedClaimFields derive(Expense_Paid = 0,\n\t\tExpense_Reserve = 0,\n\t\tExpense_Recovery = 0,\n\t\tExpense_Incurred = 0,\n\t\tMedical_BI_Paid = 0,\n\t\tMedical_BI_Reserves = 0,\n\t\tIndemnity_PD_Paid = 0,\n\t\tIndemnity_PD_Reserves = 0,\n\t\tIncurred_BI_Med = 0,\n\t\tIncurred_PD_LT = 0,\n\t\tRecovery_BI_Med = 0,\n\t\tRecovery_PD_LT = 0,\n\t\tTotal_Paid = 0,\n\t\tTotal_Reserve = 0,\n\t\tRecovery_Total = 0,\n\t\tTotal_Incurred = 0,\n\t\tNet_Incurred = 0,\n\t\tClaim_Incurred = 0,\n\t\tIncurred_Expense = 0,\n\t\tClaim_Recovery = 0,\n\t\tClaim_Net_Incurred = 0,\n\t\tExpense_Net_Incurred = 0,\n\t\tClaim_Paid = 0,\n\t\tClaimTypeKey = -99,\n\t\tInjuryTypeKey = -99,\n\t\tBodyPartKey = -99,\n\t\tGenderKey = 99,\n\t\tMaritalStatusKey = 99,\n\t\tOccupationKey = -99,\n\t\tClaimStatus = 'N/A',\n\t\tAgeRangeKey = 99,\n\t\tClaimTenureRangeKey = 99,\n\t\tClaimLagAmountRangeKey = 99,\n\t\tClaimClosePeriodRangeKey = 99,\n\t\tNetLossAmtRangeKey = 99,\n\t\tTotalIncurredLossAmtRangeKey = 99,\n\t\tCauseTypeKey = -99,\n\t\tLitigation = toBoolean('0'),\n\t\tEmployeeCount = 0,\n\t\tStatus_Priority = 99,\n\t\tClaimType_Priority = 99,\n\t\tLitigation_Priority = 99,\n\t\tLocationKey = -99) ~> DerivedFinancialColumns\nsrcFactFillerClaimTransaction, ClientCarrierGroup join(srcFactFillerClaimTransaction@ClientCarrierGroupKey == ClientCarrierGroup@ClientCarrierGroupKey,\n\tjoinType:'inner',\n\tbroadcast: 'auto')~> JoinFactFilleClientCarriergroup\nJoinFactFilleClientCarriergroup, SelectDates join(ValuationDateKey == DateKey,\n\tjoinType:'inner',\n\tbroadcast: 'auto')~> JoinFactFillerValuationDate\nSelectFillerFactCols aggregate(groupBy(ClientCarrierGroupKey),\n\tMaxValuationDate = max(Date)) ~> MaxValuationDateFactFiller\nJoinFactFillerValuationDate select(mapColumn(\n\t\tFillerClaimTransactionkey,\n\t\tValuationDateKey,\n\t\tClientCarrierGroupKey = srcFactFillerClaimTransaction@ClientCarrierGroupKey,\n\t\tCauseTypeKey,\n\t\tClaimTypeKey,\n\t\tInjuryTypeKey,\n\t\tBodyPartKey,\n\t\tGenderKey,\n\t\tOccupationKey,\n\t\tClaimStatus,\n\t\tMaritalStatusKey,\n\t\tClientKey = srcFactFillerClaimTransaction@ClientKey,\n\t\tLitigation,\n\t\tNAICS_Code,\n\t\tAgeRangeKey,\n\t\tClaimTenureRangeKey,\n\t\tClaimLagAmountRangeKey,\n\t\tClaimClosePeriodRangeKey,\n\t\tNetLossAmtRangeKey,\n\t\tTotalIncurredLossAmtRangeKey,\n\t\tExpense_Paid,\n\t\tExpense_Reserve,\n\t\tExpense_Recovery,\n\t\tExpense_Incurred,\n\t\tMedical_BI_Paid,\n\t\tMedical_BI_Reserves,\n\t\tIndemnity_PD_Paid,\n\t\tIndemnity_PD_Reserves,\n\t\tIncurred_BI_Med,\n\t\tIncurred_PD_LT,\n\t\tRecovery_BI_Med,\n\t\tRecovery_PD_LT,\n\t\tTotal_Paid,\n\t\tTotal_Reserve,\n\t\tRecovery_Total,\n\t\tTotal_Incurred,\n\t\tNet_Incurred,\n\t\tLocationKey,\n\t\tEmployeeCount,\n\t\tStatus_Priority,\n\t\tClaimType_Priority,\n\t\tLitigation_Priority,\n\t\tLastLoadTime,\n\t\tClaim_Incurred,\n\t\tIncurred_Expense,\n\t\tClaim_Recovery,\n\t\tClaim_Net_Incurred,\n\t\tExpense_Net_Incurred,\n\t\tClaim_Paid,\n\t\tClientCarrierGroupKey = ClientCarrierGroup@ClientCarrierGroupKey,\n\t\tClientKey = ClientCarrierGroup@ClientKey,\n\t\tClientCode,\n\t\tLOBCode = ClientCarrierGroup@LOBCode,\n\t\tPolicyEffectiveDate = ClientCarrierGroup@PolicyEffectiveDate,\n\t\tLineOfBusinessKey,\n\t\tCarrierKey = ClientCarrierGroup@CarrierKey,\n\t\tDateKey,\n\t\tDate\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SelectFillerFactCols\nSelectColumns, SelectClientCarrierGroup join(SelectColumns@ClientCarrierGroupKey == SelectClientCarrierGroup@ClientCarrierGroupKey,\n\tjoinType:'inner',\n\tbroadcast: 'auto')~> JoinFillerClaimRow\nJoinFillerClaimRow, SelectDates join(ValuationDateKey == DateKey,\n\tjoinType:'inner',\n\tbroadcast: 'auto')~> JoinValuationDateForFillerClaims\nSortFactTransactions derive(LastLoadTime = currentTimestamp(),\n\t\tClaimNumber = 'N/A',\n\t\tPolicyEffectiveDate = PolicyEffectiveDate,\n\t\tPolicyExpirationDate = addMonths(PolicyEffectiveDate, 12),\n\t\tClaimant = 'N/A',\n\t\tPolicyYear = year(PolicyEffectiveDate),\n\t\tPolicyPeriod = concat(toString(year({Policy Effective Date})),'-',toString(year({Policy Effective Date})+1)),\n\t\tAccident_Description = 'N/A',\n\t\tDriver = 'N/A',\n\t\tOccurance_State = 'N/A',\n\t\tBenefit_State = 'N/A',\n\t\tDayOfWeek = 'N/A') ~> DerivedClaimFields\nFilterRowsWithValidClientCarrierGroupKey aggregate(groupBy(ClientCarrierGroupKey),\n\teach(match(!in(['ClientCarrierGroupKey'],name)), $$ = first($$))) ~> Aggregate1\nJoinClientCarrierGroup filter(!isNull(ClientCarrierGroupKey)) ~> FilterRowsWithValidClientCarrierGroupKey\nJoinClientCarrierGroup filter(isNull(ClientCarrierGroupKey)) ~> FilterRowsWithoutValidClientCarrierKey\nFilterRowsWithoutValidClientCarrierKey sort(asc({Client Code}, false),\n\tasc({Coverage (Line of Business)}, false),\n\tasc({Policy Effective Date}, false)) ~> SortColumns\nDerivedFinancialColumns sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinput(\n\t\tFillerClaimTransactionkey as long,\n\t\tValuationDateKey as integer,\n\t\tClientCarrierGroupKey as integer,\n\t\tClaimNumber as string,\n\t\tPolicyNumber as string,\n\t\tPolicyEffectiveDate as date,\n\t\tPolicyExpirationDate as date,\n\t\tCarrierKey as integer,\n\t\tClaimant as string,\n\t\tAccident_Description as string,\n\t\tDayOfWeek as string,\n\t\tDateofLoss as date,\n\t\tReportedDate as date,\n\t\tClosedDate as date,\n\t\tDateOfHire as date,\n\t\tDriver as string,\n\t\tPolicyYear as integer,\n\t\tPolicyPeriod as string,\n\t\tAge as integer,\n\t\tLagTime as string,\n\t\tDaysToClose as integer,\n\t\tTenure as integer,\n\t\tOccurrence_State as string,\n\t\tBenefit_State as string,\n\t\tLOBCode as string,\n\t\tCauseTypeKey as integer,\n\t\tClaimTypeKey as integer,\n\t\tInjuryTypeKey as integer,\n\t\tBodyPartKey as integer,\n\t\tGenderKey as integer,\n\t\tOccupationKey as integer,\n\t\tClaimStatus as string,\n\t\tMaritalStatusKey as integer,\n\t\tClientKey as integer,\n\t\tLitigation as boolean,\n\t\tNAICS_Code as string,\n\t\tAgeRangeKey as integer,\n\t\tClaimTenureRangeKey as integer,\n\t\tClaimLagAmountRangeKey as integer,\n\t\tClaimClosePeriodRangeKey as integer,\n\t\tNetLossAmtRangeKey as integer,\n\t\tTotalIncurredLossAmtRangeKey as integer,\n\t\tExpense_Paid as decimal(18,2),\n\t\tExpense_Reserve as decimal(18,2),\n\t\tExpense_Recovery as decimal(18,2),\n\t\tExpense_Incurred as decimal(18,2),\n\t\tMedical_BI_Paid as decimal(18,2),\n\t\tMedical_BI_Reserves as decimal(18,2),\n\t\tIndemnity_PD_Paid as decimal(18,2),\n\t\tIndemnity_PD_Reserves as decimal(18,2),\n\t\tIncurred_BI_Med as decimal(18,2),\n\t\tIncurred_PD_LT as decimal(18,2),\n\t\tRecovery_BI_Med as decimal(18,2),\n\t\tRecovery_PD_LT as decimal(18,2),\n\t\tTotal_Paid as decimal(18,2),\n\t\tTotal_Reserve as decimal(18,2),\n\t\tRecovery_Total as decimal(18,2),\n\t\tTotal_Incurred as decimal(18,2),\n\t\tNet_Incurred as decimal(18,2),\n\t\tLocationKey as integer,\n\t\tEmployeeCount as integer,\n\t\tStatus_Priority as integer,\n\t\tClaimType_Priority as integer,\n\t\tLitigation_Priority as integer,\n\t\tLastLoadTime as timestamp,\n\t\tClaim_Incurred as decimal(18,2),\n\t\tIncurred_Expense as decimal(18,2),\n\t\tClaim_Recovery as decimal(18,2),\n\t\tClaim_Net_Incurred as decimal(18,2),\n\t\tExpense_Net_Incurred as decimal(18,2),\n\t\tClaim_Paid as decimal(18,2)\n\t),\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tstaged: false,\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\tsaveOrder: 1,\n\terrorHandlingOption: 'stopOnFirstError',\n\tmapColumn(\n\t\tValuationDateKey = DateKey,\n\t\tClientCarrierGroupKey,\n\t\tClaimNumber,\n\t\tPolicyNumber,\n\t\tPolicyEffectiveDate,\n\t\tPolicyExpirationDate,\n\t\tCarrierKey,\n\t\tClaimant,\n\t\tAccident_Description,\n\t\tDayOfWeek,\n\t\tDriver,\n\t\tPolicyYear,\n\t\tPolicyPeriod,\n\t\tOccurrence_State = Occurance_State,\n\t\tBenefit_State,\n\t\tLOBCode,\n\t\tCauseTypeKey,\n\t\tClaimTypeKey,\n\t\tInjuryTypeKey,\n\t\tBodyPartKey,\n\t\tGenderKey,\n\t\tOccupationKey,\n\t\tClaimStatus,\n\t\tMaritalStatusKey,\n\t\tClientKey,\n\t\tLitigation,\n\t\tAgeRangeKey,\n\t\tClaimTenureRangeKey,\n\t\tClaimLagAmountRangeKey,\n\t\tClaimClosePeriodRangeKey,\n\t\tNetLossAmtRangeKey,\n\t\tTotalIncurredLossAmtRangeKey,\n\t\tExpense_Paid,\n\t\tExpense_Reserve,\n\t\tExpense_Recovery,\n\t\tExpense_Incurred,\n\t\tMedical_BI_Paid,\n\t\tMedical_BI_Reserves,\n\t\tIndemnity_PD_Paid,\n\t\tIndemnity_PD_Reserves,\n\t\tIncurred_BI_Med,\n\t\tIncurred_PD_LT,\n\t\tRecovery_BI_Med,\n\t\tRecovery_PD_LT,\n\t\tTotal_Paid,\n\t\tTotal_Reserve,\n\t\tRecovery_Total,\n\t\tTotal_Incurred,\n\t\tNet_Incurred,\n\t\tLocationKey,\n\t\tEmployeeCount,\n\t\tStatus_Priority,\n\t\tClaimType_Priority,\n\t\tLitigation_Priority,\n\t\tLastLoadTime,\n\t\tClaim_Incurred,\n\t\tIncurred_Expense,\n\t\tClaim_Recovery,\n\t\tClaim_Net_Incurred,\n\t\tExpense_Net_Incurred,\n\t\tClaim_Paid\n\t)) ~> snkFillerClaimTransaction\nSortColumns sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tpartitionFileNames:[(concat($CarrierCode,\"_MissingClientCarrierRecords.csv\"))],\n\tumask: 0022,\n\tpreCommands: [],\n\tpostCommands: [],\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\tsaveOrder: 2,\n\tpartitionBy('hash', 1)) ~> sinkException"
+		}
+	}
+}

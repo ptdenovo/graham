@@ -1,0 +1,90 @@
+{
+	"name": "DimOccupation",
+	"properties": {
+		"folder": {
+			"name": "Dimesnion"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "dsExcelOccupation",
+						"type": "DatasetReference"
+					},
+					"name": "OccupationSource"
+				},
+				{
+					"dataset": {
+						"referenceName": "dsDimOccupation",
+						"type": "DatasetReference"
+					},
+					"name": "DimOccupationSource"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "dsDimOccupation",
+						"type": "DatasetReference"
+					},
+					"name": "DimOccupation"
+				}
+			],
+			"transformations": [
+				{
+					"name": "SelectColumns"
+				},
+				{
+					"name": "AlterOccupationRow"
+				},
+				{
+					"name": "DerivedOccupation"
+				},
+				{
+					"name": "AggregateOccupation"
+				},
+				{
+					"name": "AggregateOccupationKey"
+				},
+				{
+					"name": "DerivedKeyField"
+				},
+				{
+					"name": "SelectMaxKey"
+				},
+				{
+					"name": "JoinExisting"
+				},
+				{
+					"name": "ConditionalOccupationRows"
+				},
+				{
+					"name": "SelectColumnsToProcess"
+				},
+				{
+					"name": "SurrogateKeyOccupation"
+				},
+				{
+					"name": "DerivedTempKey"
+				},
+				{
+					"name": "DerivedOccupationKey"
+				},
+				{
+					"name": "UnionForUpsert"
+				},
+				{
+					"name": "JoinMaxKey"
+				},
+				{
+					"name": "DerivedLoadTime"
+				},
+				{
+					"name": "FilterRows"
+				}
+			],
+			"script": "source(output(\n\t\tOccupationID as string,\n\t\tOccupation as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> OccupationSource\nsource(output(\n\t\tOccupationKey as integer,\n\t\tOccupation as string,\n\t\tLastLoadTime as timestamp,\n\t\tOccupationID as integer\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_COMMITTED',\n\tformat: 'table',\n\tstaged: false) ~> DimOccupationSource\nDerivedOccupation select(mapColumn(\n\t\tOccupationID,\n\t\tOccupation\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SelectColumns\nDerivedLoadTime alterRow(upsertIf(true())) ~> AlterOccupationRow\nOccupationSource derive(Occupation = trim(Occupation),\n\t\tOccupationID = toInteger(OccupationID)) ~> DerivedOccupation\nSelectColumns aggregate(groupBy(Occupation),\n\teach(match(!in(['Occupation'],name)), $$ = first($$))) ~> AggregateOccupation\nDimOccupationSource aggregate(OccupationKey = coalesce(max(OccupationKey), 0)) ~> AggregateOccupationKey\nAggregateOccupationKey derive(Key = 'MaxKey') ~> DerivedKeyField\nDerivedKeyField select(mapColumn(\n\t\tMaxOccupationKey = OccupationKey,\n\t\tKey\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SelectMaxKey\nAggregateOccupation, DimOccupationSource join(AggregateOccupation@OccupationID == DimOccupationSource@OccupationID,\n\tjoinType:'left',\n\tbroadcast: 'auto')~> JoinExisting\nSelectColumnsToProcess split(!isNull(OccupationKey),\n\tdisjoint: false) ~> ConditionalOccupationRows@(UpdateRows, InsertRows)\nFilterRows select(mapColumn(\n\t\tOccupation = AggregateOccupation@Occupation,\n\t\tOccupationID = AggregateOccupation@OccupationID,\n\t\tOccupationKey,\n\t\tOccupation = DimOccupationSource@Occupation,\n\t\tLastLoadTime,\n\t\tOccupationID = DimOccupationSource@OccupationID\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SelectColumnsToProcess\nConditionalOccupationRows@InsertRows keyGenerate(output(SurrogateOccupationKey as long),\n\tstartAt: 1L) ~> SurrogateKeyOccupation\nSurrogateKeyOccupation derive(TempKey = 'MaxKey') ~> DerivedTempKey\nJoinMaxKey derive(OccupationKey = SurrogateOccupationKey+MaxOccupationKey) ~> DerivedOccupationKey\nConditionalOccupationRows@UpdateRows, DerivedOccupationKey union(byName: true)~> UnionForUpsert\nDerivedTempKey, SelectMaxKey join(TempKey == Key,\n\tjoinType:'inner',\n\tbroadcast: 'auto')~> JoinMaxKey\nUnionForUpsert derive(LastLoadTime = currentTimestamp()) ~> DerivedLoadTime\nJoinExisting filter(!isNull(AggregateOccupation@OccupationID) && lower(AggregateOccupation@Occupation)!='unknown') ~> FilterRows\nAlterOccupationRow sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinput(\n\t\tOccupationKey as integer,\n\t\tOccupation as string,\n\t\tLastLoadTime as timestamp,\n\t\tOccupationID as integer\n\t),\n\tdeletable:false,\n\tinsertable:false,\n\tupdateable:false,\n\tupsertable:true,\n\tkeys:['OccupationKey'],\n\tformat: 'table',\n\tstaged: false,\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError',\n\tmapColumn(\n\t\tOccupation,\n\t\tOccupationKey,\n\t\tLastLoadTime,\n\t\tOccupationID\n\t),\n\tpartitionBy('roundRobin', 4)) ~> DimOccupation"
+		}
+	}
+}

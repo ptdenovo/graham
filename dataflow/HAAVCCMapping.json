@@ -1,0 +1,136 @@
+{
+	"name": "HAAVCCMapping",
+	"properties": {
+		"folder": {
+			"name": "Transform"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "dsQuery",
+						"type": "DatasetReference"
+					},
+					"name": "Carrier"
+				},
+				{
+					"dataset": {
+						"referenceName": "dsQuery",
+						"type": "DatasetReference"
+					},
+					"name": "ClaimTransaction"
+				},
+				{
+					"dataset": {
+						"referenceName": "dsgrahamDB",
+						"type": "DatasetReference"
+					},
+					"name": "ClaimCorrectionMaps"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "dsClaimsTransaction",
+						"type": "DatasetReference"
+					},
+					"name": "StageClaimTransaction"
+				}
+			],
+			"transformations": [
+				{
+					"name": "FilterCCMBodyPart"
+				},
+				{
+					"name": "FilterCCMCauseType"
+				},
+				{
+					"name": "FilterCCMInjuryType"
+				},
+				{
+					"name": "FilterCCMGender"
+				},
+				{
+					"name": "FilterCCMMaritalStatus"
+				},
+				{
+					"name": "FilterCCMOccupation"
+				},
+				{
+					"name": "FilterCCMClaimOccupation"
+				},
+				{
+					"name": "JoinCCMBodyPart"
+				},
+				{
+					"name": "DerivedBodyPart"
+				},
+				{
+					"name": "SelectAfterBodyPart"
+				},
+				{
+					"name": "JoinCCMCauseType"
+				},
+				{
+					"name": "DerivedCauseType"
+				},
+				{
+					"name": "SelectAfterCauseType"
+				},
+				{
+					"name": "JoinCCMInjuryType"
+				},
+				{
+					"name": "DerivedInjuryType"
+				},
+				{
+					"name": "SelectAfterInjuryType"
+				},
+				{
+					"name": "JoinCCMGender"
+				},
+				{
+					"name": "DerivedGender"
+				},
+				{
+					"name": "SelectAfterGender"
+				},
+				{
+					"name": "JoinCCMMaritalStatus"
+				},
+				{
+					"name": "DerivedMaritalStatus"
+				},
+				{
+					"name": "SelectAfterMaritalStatus"
+				},
+				{
+					"name": "JoinCCMOccupation"
+				},
+				{
+					"name": "DerivedOccupation2"
+				},
+				{
+					"name": "SelectAfterOccupation"
+				},
+				{
+					"name": "JoinCCMClaimOccupation"
+				},
+				{
+					"name": "DerivedOccupation"
+				},
+				{
+					"name": "SelectClaimOccupation"
+				},
+				{
+					"name": "AlterSatgeRow"
+				},
+				{
+					"name": "AggregateStageRow"
+				}
+			],
+			"script": "parameters{\n\tCarrierCode as string ('HAAV')\n}\nsource(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_COMMITTED',\n\tquery: (concat('SELECT CarrierKey, CarrierCode From DimCarrier WHERE CarrierCode=', '\\'',$CarrierCode,'\\'')),\n\tformat: 'query',\n\tstaged: false) ~> Carrier\nsource(output(\n\t\tClaimNumber as string,\n\t\tClaimTransactionKey as long,\n\t\tRowID as long,\n\t\tCarrierCode as string,\n\t\tClientCode as string,\n\t\tValuationDate as date,\n\t\t{Policy Number} as string,\n\t\tClaimant as string,\n\t\tGender as string,\n\t\tLOBCode as string,\n\t\tClaimStatus as string,\n\t\tMaritalStatus as string,\n\t\tClaimTypeCode as string,\n\t\tOccupation as string,\n\t\tInjuryType as string,\n\t\tBodyPart as string,\n\t\tCauseType as string,\n\t\tLitigation as string,\n\t\tNAICS_Code as string,\n\t\tTotal_Paid as decimal(18,2),\n\t\tTotal_Reserve as decimal(18,2),\n\t\tRecovery_Total as decimal(18,2),\n\t\tTotal_Incurred as decimal(18,2),\n\t\tNet_Incurred as decimal(18,2),\n\t\tExpense_Paid as decimal(18,2),\n\t\tExpense_Reserve as decimal(18,2),\n\t\tExpense_Recovery as decimal(18,2),\n\t\tExpense_Incurred as decimal(18,2),\n\t\tMedical_BI_Paid as decimal(18,2),\n\t\tMedical_BI_Reserves as decimal(18,2),\n\t\tIndemnity_PD_Paid as decimal(18,2),\n\t\tIndemnity_PD_Reserves as decimal(18,2),\n\t\tIncurred_BI_Med as decimal(18,2),\n\t\tIncurred_PD_LT as decimal(18,2),\n\t\tRecovery_BI_Med as decimal(18,2),\n\t\tRecovery_PD_LT as decimal(18,2)\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tquery: (concat('SELECT ClaimNumber,ClaimTransactionKey,RowID,CarrierCode,ClientCode,ValuationDate,[Policy Number],Claimant,Gender,LOBCode,[ClaimStatus],MaritalStatus,ClaimTypeCode,Occupation,InjuryType,BodyPart,CauseType,Litigation,NAICS_Code, [Total_Paid], [Total_Reserve], [Recovery_Total], [Total_Incurred], [Net_Incurred], [Expense_Paid], [Expense_Reserve], [Expense_Recovery], [Expense_Incurred], [Medical_BI_Paid], [Medical_BI_Reserves], [Indemnity_PD_Paid], [Indemnity_PD_Reserves], [Incurred_BI_Med], [Incurred_PD_LT], [Recovery_BI_Med], [Recovery_PD_LT] FROM stage.ClaimTransaction WHERE CarrierCode =', \"'\",$CarrierCode,\"'\")),\n\tformat: 'query',\n\tstaged: false) ~> ClaimTransaction\nsource(output(\n\t\tCarrierCode as string,\n\t\tFieldName as string,\n\t\tFieldValue1 as string,\n\t\tFieldValue2 as string,\n\t\tFieldValue3 as string,\n\t\tFieldValue4 as string,\n\t\tFieldValue5 as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_COMMITTED',\n\tquery: (concat('SELECT CarrierCode,FieldName,FieldValue1 AS FieldValue1,FieldValue2,FieldValue3,FieldValue4,FieldValue5 FROM ClaimCorrectionMap WHERE CarrierCode=', '\\'',$CarrierCode,'\\'')),\n\tformat: 'query') ~> ClaimCorrectionMaps\nClaimCorrectionMaps filter(FieldName=='Body Part') ~> FilterCCMBodyPart\nClaimCorrectionMaps filter(FieldName=='Cause Type') ~> FilterCCMCauseType\nClaimCorrectionMaps filter(FieldName=='Injury Type') ~> FilterCCMInjuryType\nClaimCorrectionMaps filter(FieldName=='Gender') ~> FilterCCMGender\nClaimCorrectionMaps filter(FieldName=='Marital Status') ~> FilterCCMMaritalStatus\nClaimCorrectionMaps filter(FieldName=='Occupation') ~> FilterCCMOccupation\nClaimCorrectionMaps filter(FieldName=='Claim Occupation') ~> FilterCCMClaimOccupation\nClaimTransaction, FilterCCMBodyPart join(ClientCode == FieldValue1\n\t&& ClaimNumber == FieldValue2,\n\tjoinType:'left',\n\tbroadcast: 'right')~> JoinCCMBodyPart\nJoinCCMBodyPart derive(BodyPart = iif(!isNull(FieldValue1) && !isNull(FieldValue2),FieldValue3,BodyPart)) ~> DerivedBodyPart\nDerivedBodyPart select(mapColumn(\n\t\tClaimNumber,\n\t\tClaimTransactionKey,\n\t\tRowID,\n\t\tCarrierCode = ClaimTransaction@CarrierCode,\n\t\tClientCode,\n\t\tValuationDate,\n\t\t{Policy Number},\n\t\tClaimant,\n\t\tGender,\n\t\tLOBCode,\n\t\tClaimStatus,\n\t\tMaritalStatus,\n\t\tClaimTypeCode,\n\t\tOccupation,\n\t\tInjuryType,\n\t\tBodyPart,\n\t\tCauseType,\n\t\tLitigation,\n\t\tNAICS_Code,\n\t\tTotal_Paid,\n\t\tTotal_Reserve,\n\t\tRecovery_Total,\n\t\tTotal_Incurred,\n\t\tNet_Incurred,\n\t\tExpense_Paid,\n\t\tExpense_Reserve,\n\t\tExpense_Recovery,\n\t\tExpense_Incurred,\n\t\tMedical_BI_Paid,\n\t\tMedical_BI_Reserves,\n\t\tIndemnity_PD_Paid,\n\t\tIndemnity_PD_Reserves,\n\t\tIncurred_BI_Med,\n\t\tIncurred_PD_LT,\n\t\tRecovery_BI_Med,\n\t\tRecovery_PD_LT\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SelectAfterBodyPart\nSelectAfterBodyPart, FilterCCMCauseType join(ClientCode == FieldValue1\n\t&& ClaimNumber == FieldValue2,\n\tjoinType:'left',\n\tbroadcast: 'right')~> JoinCCMCauseType\nJoinCCMCauseType derive(CauseType = iif(!isNull(FieldValue1) && !isNull(FieldValue2),FieldValue3,CauseType)) ~> DerivedCauseType\nDerivedCauseType select(mapColumn(\n\t\tClaimNumber,\n\t\tClaimTransactionKey,\n\t\tRowID,\n\t\tCarrierCode = SelectAfterBodyPart@CarrierCode,\n\t\tClientCode,\n\t\tValuationDate,\n\t\t{Policy Number},\n\t\tClaimant,\n\t\tGender,\n\t\tLOBCode,\n\t\tClaimStatus,\n\t\tMaritalStatus,\n\t\tClaimTypeCode,\n\t\tOccupation,\n\t\tInjuryType,\n\t\tBodyPart,\n\t\tCauseType,\n\t\tLitigation,\n\t\tNAICS_Code,\n\t\tTotal_Paid,\n\t\tTotal_Reserve,\n\t\tRecovery_Total,\n\t\tTotal_Incurred,\n\t\tNet_Incurred,\n\t\tExpense_Paid,\n\t\tExpense_Reserve,\n\t\tExpense_Recovery,\n\t\tExpense_Incurred,\n\t\tMedical_BI_Paid,\n\t\tMedical_BI_Reserves,\n\t\tIndemnity_PD_Paid,\n\t\tIndemnity_PD_Reserves,\n\t\tIncurred_BI_Med,\n\t\tIncurred_PD_LT,\n\t\tRecovery_BI_Med,\n\t\tRecovery_PD_LT\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SelectAfterCauseType\nSelectAfterCauseType, FilterCCMInjuryType join(ClientCode == FieldValue1\n\t&& ClaimNumber == FieldValue2,\n\tjoinType:'left',\n\tbroadcast: 'right')~> JoinCCMInjuryType\nJoinCCMInjuryType derive(InjuryType = iif(!isNull(FieldValue1) && !isNull(FieldValue2),FieldValue3,InjuryType)) ~> DerivedInjuryType\nDerivedInjuryType select(mapColumn(\n\t\tClaimNumber,\n\t\tClaimTransactionKey,\n\t\tRowID,\n\t\tCarrierCode = SelectAfterCauseType@CarrierCode,\n\t\tClientCode,\n\t\tValuationDate,\n\t\t{Policy Number},\n\t\tClaimant,\n\t\tGender,\n\t\tLOBCode,\n\t\tClaimStatus,\n\t\tMaritalStatus,\n\t\tClaimTypeCode,\n\t\tOccupation,\n\t\tInjuryType,\n\t\tBodyPart,\n\t\tCauseType,\n\t\tLitigation,\n\t\tNAICS_Code,\n\t\tTotal_Paid,\n\t\tTotal_Reserve,\n\t\tRecovery_Total,\n\t\tTotal_Incurred,\n\t\tNet_Incurred,\n\t\tExpense_Paid,\n\t\tExpense_Reserve,\n\t\tExpense_Recovery,\n\t\tExpense_Incurred,\n\t\tMedical_BI_Paid,\n\t\tMedical_BI_Reserves,\n\t\tIndemnity_PD_Paid,\n\t\tIndemnity_PD_Reserves,\n\t\tIncurred_BI_Med,\n\t\tIncurred_PD_LT,\n\t\tRecovery_BI_Med,\n\t\tRecovery_PD_LT\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SelectAfterInjuryType\nSelectAfterInjuryType, FilterCCMGender join(ClientCode == FieldValue1\n\t&& ClaimNumber == FieldValue2,\n\tjoinType:'left',\n\tbroadcast: 'right')~> JoinCCMGender\nJoinCCMGender derive(Gender = iif(!isNull(FieldValue1) && !isNull(FieldValue2),FieldValue3,Gender)) ~> DerivedGender\nDerivedGender select(mapColumn(\n\t\tClaimNumber,\n\t\tClaimTransactionKey,\n\t\tRowID,\n\t\tCarrierCode = SelectAfterInjuryType@CarrierCode,\n\t\tClientCode,\n\t\tValuationDate,\n\t\t{Policy Number},\n\t\tClaimant,\n\t\tGender,\n\t\tLOBCode,\n\t\tClaimStatus,\n\t\tMaritalStatus,\n\t\tClaimTypeCode,\n\t\tOccupation,\n\t\tInjuryType,\n\t\tBodyPart,\n\t\tCauseType,\n\t\tLitigation,\n\t\tNAICS_Code,\n\t\tTotal_Paid,\n\t\tTotal_Reserve,\n\t\tRecovery_Total,\n\t\tTotal_Incurred,\n\t\tNet_Incurred,\n\t\tExpense_Paid,\n\t\tExpense_Reserve,\n\t\tExpense_Recovery,\n\t\tExpense_Incurred,\n\t\tMedical_BI_Paid,\n\t\tMedical_BI_Reserves,\n\t\tIndemnity_PD_Paid,\n\t\tIndemnity_PD_Reserves,\n\t\tIncurred_BI_Med,\n\t\tIncurred_PD_LT,\n\t\tRecovery_BI_Med,\n\t\tRecovery_PD_LT\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SelectAfterGender\nSelectAfterGender, FilterCCMMaritalStatus join(ClientCode == FieldValue1\n\t&& ClaimNumber == FieldValue2,\n\tjoinType:'left',\n\tbroadcast: 'right')~> JoinCCMMaritalStatus\nJoinCCMMaritalStatus derive(MaritalStatus = iif(!isNull(FieldValue1) && !isNull(FieldValue2),FieldValue3,MaritalStatus)) ~> DerivedMaritalStatus\nDerivedMaritalStatus select(mapColumn(\n\t\tClaimNumber,\n\t\tClaimTransactionKey,\n\t\tRowID,\n\t\tCarrierCode = SelectAfterGender@CarrierCode,\n\t\tClientCode,\n\t\tValuationDate,\n\t\t{Policy Number},\n\t\tClaimant,\n\t\tGender,\n\t\tLOBCode,\n\t\tClaimStatus,\n\t\tMaritalStatus,\n\t\tClaimTypeCode,\n\t\tOccupation,\n\t\tInjuryType,\n\t\tBodyPart,\n\t\tCauseType,\n\t\tLitigation,\n\t\tNAICS_Code,\n\t\tTotal_Paid,\n\t\tTotal_Reserve,\n\t\tRecovery_Total,\n\t\tTotal_Incurred,\n\t\tNet_Incurred,\n\t\tExpense_Paid,\n\t\tExpense_Reserve,\n\t\tExpense_Recovery,\n\t\tExpense_Incurred,\n\t\tMedical_BI_Paid,\n\t\tMedical_BI_Reserves,\n\t\tIndemnity_PD_Paid,\n\t\tIndemnity_PD_Reserves,\n\t\tIncurred_BI_Med,\n\t\tIncurred_PD_LT,\n\t\tRecovery_BI_Med,\n\t\tRecovery_PD_LT\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SelectAfterMaritalStatus\nSelectClaimOccupation, FilterCCMOccupation join(ClientCode == FieldValue1\n\t&& Occupation == FieldValue2,\n\tjoinType:'left',\n\tbroadcast: 'right')~> JoinCCMOccupation\nJoinCCMOccupation derive(Occupation = iif(!isNull(FieldValue1) && !isNull(FieldValue2),FieldValue3,Occupation)) ~> DerivedOccupation2\nDerivedOccupation2 select(mapColumn(\n\t\tClaimNumber,\n\t\tClaimTransactionKey,\n\t\tRowID,\n\t\tCarrierCode = SelectClaimOccupation@CarrierCode,\n\t\tClientCode,\n\t\tValuationDate,\n\t\t{Policy Number},\n\t\tClaimant,\n\t\tGender,\n\t\tLOBCode,\n\t\tClaimStatus,\n\t\tMaritalStatus,\n\t\tClaimTypeCode,\n\t\tOccupation,\n\t\tInjuryType,\n\t\tBodyPart,\n\t\tCauseType,\n\t\tLitigation,\n\t\tNAICS_Code,\n\t\tTotal_Paid,\n\t\tTotal_Reserve,\n\t\tRecovery_Total,\n\t\tTotal_Incurred,\n\t\tNet_Incurred,\n\t\tExpense_Paid,\n\t\tExpense_Reserve,\n\t\tExpense_Recovery,\n\t\tExpense_Incurred,\n\t\tMedical_BI_Paid,\n\t\tMedical_BI_Reserves,\n\t\tIndemnity_PD_Paid,\n\t\tIndemnity_PD_Reserves,\n\t\tIncurred_BI_Med,\n\t\tIncurred_PD_LT,\n\t\tRecovery_BI_Med,\n\t\tRecovery_PD_LT\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SelectAfterOccupation\nSelectAfterMaritalStatus, FilterCCMClaimOccupation join(ClientCode == FieldValue1\n\t&& ClaimNumber == FieldValue2,\n\tjoinType:'left',\n\tbroadcast: 'right')~> JoinCCMClaimOccupation\nJoinCCMClaimOccupation derive(Occupation = iif(!isNull(FieldValue1) && !isNull(FieldValue2),FieldValue3,Occupation)) ~> DerivedOccupation\nDerivedOccupation select(mapColumn(\n\t\tClaimNumber,\n\t\tClaimTransactionKey,\n\t\tRowID,\n\t\tCarrierCode = SelectAfterMaritalStatus@CarrierCode,\n\t\tClientCode,\n\t\tValuationDate,\n\t\t{Policy Number},\n\t\tClaimant,\n\t\tGender,\n\t\tLOBCode,\n\t\tClaimStatus,\n\t\tMaritalStatus,\n\t\tClaimTypeCode,\n\t\tOccupation,\n\t\tInjuryType,\n\t\tBodyPart,\n\t\tCauseType,\n\t\tLitigation,\n\t\tNAICS_Code,\n\t\tTotal_Paid,\n\t\tTotal_Reserve,\n\t\tRecovery_Total,\n\t\tTotal_Incurred,\n\t\tNet_Incurred,\n\t\tExpense_Paid,\n\t\tExpense_Reserve,\n\t\tExpense_Recovery,\n\t\tExpense_Incurred,\n\t\tMedical_BI_Paid,\n\t\tMedical_BI_Reserves,\n\t\tIndemnity_PD_Paid,\n\t\tIndemnity_PD_Reserves,\n\t\tIncurred_BI_Med,\n\t\tIncurred_PD_LT,\n\t\tRecovery_BI_Med,\n\t\tRecovery_PD_LT\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SelectClaimOccupation\nAggregateStageRow alterRow(updateIf(true())) ~> AlterSatgeRow\nSelectAfterOccupation aggregate(groupBy(ClaimTransactionKey),\n\teach(match(!in(['ClaimTransactionKey'],name)), $$ = first($$))) ~> AggregateStageRow\nAlterSatgeRow sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinput(\n\t\tClaimTransactionKey as long,\n\t\tCarrierCode as string,\n\t\tClientCode as string,\n\t\tValuationDate as date,\n\t\t{Policy Year} as integer,\n\t\t{Policy Effective Date} as date,\n\t\t{Policy Expiration Date} as date,\n\t\t{Policy Number} as string,\n\t\tAccident_Description as string,\n\t\tClaimant as string,\n\t\tClaimNumber as string,\n\t\t{Date of Loss} as date,\n\t\t{Lag Time} as string,\n\t\t{Date Reported} as date,\n\t\t{Day of Week} as string,\n\t\t{Closed Date} as date,\n\t\tDaysToClose as integer,\n\t\tClaimStatus as string,\n\t\tGender as string,\n\t\tMaritalStatus as string,\n\t\t{Date of Hire} as string,\n\t\tDriver as string,\n\t\tOccupation as string,\n\t\tLOBCode as string,\n\t\tClaimTypeCode as string,\n\t\tInjuryType as string,\n\t\tBodyPart as string,\n\t\tCauseType as string,\n\t\tNAICS_Code as string,\n\t\tLitigation as string,\n\t\tLocation_Name as string,\n\t\tDepartment_Name as string,\n\t\tDivision_Name as string,\n\t\tTotal_Paid as decimal(18,2),\n\t\tTotal_Reserve as decimal(18,2),\n\t\tRecovery_Total as decimal(18,2),\n\t\tTotal_Incurred as decimal(18,2),\n\t\tNet_Incurred as decimal(18,2),\n\t\tExpense_Paid as decimal(18,2),\n\t\tExpense_Reserve as decimal(18,2),\n\t\tExpense_Recovery as decimal(18,2),\n\t\tExpense_Incurred as decimal(18,2),\n\t\tMedical_BI_Paid as decimal(18,2),\n\t\tMedical_BI_Reserves as decimal(18,2),\n\t\tIndemnity_PD_Paid as decimal(18,2),\n\t\tIndemnity_PD_Reserves as decimal(18,2),\n\t\tIncurred_BI_Med as decimal(18,2),\n\t\tIncurred_PD_LT as decimal(18,2),\n\t\tRecovery_BI_Med as decimal(18,2),\n\t\tRecovery_PD_LT as decimal(18,2),\n\t\tOccurrance_State as string,\n\t\tBenefit_State as string,\n\t\tInsured_Identifier as string,\n\t\tRowID as long,\n\t\tAge as string,\n\t\tClientCarrierGroupKey as integer,\n\t\tClaimHashKey as string\n\t),\n\tdeletable:false,\n\tinsertable:false,\n\tupdateable:true,\n\tupsertable:false,\n\tkeys:['ClaimTransactionKey'],\n\tformat: 'table',\n\tstaged: false,\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError',\n\tmapColumn(\n\t\tClaimNumber,\n\t\tClaimTransactionKey,\n\t\tRowID,\n\t\tCarrierCode,\n\t\tClientCode,\n\t\tValuationDate,\n\t\tClaimant,\n\t\tGender,\n\t\tLOBCode,\n\t\tClaimStatus,\n\t\tMaritalStatus,\n\t\tClaimTypeCode,\n\t\tOccupation,\n\t\tInjuryType,\n\t\tBodyPart,\n\t\tCauseType,\n\t\tLitigation,\n\t\tNAICS_Code,\n\t\tTotal_Paid,\n\t\tTotal_Reserve,\n\t\tRecovery_Total,\n\t\tTotal_Incurred,\n\t\tNet_Incurred,\n\t\tExpense_Paid,\n\t\tExpense_Reserve,\n\t\tExpense_Recovery,\n\t\tExpense_Incurred,\n\t\tMedical_BI_Paid,\n\t\tMedical_BI_Reserves,\n\t\tIndemnity_PD_Paid,\n\t\tIndemnity_PD_Reserves,\n\t\tIncurred_BI_Med,\n\t\tIncurred_PD_LT,\n\t\tRecovery_BI_Med,\n\t\tRecovery_PD_LT\n\t)) ~> StageClaimTransaction"
+		}
+	}
+}

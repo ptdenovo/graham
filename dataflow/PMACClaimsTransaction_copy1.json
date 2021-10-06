@@ -1,0 +1,372 @@
+{
+	"name": "PMACClaimsTransaction_copy1",
+	"properties": {
+		"folder": {
+			"name": "Copy"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "dsgrahamStageDB",
+						"type": "DatasetReference"
+					},
+					"name": "stagePMAC"
+				},
+				{
+					"dataset": {
+						"referenceName": "dsQuery",
+						"type": "DatasetReference"
+					},
+					"name": "ClaimTransaction"
+				},
+				{
+					"dataset": {
+						"referenceName": "dsQuery",
+						"type": "DatasetReference"
+					},
+					"name": "Gender"
+				},
+				{
+					"dataset": {
+						"referenceName": "dsQuery",
+						"type": "DatasetReference"
+					},
+					"name": "MaritalStatus"
+				},
+				{
+					"dataset": {
+						"referenceName": "dsQuery",
+						"type": "DatasetReference"
+					},
+					"name": "BodyPart"
+				},
+				{
+					"dataset": {
+						"referenceName": "dsQuery",
+						"type": "DatasetReference"
+					},
+					"name": "InjuryType"
+				},
+				{
+					"dataset": {
+						"referenceName": "dsQuery",
+						"type": "DatasetReference"
+					},
+					"name": "ClaimType"
+				},
+				{
+					"dataset": {
+						"referenceName": "dsQuery",
+						"type": "DatasetReference"
+					},
+					"name": "CauseType"
+				},
+				{
+					"dataset": {
+						"referenceName": "dsQuery",
+						"type": "DatasetReference"
+					},
+					"name": "Occupation"
+				},
+				{
+					"dataset": {
+						"referenceName": "dsgrahamDB",
+						"type": "DatasetReference"
+					},
+					"name": "CCM"
+				},
+				{
+					"dataset": {
+						"referenceName": "dsMerakeyMasterLocationDataFile",
+						"type": "DatasetReference"
+					},
+					"name": "MerakeyMasterLocation"
+				},
+				{
+					"dataset": {
+						"referenceName": "dsControlFilesParameterizedSheetIndex",
+						"type": "DatasetReference"
+					},
+					"name": "BravoLocationMap"
+				},
+				{
+					"dataset": {
+						"referenceName": "dsControlFilesParameterizedSheetIndex",
+						"type": "DatasetReference"
+					},
+					"name": "OldMerakeyLocationMap"
+				},
+				{
+					"dataset": {
+						"referenceName": "dsControlFilesParameterizedSheetIndex",
+						"type": "DatasetReference"
+					},
+					"name": "Level5Location"
+				},
+				{
+					"dataset": {
+						"referenceName": "dsControlFilesParameterizedSheetIndex",
+						"type": "DatasetReference"
+					},
+					"name": "ClaimCostCenter"
+				},
+				{
+					"dataset": {
+						"referenceName": "dsControlFiles",
+						"type": "DatasetReference"
+					},
+					"name": "LocationMapSheet1"
+				},
+				{
+					"dataset": {
+						"referenceName": "dsQuery",
+						"type": "DatasetReference"
+					},
+					"name": "DimClaim"
+				},
+				{
+					"dataset": {
+						"referenceName": "dsQuery",
+						"type": "DatasetReference"
+					},
+					"name": "DimLocation"
+				},
+				{
+					"dataset": {
+						"referenceName": "dsQuery",
+						"type": "DatasetReference"
+					},
+					"name": "DimDate"
+				},
+				{
+					"dataset": {
+						"referenceName": "dsgrahamStageDB",
+						"type": "DatasetReference"
+					},
+					"name": "ClientEmployeeCount"
+				},
+				{
+					"dataset": {
+						"referenceName": "dsQuery",
+						"type": "DatasetReference"
+					},
+					"name": "AgeRange"
+				},
+				{
+					"dataset": {
+						"referenceName": "dsQuery",
+						"type": "DatasetReference"
+					},
+					"name": "TenureRange"
+				},
+				{
+					"dataset": {
+						"referenceName": "dsQuery",
+						"type": "DatasetReference"
+					},
+					"name": "LagAmountRange"
+				},
+				{
+					"dataset": {
+						"referenceName": "dsQuery",
+						"type": "DatasetReference"
+					},
+					"name": "ClosePeriodRange"
+				},
+				{
+					"dataset": {
+						"referenceName": "dsQuery",
+						"type": "DatasetReference"
+					},
+					"name": "LossAmountRange"
+				},
+				{
+					"dataset": {
+						"referenceName": "dsQuery",
+						"type": "DatasetReference"
+					},
+					"name": "ClaimTypeRollup"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "dsFactClaimTrans",
+						"type": "DatasetReference"
+					},
+					"name": "FactClaimTransaction"
+				},
+				{
+					"name": "cacheMarekeyMasterLocation"
+				},
+				{
+					"name": "cacheBravoLocation"
+				},
+				{
+					"name": "cacheNHSMap"
+				},
+				{
+					"name": "cacheLevel5"
+				},
+				{
+					"name": "cacheCostCenterMap"
+				},
+				{
+					"name": "cacheLocationMap"
+				},
+				{
+					"name": "cacheGender"
+				},
+				{
+					"name": "cacheMaritalStatus"
+				},
+				{
+					"name": "cacheBodyPart"
+				},
+				{
+					"name": "cacheClaimType"
+				},
+				{
+					"name": "cacheCauseType"
+				},
+				{
+					"name": "cacheAgeRange"
+				},
+				{
+					"name": "cacheTenureRange"
+				},
+				{
+					"name": "cacheLagAmountRange"
+				},
+				{
+					"name": "cacheClosePeriodRange"
+				},
+				{
+					"name": "cacheLossAmountRange"
+				}
+			],
+			"transformations": [
+				{
+					"name": "JoinStage"
+				},
+				{
+					"name": "FilterNegativeFC"
+				},
+				{
+					"name": "SelectNegativeFC"
+				},
+				{
+					"name": "DeriveMultiplier"
+				},
+				{
+					"name": "LookupNegativeFC"
+				},
+				{
+					"name": "DeriveFinancials"
+				},
+				{
+					"name": "DeriveMarkeyLocationMasterCols"
+				},
+				{
+					"name": "SelectMasterLocationColumns"
+				},
+				{
+					"name": "DeriveBravoLocationColumns"
+				},
+				{
+					"name": "SelectBarvoLocationColumns"
+				},
+				{
+					"name": "DeriveOldMerakeyLocColumns"
+				},
+				{
+					"name": "SelectOldMeraKeyLocationCols"
+				},
+				{
+					"name": "DeriveLevel5Key"
+				},
+				{
+					"name": "SelectLevel5Colums"
+				},
+				{
+					"name": "DeriveCCNoDash"
+				},
+				{
+					"name": "SelectClaimCostCenterCols"
+				},
+				{
+					"name": "DeriveLocationMapKey"
+				},
+				{
+					"name": "SelectLocationMapCols"
+				},
+				{
+					"name": "MeraKeyClientBased"
+				},
+				{
+					"name": "SetMerakeyLocationKeys"
+				},
+				{
+					"name": "SetOtherLocationKey"
+				},
+				{
+					"name": "DerivedMerakeyLocationDetails"
+				},
+				{
+					"name": "DeriveOtherClientLocation"
+				},
+				{
+					"name": "SelectMerakeyCols"
+				},
+				{
+					"name": "SelectOtherClientCols"
+				},
+				{
+					"name": "UnionOtherClients"
+				},
+				{
+					"name": "JoinDimClaim"
+				},
+				{
+					"name": "LookupLocation"
+				},
+				{
+					"name": "DeriveKeyAndRangeValues"
+				},
+				{
+					"name": "LookupOccupation"
+				},
+				{
+					"name": "LookupEmployeeCount"
+				},
+				{
+					"name": "DeriveOccupationRangeKey"
+				},
+				{
+					"name": "LookupDate"
+				},
+				{
+					"name": "DerivRangeKey"
+				},
+				{
+					"name": "LookupClaimTypePririty"
+				},
+				{
+					"name": "SelectTranCols"
+				},
+				{
+					"name": "LookupInjuryType"
+				},
+				{
+					"name": "Filter1"
+				},
+				{
+					"name": "Filter2"
+				}
+			],
+			"script": "parameters{\n\tCarrierCode as string ('PMAC')\n}\nsource(output(\n\t\t{Exp Paid} as string,\n\t\t{Exp Inc} as string,\n\t\t{WC Exp Recovery} as string,\n\t\t{WC Med Paid} as string,\n\t\t{WC Med Inc} as string,\n\t\t{WC Ind Paid} as string,\n\t\t{WC Ind Recovery} as string,\n\t\t{WC Ind Inc} as string,\n\t\t{Total Paid} as string,\n\t\t{Total Recoveries} as string,\n\t\t{Total Reserve} as string,\n\t\t{Account Number} as string,\n\t\t{Claim Number} as string,\n\t\t{Location Code} as string,\n\t\tRowID as long,\n\t\tValuationDate as timestamp,\n\t\t{WC Ind Res} as string,\n\t\t{Location Name} as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_COMMITTED',\n\tquery: 'SELECT [Exp Paid],[Exp Inc],[WC Exp Recovery], [WC Med Paid], [WC Med Inc],[WC Ind Paid],[WC Ind Recovery],[WC Ind Inc],[Total Paid],[Total Recoveries],[Total Reserve],[Account Number] ,[Claim Number], [Location Code],RowID,ValuationDate,[WC Ind Res],[Location Name] FROM stage.PMAC WHERE [Policy Year]=2020',\n\tformat: 'query') ~> stagePMAC\nsource(output(\n\t\tClaimNumber as string,\n\t\tClaimTransactionKey as long,\n\t\tRowID as long,\n\t\tCarrierCode as string,\n\t\tClientCode as string,\n\t\tValuationDate as date,\n\t\t{Policy Number} as string,\n\t\tClaimant as string,\n\t\tGender as string,\n\t\tLOBCode as string,\n\t\tClaimStatus as string,\n\t\tMaritalStatus as string,\n\t\tClaimTypeCode as string,\n\t\tOccupation as string,\n\t\tInjuryType as string,\n\t\tBodyPart as string,\n\t\tCauseType as string,\n\t\tLitigation as string,\n\t\tNAICS_Code as string,\n\t\tTotal_Paid as decimal(18,2),\n\t\tTotal_Reserve as decimal(18,2),\n\t\tRecovery_Total as decimal(18,2),\n\t\tTotal_Incurred as decimal(18,2),\n\t\tNet_Incurred as decimal(18,2),\n\t\tExpense_Paid as decimal(18,2),\n\t\tExpense_Reserve as decimal(18,2),\n\t\tExpense_Recovery as decimal(18,2),\n\t\tExpense_Incurred as decimal(18,2),\n\t\tMedical_BI_Paid as decimal(18,2),\n\t\tMedical_BI_Reserves as decimal(18,2),\n\t\tIndemnity_PD_Paid as decimal(18,2),\n\t\tIndemnity_PD_Reserves as decimal(18,2),\n\t\tIncurred_BI_Med as decimal(18,2),\n\t\tIncurred_PD_LT as decimal(18,2),\n\t\tRecovery_BI_Med as decimal(18,2),\n\t\tRecovery_PD_LT as decimal(18,2)\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_COMMITTED',\n\tquery: (concat('SELECT ClaimNumber,ClaimTransactionKey,RowID,CarrierCode,ClientCode,ValuationDate,[Policy Number],Claimant,Gender,LOBCode,[ClaimStatus],MaritalStatus,ClaimTypeCode,Occupation,InjuryType,BodyPart,CauseType,Litigation,NAICS_Code, [Total_Paid], [Total_Reserve], [Recovery_Total], [Total_Incurred], [Net_Incurred], [Expense_Paid], [Expense_Reserve], [Expense_Recovery], [Expense_Incurred], [Medical_BI_Paid], [Medical_BI_Reserves], [Indemnity_PD_Paid], [Indemnity_PD_Reserves], [Incurred_BI_Med], [Incurred_PD_LT], [Recovery_BI_Med], [Recovery_PD_LT] FROM stage.ClaimTransaction WHERE [Policy Year]=2020 AND ClientCode=',\"'\",'MERAKEY-01',\"'\",' AND CarrierCode =', \"'\",$CarrierCode,\"'\")),\n\tformat: 'query',\n\tstaged: false,\n\tpartitionColumn: 'ClaimTransactionKey',\n\tpartitionBy('external', 4)) ~> ClaimTransaction\nsource(output(\n\t\tGenderKey as integer,\n\t\tGender as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_COMMITTED',\n\tquery: 'SELECT GenderKey,Gender FROM DimGender',\n\tformat: 'query',\n\tstaged: false) ~> Gender\nsource(output(\n\t\tMaritalStatusKey as integer,\n\t\tMaritalStatus as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_COMMITTED',\n\tquery: 'SELECT MaritalStatusKey,MaritalStatus FROM DimMaritalStatus',\n\tformat: 'query',\n\tstaged: false) ~> MaritalStatus\nsource(output(\n\t\tBodyPartKey as short,\n\t\tBodyPart as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_COMMITTED',\n\tquery: 'SELECT BodyPartKey,BodyPart FROM DimBodyPart',\n\tformat: 'query',\n\tstaged: false) ~> BodyPart\nsource(output(\n\t\tInjuryTypeKey as integer,\n\t\tInjuryType as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tquery: 'SELECT InjuryTypeKey,InjuryType FROM DimInjuryType',\n\tformat: 'query',\n\tstaged: false) ~> InjuryType\nsource(output(\n\t\tClaimTypeKey as short,\n\t\tClaimTypeCode as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_COMMITTED',\n\tquery: 'SELECT ClaimTypeKey,ClaimTypeCode FROM DimClaimType',\n\tformat: 'query',\n\tstaged: false) ~> ClaimType\nsource(output(\n\t\tCauseTypeKey as short,\n\t\tCauseType as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_COMMITTED',\n\tquery: 'SELECT CauseTypeKey,CauseType FROM DimCauseType',\n\tformat: 'query',\n\tstaged: false) ~> CauseType\nsource(output(\n\t\tOccupationKey as integer,\n\t\tOccupation as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_COMMITTED',\n\tquery: 'SELECT OccupationKey,Occupation FROM DimOccupation',\n\tformat: 'query',\n\tstaged: false) ~> Occupation\nsource(output(\n\t\tCarrierCode as string,\n\t\tFieldName as string,\n\t\tFieldValue1 as string,\n\t\tFieldValue2 as string,\n\t\tFieldValue3 as string,\n\t\tFieldValue4 as string,\n\t\tFieldValue5 as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_COMMITTED',\n\tquery: (concat('SELECT CarrierCode,FieldName,FieldValue1 AS FieldValue1,FieldValue2,FieldValue3,FieldValue4,FieldValue5 FROM ClaimCorrectionMap WHERE CarrierCode=', '\\'',$CarrierCode,'\\'')),\n\tformat: 'query') ~> CCM\nsource(output(\n\t\tEntity_Key as string,\n\t\tService_Line_Key as string,\n\t\tLocationKey as string,\n\t\tLocationName as string,\n\t\tCost_Center_Key as string,\n\t\tCost_Center_Name as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> MerakeyMasterLocation\nsource(output(\n\t\t{Client Code} as string,\n\t\t{Account Number} as integer,\n\t\t{Claim Number} as string,\n\t\t{Location Name} as string,\n\t\t{Department Name} as string,\n\t\t{Division Name} as string,\n\t\t{Location Level 4} as string,\n\t\t{Location Level 5} as string,\n\t\t{Received Date} as date,\n\t\t{Claim Type/Status} as string,\n\t\t{Claim Type} as string,\n\t\t{Claim Status} as string,\n\t\tSuit_Ind as boolean,\n\t\t{_c13} as string,\n\t\t{_c14} as string,\n\t\t{Full Name} as string,\n\t\t{Accident Date} as date\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\twildcardPaths:['PMAC/PMAC Location Level Map.xlsx']) ~> BravoLocationMap\nsource(output(\n\t\t{Client } as string,\n\t\t{Account Number} as integer,\n\t\t{Location Code} as string,\n\t\t{Location Name} as string,\n\t\t{Department Name} as string,\n\t\t{Division Name} as string,\n\t\t{Location Level 4} as string,\n\t\t{Location Level 5} as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\twildcardPaths:['PMAC/PMAC Location Level Map.xlsx']) ~> OldMerakeyLocationMap\nsource(output(\n\t\tClient as string,\n\t\t{Claim #} as string,\n\t\t{Location Level 5} as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\twildcardPaths:['PMAC/PMAC Location Level Map.xlsx']) ~> Level5Location\nsource(output(\n\t\t{Claim #} as string,\n\t\t{Cost Center} as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\twildcardPaths:['PMAC/PMAC Location Level Map.xlsx']) ~> ClaimCostCenter\nsource(output(\n\t\t{Client } as string,\n\t\t{Account Number} as integer,\n\t\t{Location Code} as string,\n\t\t{Location Name} as string,\n\t\t{Department Name} as string,\n\t\t{Division Name} as string,\n\t\t{Location Level 4} as string,\n\t\t{Location Level 5} as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\twildcardPaths:['PMAC/PMAC Location Level Map.xlsx']) ~> LocationMapSheet1\nsource(output(\n\t\tClaimKey as long,\n\t\tClientCarrierGroupKey as integer,\n\t\tTenure as short,\n\t\tLagTime as string,\n\t\tDaysToClose as integer,\n\t\tAge as integer,\n\t\tClaimTransactionKey as long,\n\t\tClientKey as short\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_COMMITTED',\n\tquery: (concat('SELECT ClaimKey,dc.ClientCarrierGroupKey,Tenure,LagTime,dc.DaysToClose,dc.Age,ClaimTransactionKey,ClientKey FROM DimClaim dc INNER JOIN stage.ClaimTransaction c ON dc.ClaimNumber=c.ClaimNumber AND dc.Claimant=c.Claimant AND dc.ClientCarrierGroupKey=c.ClientCarrierGroupKey WHERE c.CarrierCode=','\\'',$CarrierCode,'\\'')),\n\tformat: 'query',\n\tstaged: false) ~> DimClaim\nsource(output(\n\t\tLocationKey as integer,\n\t\tClientKey as short,\n\t\tLocation_Name as string,\n\t\tDepartment_Name as string,\n\t\tDivision_Name as string,\n\t\tLocation4_Name as string,\n\t\tLocation5_Name as string,\n\t\tLocation6_Name as string,\n\t\tLocation7_Name as string,\n\t\tLocation8_Name as string,\n\t\tLocation9_Name as string,\n\t\tLocation10_Name as string,\n\t\tCarrierKey as short\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_COMMITTED',\n\tquery: 'SELECT * FROM DimLocation',\n\tformat: 'query',\n\tstaged: false) ~> DimLocation\nsource(output(\n\t\tDate as date,\n\t\tDateKey as integer\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_COMMITTED',\n\tquery: (concat('select distinct Date,DateKey FROM DimDate dd INNER JOIN stage.ClaimTransaction c ON dd.Date=c.ValuationDate WHERE c.CarrierCode =', '\\'',$CarrierCode,'\\'')),\n\tformat: 'query',\n\tstaged: false) ~> DimDate\nsource(output(\n\t\t{Client Code} as string,\n\t\t{Employee Count} as short,\n\t\tLocation as string,\n\t\t{Valuation Date} as date\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_COMMITTED',\n\tquery: 'SELECT [Client Code],[Employee Count], Location,[Valuation Date] FROM stage.EmployeeCount',\n\tformat: 'query') ~> ClientEmployeeCount\nsource(output(\n\t\tAgeRangeKey as integer,\n\t\tAgeRange as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_COMMITTED',\n\tquery: 'SELECT AgeRangeKey,AgeRange FROM DimAgeRange',\n\tformat: 'query',\n\tstaged: false) ~> AgeRange\nsource(output(\n\t\tClaimTenureRangeKey as integer,\n\t\tClaimTenureRange as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_COMMITTED',\n\tquery: 'SELECT ClaimTenureRangeKey,ClaimTenureRange FROM DimClaimTenureRange',\n\tformat: 'query',\n\tstaged: false) ~> TenureRange\nsource(output(\n\t\tClaimLagAmountRangeKey as integer,\n\t\tClaimLagAmountRange as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_COMMITTED',\n\tquery: 'SELECT ClaimLagAmountRangeKey,ClaimLagAmountRange FROM DimClaimLagAmountRange',\n\tformat: 'query',\n\tstaged: false) ~> LagAmountRange\nsource(output(\n\t\tClaimClosePeriodRangeKey as integer,\n\t\tClaimClosePeriodRange as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_COMMITTED',\n\tquery: 'SELECT ClaimClosePeriodRangeKey,ClaimClosePeriodRange FROM DimClaimClosePeriodRange',\n\tformat: 'query',\n\tstaged: false) ~> ClosePeriodRange\nsource(output(\n\t\tClaimLossAmtRangeKey as integer,\n\t\tClaimLossAmtRange as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_COMMITTED',\n\tquery: 'SELECT ClaimLossAmtRangeKey,ClaimLossAmtRange FROM DimClaimLossAmtRange',\n\tformat: 'query',\n\tstaged: false) ~> LossAmountRange\nsource(output(\n\t\tClaimTypeKey as short,\n\t\tRollup_Priority as integer\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_COMMITTED',\n\tquery: (concat('SELECT ClaimTypeKey,Rollup_Priority FROM DimClaimTypeRollupPrority dp INNER JOIN DimCarrier dc ON dp.CarrierKey=dc.CarrierKey WHERE dc.CarrierCode=',\"'$CarrierCode'\")),\n\tformat: 'query',\n\tstaged: false) ~> ClaimTypeRollup\nClaimTransaction, stagePMAC join(ClaimTransaction@RowID == stagePMAC@RowID,\n\tjoinType:'inner',\n\tbroadcast: 'auto')~> JoinStage\nCCM filter(FieldName=='Negative Financial Claims') ~> FilterNegativeFC\nDeriveMultiplier select(mapColumn(\n\t\t{NegativeFCClaim#} = FieldValue1,\n\t\tMultiplier\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SelectNegativeFC\nFilterNegativeFC derive(Multiplier = -1) ~> DeriveMultiplier\nJoinStage, SelectNegativeFC lookup(ClaimNumber == {NegativeFCClaim#},\n\tmultiple: false,\n\tpickup: 'any',\n\tbroadcast: 'right')~> LookupNegativeFC\nLookupNegativeFC derive(Expense_Paid = ((toDecimal({Exp Paid})*coalesce(Multiplier,1))-toDecimal({WC Exp Recovery})),\n\t\tExpense_Incurred = ((toDecimal({Exp Inc})*coalesce(Multiplier,1))-toDecimal({WC Exp Recovery})),\n\t\tMedical_BI_Paid = toDecimal({WC Med Paid})*coalesce(Multiplier,1),\n\t\tIncurred_BI_Med = toDecimal({WC Med Inc})*coalesce(Multiplier,1),\n\t\tIndemnity_PD_Paid = toDecimal({WC Ind Paid})*coalesce(Multiplier,1),\n\t\tIndemnity_PD_Reserves = toDecimal({WC Ind Res})*coalesce(Multiplier,1),\n\t\tRecovery_PD_LT = toDecimal({WC Ind Recovery})*coalesce(Multiplier,1),\n\t\tIncurred_PD_LT = toDecimal({WC Ind Inc})*coalesce(Multiplier,1),\n\t\tTotal_Incurred = ((toDecimal({Total Paid})*coalesce(Multiplier,1))-toDecimal({Total Recoveries})+toDecimal({Total Reserve})),\n\t\tTotal_Paid = ((toDecimal({Total Paid})*coalesce(Multiplier,1))-toDecimal({Total Recoveries}))) ~> DeriveFinancials\nMerakeyMasterLocation derive({CC-DashKey} = concatWS('_', trim(Entity_Key), trim(LocationKey), trim(Cost_Center_Key)),\n\t\t{CC-NodashKey} = concatWS('', trim(Entity_Key), trim(LocationKey), trim(Cost_Center_Key)),\n\t\tLocationLevel1 = trim(Service_Line_Key),\n\t\tLocationLevel2 = iifNull(trim(LocationName), trim(Cost_Center_Name)),\n\t\tLocationLevel3 = trim(Cost_Center_Name),\n\t\tLocationLevel4 = concatWS('-', trim(Entity_Key), trim(LocationKey), trim(Cost_Center_Key))) ~> DeriveMarkeyLocationMasterCols\nDeriveMarkeyLocationMasterCols select(mapColumn(\n\t\t{CC-DashKey},\n\t\t{CC-NodashKey},\n\t\tLocationLevel1,\n\t\tLocationLevel2,\n\t\tLocationLevel3,\n\t\tLocationLevel4\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SelectMasterLocationColumns\nBravoLocationMap derive(BravoLocationKey = concatWS('_', trim(toString({Account Number})), trim({Claim Number}))) ~> DeriveBravoLocationColumns\nDeriveBravoLocationColumns select(mapColumn(\n\t\t{Location Name},\n\t\t{Department Name},\n\t\t{Division Name},\n\t\tLocationLevel4 = {Location Level 4},\n\t\tLocationLevel5 = {Location Level 5},\n\t\tBravoLocationKey\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SelectBarvoLocationColumns\nOldMerakeyLocationMap derive(NHSLocationKey = concatWS('_', trim(toString({Account Number})), trim({Location Code}))) ~> DeriveOldMerakeyLocColumns\nDeriveOldMerakeyLocColumns select(mapColumn(\n\t\t{Location Name},\n\t\t{Department Name},\n\t\t{Division Name},\n\t\tNHSLocationKey,\n\t\tLocationLevel4 = {Location Level 4}\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SelectOldMeraKeyLocationCols\nLevel5Location derive(Level5Key = concatWS('_', trim(Client),trim({Claim #}))) ~> DeriveLevel5Key\nDeriveLevel5Key select(mapColumn(\n\t\t{Location Level 5},\n\t\tLevel5Key\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SelectLevel5Colums\nClaimCostCenter derive(CCNoDash = replace({Cost Center}, '-','')) ~> DeriveCCNoDash\nDeriveCCNoDash select(mapColumn(\n\t\t{Claim #},\n\t\tCCNoDash\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SelectClaimCostCenterCols\nFilter1 derive(LocationMapKey = concatWS('_', toString({Account Number}),trim({Location Code}))) ~> DeriveLocationMapKey\nDeriveLocationMapKey select(mapColumn(\n\t\t{Location Name},\n\t\t{Department Name},\n\t\t{Division Name},\n\t\t{Location Level 4},\n\t\t{Location Level 5},\n\t\tLocationMapKey\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SelectLocationMapCols\nDeriveFinancials split(ClientCode == 'MERAKEY-01',\n\tdisjoint: false) ~> MeraKeyClientBased@(MERAKEY, OTHERS)\nFilter2 derive(ClaimCostCenterLocationMapKey = {Claim Number},\n\t\tMasterLocationMapKey = cacheCostCenterMap#lookup({Claim Number}).CCNoDash,\n\t\tBravoLocationMapKey = concatWS('_', {Account Number}, {Claim Number}),\n\t\tNHSLocationMapKey = concatWS('_', {Account Number}, {Location Code}),\n\t\tFifthLocationMapKey = {Claim Number}) ~> SetMerakeyLocationKeys\nMeraKeyClientBased@OTHERS derive(BravoLocationMapKey = concatWS('_', {Account Number}, {Claim Number}),\n\t\tSheet1LocationMapKey = concatWS('_', {Account Number}, {Location Code})) ~> SetOtherLocationKey\nSetMerakeyLocationKeys derive(Location_Name = case(not(isNull(cacheCostCenterMap#lookup(ClaimCostCenterLocationMapKey).CCNoDash)), cacheMarekeyMasterLocation#lookup(MasterLocationMapKey).LocationLevel1,\r\ncase(not(isNull(cacheBravoLocation#lookup(BravoLocationMapKey).{Location Name})), cacheBravoLocation#lookup(BravoLocationMapKey).{Location Name}, \r\ncase(not(isNull(cacheNHSMap#lookup(NHSLocationMapKey).{Location Name})), cacheNHSMap#lookup(NHSLocationMapKey).{Location Name}, concat('Invalid Cost Center - ', trim({Location Code}))))),\n\t\tDepartment_Name = case(not(isNull(cacheCostCenterMap#lookup(ClaimCostCenterLocationMapKey).CCNoDash)), cacheMarekeyMasterLocation#lookup(MasterLocationMapKey).LocationLevel2,\r\ncase(not(isNull(cacheBravoLocation#lookup(BravoLocationMapKey).{Department Name})), cacheBravoLocation#lookup(BravoLocationMapKey).{Department Name},\r\ncase(not(isNull(cacheNHSMap#lookup(NHSLocationMapKey).{Department Name})), cacheNHSMap#lookup(NHSLocationMapKey).{Department Name}, concat('Invalid Cost Center - ', trim({Location Code}))))),\n\t\tDivision_Name = case(not(isNull(cacheCostCenterMap#lookup(ClaimCostCenterLocationMapKey).CCNoDash)), cacheMarekeyMasterLocation#lookup(MasterLocationMapKey).LocationLevel3,\r\ncase(not(isNull(cacheBravoLocation#lookup(BravoLocationMapKey).{Division Name})), cacheBravoLocation#lookup(BravoLocationMapKey).{Division Name}, \r\ncase(not(isNull(cacheNHSMap#lookup(NHSLocationMapKey).{Division Name})), cacheNHSMap#lookup(NHSLocationMapKey).{Division Name}, concat('Invalid Cost Center - ', trim({Location Code}))))),\n\t\tLocation4_Name = case(not(isNull(cacheCostCenterMap#lookup(ClaimCostCenterLocationMapKey).CCNoDash)), cacheMarekeyMasterLocation#lookup(MasterLocationMapKey).LocationLevel4,\r\ncase(not(isNull(cacheBravoLocation#lookup(BravoLocationMapKey).LocationLevel4)), cacheBravoLocation#lookup(BravoLocationMapKey).LocationLevel4, \r\ncase(not(isNull(cacheNHSMap#lookup(NHSLocationMapKey).LocationLevel4)), cacheNHSMap#lookup(NHSLocationMapKey).LocationLevel4, concat('Invalid Cost Center - ', trim({Location Code}))))),\n\t\tLocation5_Name = coalesce(cacheLevel5#lookup(FifthLocationMapKey).{Location Level 5}, 'N/A')) ~> DerivedMerakeyLocationDetails\nSetOtherLocationKey derive(Location_Name = case(not(isNull(cacheBravoLocation#lookup(BravoLocationMapKey).{Location Name})), cacheBravoLocation#lookup(BravoLocationMapKey).{Location Name},     case(not(isNull(cacheLocationMap#lookup(Sheet1LocationMapKey).{Location Name})), cacheLocationMap#lookup(Sheet1LocationMapKey).{Location Name}, concatWS('_', {Account Number}, {Location Code}, {Location Name}))),\n\t\tDepartment_Name = case(not(isNull(cacheBravoLocation#lookup(BravoLocationMapKey).{Department Name})), cacheBravoLocation#lookup(BravoLocationMapKey).{Department Name},     case(not(isNull(cacheLocationMap#lookup(Sheet1LocationMapKey).{Department Name})), cacheLocationMap#lookup(Sheet1LocationMapKey).{Department Name}, concatWS('_', {Account Number}, {Location Code}, {Location Name}))),\n\t\tDivision_Name = case(not(isNull(cacheBravoLocation#lookup(BravoLocationMapKey).{Division Name})), cacheBravoLocation#lookup(BravoLocationMapKey).{Division Name}, \r\ncase(not(isNull(cacheLocationMap#lookup(Sheet1LocationMapKey).{Division Name})), cacheLocationMap#lookup(Sheet1LocationMapKey).{Division Name}, concatWS('_', {Account Number}, {Location Code}, {Location Name}))),\n\t\tLocation4_Name = case(not(isNull(cacheBravoLocation#lookup(BravoLocationMapKey).LocationLevel4)), cacheBravoLocation#lookup(BravoLocationMapKey).LocationLevel4, \r\ncase(not(isNull(cacheLocationMap#lookup(Sheet1LocationMapKey).{Location Level 4})), cacheLocationMap#lookup(Sheet1LocationMapKey).{Location Level 4}, concatWS('_', {Account Number}, {Location Code}, {Location Name}))),\n\t\tLocation5_Name = case(not(isNull(cacheBravoLocation#lookup(BravoLocationMapKey).LocationLevel5)), cacheBravoLocation#lookup(BravoLocationMapKey).LocationLevel5, \r\ncase(not(isNull(cacheLocationMap#lookup(Sheet1LocationMapKey).{Location Level 5})), cacheLocationMap#lookup(Sheet1LocationMapKey).{Location Level 5}, concatWS('_', {Account Number}, {Location Code}, {Location Name})))) ~> DeriveOtherClientLocation\nDerivedMerakeyLocationDetails select(mapColumn(\n\t\tClaimNumber,\n\t\tClaimTransactionKey,\n\t\tRowID = MeraKeyClientBased@MERAKEY@RowID,\n\t\tCarrierCode,\n\t\tClientCode,\n\t\tValuationDate = MeraKeyClientBased@MERAKEY@ValuationDate,\n\t\t{Policy Number},\n\t\tClaimant,\n\t\tGender,\n\t\tLOBCode,\n\t\tClaimStatus,\n\t\tMaritalStatus,\n\t\tClaimTypeCode,\n\t\tOccupation,\n\t\tInjuryType,\n\t\tBodyPart,\n\t\tCauseType,\n\t\tLitigation,\n\t\tNAICS_Code,\n\t\tTotal_Paid,\n\t\tTotal_Reserve,\n\t\tRecovery_Total,\n\t\tTotal_Incurred,\n\t\tNet_Incurred,\n\t\tExpense_Paid,\n\t\tExpense_Reserve,\n\t\tExpense_Recovery,\n\t\tExpense_Incurred,\n\t\tMedical_BI_Paid,\n\t\tMedical_BI_Reserves,\n\t\tIndemnity_PD_Paid,\n\t\tIndemnity_PD_Reserves,\n\t\tIncurred_BI_Med,\n\t\tIncurred_PD_LT,\n\t\tRecovery_BI_Med,\n\t\tRecovery_PD_LT,\n\t\tLocation_Name,\n\t\tDepartment_Name,\n\t\tDivision_Name,\n\t\tLocation4_Name,\n\t\tLocation5_Name\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SelectMerakeyCols\nDeriveOtherClientLocation select(mapColumn(\n\t\tClaimNumber,\n\t\tClaimTransactionKey,\n\t\tRowID = MeraKeyClientBased@OTHERS@RowID,\n\t\tCarrierCode,\n\t\tClientCode,\n\t\tValuationDate = MeraKeyClientBased@OTHERS@ValuationDate,\n\t\t{Policy Number},\n\t\tClaimant,\n\t\tGender,\n\t\tLOBCode,\n\t\tClaimStatus,\n\t\tMaritalStatus,\n\t\tClaimTypeCode,\n\t\tOccupation,\n\t\tInjuryType,\n\t\tBodyPart,\n\t\tCauseType,\n\t\tLitigation,\n\t\tNAICS_Code,\n\t\tTotal_Paid,\n\t\tTotal_Reserve,\n\t\tRecovery_Total,\n\t\tTotal_Incurred,\n\t\tNet_Incurred,\n\t\tExpense_Paid,\n\t\tExpense_Reserve,\n\t\tExpense_Recovery,\n\t\tExpense_Incurred,\n\t\tMedical_BI_Paid,\n\t\tMedical_BI_Reserves,\n\t\tIndemnity_PD_Paid,\n\t\tIndemnity_PD_Reserves,\n\t\tIncurred_BI_Med,\n\t\tIncurred_PD_LT,\n\t\tRecovery_BI_Med,\n\t\tRecovery_PD_LT,\n\t\tLocation_Name,\n\t\tDepartment_Name,\n\t\tDivision_Name,\n\t\tLocation4_Name,\n\t\tLocation5_Name\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SelectOtherClientCols\nSelectMerakeyCols, SelectOtherClientCols union(byName: true)~> UnionOtherClients\nUnionOtherClients, DimClaim join(UnionOtherClients@ClaimTransactionKey == DimClaim@ClaimTransactionKey,\n\tjoinType:'inner',\n\tbroadcast: 'auto')~> JoinDimClaim\nJoinDimClaim, DimLocation lookup(DimClaim@ClientKey == DimLocation@ClientKey\n\t&& UnionOtherClients@Location_Name == DimLocation@Location_Name\n\t&& UnionOtherClients@Department_Name == DimLocation@Department_Name\n\t&& UnionOtherClients@Division_Name == DimLocation@Division_Name\n\t&& UnionOtherClients@Location4_Name == DimLocation@Location4_Name\n\t&& UnionOtherClients@Location5_Name == DimLocation@Location5_Name,\n\tmultiple: false,\n\tpickup: 'any',\n\tbroadcast: 'auto')~> LookupLocation\nLookupLocation derive(FinalLocationKey = coalesce(LocationKey,-99),\n\t\tGenderKey = coalesce(cacheGender#lookup(Gender).GenderKey,99),\n\t\tMaritalStatusKey = coalesce(cacheMaritalStatus#lookup(MaritalStatus).MaritalStatusKey,99),\n\t\tClaimTypeKey = coalesce(cacheClaimType#lookup(trim(ClaimTypeCode)).ClaimTypeKey,-99),\n\t\tBodyPartKey = coalesce(cacheBodyPart#lookup(trim(BodyPart)).BodyPartKey,-99),\n\t\tCauseTypeKey = coalesce(cacheCauseType#lookup(trim(CauseType)).CauseTypeKey,-99),\n\t\tAgeRange = iif(!isNull(Age),\r\niif(Age >=0 && Age<20, '0-19',iif(Age >=20 && Age<30, '20-29',iif(Age >=30 && Age<40, '30-39',\r\niif(Age >=40 && Age<50, '40-49',iif(Age >=50 && Age<60, '50-59',\r\niif(Age >=60 && Age<70, '60-69',iif(Age >=70 && Age<80, '70-79',iif(Age >=80 && Age<90, '80-89',\r\niif(Age >=90 && Age<100, '90-99',iif(Age >=100 && Age<110, '100-109',iif(Age >=110 && Age<120, '110-119',\r\niif(Age >=120 && Age<130, '120-129',iif(Age >=130 && Age<140, '130-139',\r\niif(Age >=140 && Age<150, '140-149','Unknown'))))))))))\r\n)))\r\n),'Unknown'\r\n),\n\t\tTenureRange = iif(Tenure<0,'Unknown',\r\niif(Tenure >=0 && Tenure<90, '0-3 months',\r\niif(Tenure >=90 && Tenure< 90 * 2, '3-6 months',\r\niif(Tenure >=90 * 2 && Tenure< 90 * 3, '6-9 months',\r\niif(Tenure >=90 * 3 && Tenure<365, '9-12 months',\r\niif(Tenure >=365 && Tenure<365 * 5, '1-5 years',\r\niif(Tenure >=365 * 5 && Tenure<365 * 10, '5-10 years',\r\niif(Tenure >=365 * 10 && Tenure<365 * 15, '10-15 years',\r\niif(Tenure >=365 * 15 && Tenure<365 * 20, '15-20 years',\r\niif(Tenure >=365 * 20 && Tenure<365 * 25, '20-25 years',\r\niif(Tenure >=365 * 25 , '25+ years','Unknown'))))))))))\r\n),\n\t\tLagTimeRange = iif(!isNull(LagTime),iif(toInteger(LagTime) <=3, '0-3',iif(toInteger(LagTime) <= 7, '4-7',iif(toInteger(LagTime) <= 13, '8-13',iif(toInteger(LagTime) <= 20, '14-20',iif(toInteger(LagTime) <=100, '21-100','101+'))))),'Unknown'),\n\t\tClosePeriodRange = iif(isNull(DaysToClose) || DaysToClose<0,'Unknown',iif(DaysToClose <= 90, '0-90 Days',iif(DaysToClose <= 180, '91-180 Days',iif(DaysToClose <= 365, '180 Days-12 Months',iif(DaysToClose >= 365 && DaysToClose <= 545, '12 Months-18 Months',iif(DaysToClose >= 546 && DaysToClose <= 365*2, '18 Months-2 Years','2+ Years')))))),\n\t\tNetIncurredLossLevel = iif(isNull(Net_Incurred) || Net_Incurred<= 25000, '$0-25K',iif(Net_Incurred <= 50000, '$25-50K',iif(Net_Incurred <= 100000, '$50-100K',iif(Net_Incurred <= 500000, '$100-500K',iif(Net_Incurred <= 1000000, '$0.5-1M',iif(Net_Incurred <= 2000000, '$1-2M',iif(Net_Incurred > 2000000, '$2M+','Unknown'))))))),\n\t\tTotalIncurredLossLevel = iif(isNull(Total_Incurred) || Total_Incurred<= 25000, '$0-25K',iif(Total_Incurred <= 50000, '$25-50K',iif(Total_Incurred <= 100000, '$50-100K',iif(Total_Incurred <= 500000, '$100-500K',iif(Total_Incurred <= 1000000, '$0.5-1M',iif(Total_Incurred <= 2000000, '$1-2M',iif(Total_Incurred > 2000000, '$2M+','Unknown')))))))) ~> DeriveKeyAndRangeValues\nLookupInjuryType, Occupation lookup(UnionOtherClients@Occupation == Occupation@Occupation,\n\tmultiple: false,\n\tpickup: 'any',\n\tbroadcast: 'right')~> LookupOccupation\nLookupOccupation, ClientEmployeeCount lookup(ClientCode == {Client Code}\n\t&& UnionOtherClients@Location_Name == Location\n\t&& ValuationDate == {Valuation Date},\n\tmultiple: false,\n\tpickup: 'any',\n\tbroadcast: 'right')~> LookupEmployeeCount\nLookupClaimTypePririty derive(OccupationKey = coalesce(OccupationKey,-99),\n\t\tInjuryTypeKey = coalesce(InjuryTypeKey,-99),\n\t\tEmployeeCount = coalesce({Employee Count},0),\n\t\tValuationDateKey = DateKey,\n\t\tClaimType_Priority = coalesce(Rollup_Priority,99),\n\t\tLastLoadTime = currentTimestamp(),\n\t\tStatus_Priority = iif(ClaimStatus==\"Open\",1,iif(ClaimStatus=='Closed', 2, 99)),\n\t\tLitigation_Priority = iif(Litigation==true(),1,iif(Litigation==false(), 2, 99))) ~> DeriveOccupationRangeKey\nLookupEmployeeCount, DimDate lookup(ValuationDate == Date,\n\tmultiple: false,\n\tpickup: 'any',\n\tbroadcast: 'right')~> LookupDate\nLookupDate derive(AgeRangeKey = coalesce(cacheAgeRange#lookup(AgeRange).AgeRangeKey,99),\n\t\tClaimTenureRangeKey = coalesce(cacheTenureRange#lookup(TenureRange).ClaimTenureRangeKey,99),\n\t\tClaimClosePeriodRangeKey = coalesce(cacheClosePeriodRange#lookup(ClosePeriodRange).ClaimClosePeriodRangeKey,99),\n\t\tClaimLagAmountRangeKey = coalesce(cacheLagAmountRange#lookup(LagTimeRange).ClaimLagAmountRangeKey,99),\n\t\tNetLossAmtRangeKey = coalesce(cacheLossAmountRange#lookup(NetIncurredLossLevel).ClaimLossAmtRangeKey,99),\n\t\tTotalIncurredLossAmtRangeKey = coalesce(cacheLossAmountRange#lookup(TotalIncurredLossLevel).ClaimLossAmtRangeKey,99),\n\t\tClaimStatus = coalesce(ClaimStatus,'Open'),\n\t\tLitigation = iif(isNull(Litigation), false(),iif(lower(Litigation)=='yes'||lower(Litigation)=='y',true(),false()))) ~> DerivRangeKey\nDerivRangeKey, ClaimTypeRollup lookup(DeriveKeyAndRangeValues@ClaimTypeKey == ClaimTypeRollup@ClaimTypeKey,\n\tmultiple: false,\n\tpickup: 'any',\n\tbroadcast: 'auto')~> LookupClaimTypePririty\nDeriveOccupationRangeKey select(mapColumn(\n\t\tClaimStatus,\n\t\tLitigation,\n\t\tNAICS_Code,\n\t\tTotal_Paid,\n\t\tTotal_Reserve,\n\t\tRecovery_Total,\n\t\tTotal_Incurred,\n\t\tNet_Incurred,\n\t\tExpense_Paid,\n\t\tExpense_Reserve,\n\t\tExpense_Recovery,\n\t\tExpense_Incurred,\n\t\tMedical_BI_Paid,\n\t\tMedical_BI_Reserves,\n\t\tIndemnity_PD_Paid,\n\t\tIndemnity_PD_Reserves,\n\t\tIncurred_BI_Med,\n\t\tIncurred_PD_LT,\n\t\tRecovery_BI_Med,\n\t\tRecovery_PD_LT,\n\t\tClaimKey,\n\t\tClientCarrierGroupKey,\n\t\tCarrierKey,\n\t\tFinalLocationKey,\n\t\tGenderKey,\n\t\tMaritalStatusKey,\n\t\tClaimTypeKey = DeriveKeyAndRangeValues@ClaimTypeKey,\n\t\tBodyPartKey,\n\t\tCauseTypeKey,\n\t\tInjuryTypeKey,\n\t\tOccupationKey,\n\t\tDateKey,\n\t\tAgeRangeKey,\n\t\tClaimTenureRangeKey,\n\t\tClaimClosePeriodRangeKey,\n\t\tClaimLagAmountRangeKey,\n\t\tNetLossAmtRangeKey,\n\t\tTotalIncurredLossAmtRangeKey,\n\t\tClaimTypeKey = ClaimTypeRollup@ClaimTypeKey,\n\t\tRollup_Priority,\n\t\tEmployeeCount,\n\t\tValuationDateKey,\n\t\tClaimType_Priority,\n\t\tLastLoadTime,\n\t\tStatus_Priority,\n\t\tLitigation_Priority,\n\t\tClientKey = DimClaim@ClientKey\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SelectTranCols\nDeriveKeyAndRangeValues, InjuryType lookup(UnionOtherClients@InjuryType == InjuryType@InjuryType,\n\tmultiple: false,\n\tpickup: 'any',\n\tbroadcast: 'auto')~> LookupInjuryType\nLocationMapSheet1 filter({Client }=='Chaney Enterprises') ~> Filter1\nMeraKeyClientBased@MERAKEY filter({Claim Number}=='W003139617' || {Claim Number}=='W003138925') ~> Filter2\nSelectTranCols sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tstaged: true,\n\tallowCopyCommand: true,\n\tpreSQLs:[(concat('DELETE fc FROM FactClaimTransaction fc INNER JOIN DimClaim dc ON fc.ClaimKey=dc.ClaimKey INNER JOIN stage.ClaimTransaction sc ON dc.ClaimNumber=sc.ClaimNumber AND dc.Claimant=sc.Claimant AND dc.ClientCarrierGroupKey=sc.ClientCarrierGroupKey INNER JOIN DimDate dd ON dd.Date=sc.ValuationDate WHERE CarrierCode=',\"'\",$CarrierCode,\"'\"))],\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\tsaveOrder: 2,\n\terrorHandlingOption: 'stopOnFirstError',\n\tmapColumn(\n\t\tClaimStatus,\n\t\tLitigation,\n\t\tNAICS_Code,\n\t\tTotal_Paid,\n\t\tTotal_Reserve,\n\t\tRecovery_Total,\n\t\tTotal_Incurred,\n\t\tNet_Incurred,\n\t\tExpense_Paid,\n\t\tExpense_Reserve,\n\t\tExpense_Recovery,\n\t\tExpense_Incurred,\n\t\tMedical_BI_Paid,\n\t\tMedical_BI_Reserves,\n\t\tIndemnity_PD_Paid,\n\t\tIndemnity_PD_Reserves,\n\t\tIncurred_BI_Med,\n\t\tIncurred_PD_LT,\n\t\tRecovery_BI_Med,\n\t\tRecovery_PD_LT,\n\t\tClaimKey,\n\t\tLocationKey = FinalLocationKey,\n\t\tGenderKey,\n\t\tMaritalStatusKey,\n\t\tClaimTypeKey,\n\t\tBodyPartKey,\n\t\tCauseTypeKey,\n\t\tInjuryTypeKey,\n\t\tOccupationKey,\n\t\tValuationDateKey,\n\t\tAgeRangeKey,\n\t\tClaimTenureRangeKey,\n\t\tClaimClosePeriodRangeKey,\n\t\tClaimLagAmountRangeKey,\n\t\tNetLossAmtRangeKey,\n\t\tTotalIncurredLossAmtRangeKey,\n\t\tRollup_Priority,\n\t\tEmployeeCount,\n\t\tValuationDateKey,\n\t\tClaimType_Priority,\n\t\tLastLoadTime,\n\t\tStatus_Priority,\n\t\tLitigation_Priority,\n\t\tClientKey,\n\t\tClientCarrierGroupKey\n\t)) ~> FactClaimTransaction\nSelectMasterLocationColumns sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\tkeys:['CC-NodashKey'],\n\tstore: 'cache',\n\tformat: 'inline',\n\toutput: false,\n\tsaveOrder: 1) ~> cacheMarekeyMasterLocation\nSelectBarvoLocationColumns sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\tkeys:['BravoLocationKey'],\n\tstore: 'cache',\n\tformat: 'inline',\n\toutput: false,\n\tsaveOrder: 1) ~> cacheBravoLocation\nSelectOldMeraKeyLocationCols sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\tkeys:['NHSLocationKey'],\n\tstore: 'cache',\n\tformat: 'inline',\n\toutput: false,\n\tsaveOrder: 1) ~> cacheNHSMap\nSelectLevel5Colums sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\tkeys:['Level5Key'],\n\tstore: 'cache',\n\tformat: 'inline',\n\toutput: false,\n\tsaveOrder: 1) ~> cacheLevel5\nSelectClaimCostCenterCols sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\tkeys:['Claim #'],\n\tstore: 'cache',\n\tformat: 'inline',\n\toutput: false,\n\tsaveOrder: 1) ~> cacheCostCenterMap\nSelectLocationMapCols sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\tkeys:['LocationMapKey'],\n\tstore: 'cache',\n\tformat: 'inline',\n\toutput: false,\n\tsaveOrder: 1) ~> cacheLocationMap\nGender sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\tkeys:['Gender'],\n\tstore: 'cache',\n\tformat: 'inline',\n\toutput: false,\n\tsaveOrder: 1) ~> cacheGender\nMaritalStatus sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\tkeys:['MaritalStatus'],\n\tstore: 'cache',\n\tformat: 'inline',\n\toutput: false,\n\tsaveOrder: 1) ~> cacheMaritalStatus\nBodyPart sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\tkeys:['BodyPart'],\n\tstore: 'cache',\n\tformat: 'inline',\n\toutput: false,\n\tsaveOrder: 1) ~> cacheBodyPart\nClaimType sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\tkeys:['ClaimTypeCode'],\n\tstore: 'cache',\n\tformat: 'inline',\n\toutput: false,\n\tsaveOrder: 1) ~> cacheClaimType\nCauseType sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\tkeys:['CauseType'],\n\tstore: 'cache',\n\tformat: 'inline',\n\toutput: false,\n\tsaveOrder: 1) ~> cacheCauseType\nAgeRange sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\tkeys:['AgeRange'],\n\tstore: 'cache',\n\tformat: 'inline',\n\toutput: false,\n\tsaveOrder: 1) ~> cacheAgeRange\nTenureRange sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\tkeys:['ClaimTenureRange'],\n\tstore: 'cache',\n\tformat: 'inline',\n\toutput: false,\n\tsaveOrder: 1) ~> cacheTenureRange\nLagAmountRange sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\tkeys:['ClaimLagAmountRange'],\n\tstore: 'cache',\n\tformat: 'inline',\n\toutput: false,\n\tsaveOrder: 1) ~> cacheLagAmountRange\nClosePeriodRange sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\tkeys:['ClaimClosePeriodRange'],\n\tstore: 'cache',\n\tformat: 'inline',\n\toutput: false,\n\tsaveOrder: 1) ~> cacheClosePeriodRange\nLossAmountRange sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\tkeys:['ClaimLossAmtRange'],\n\tstore: 'cache',\n\tformat: 'inline',\n\toutput: false,\n\tsaveOrder: 1) ~> cacheLossAmountRange"
+		}
+	}
+}

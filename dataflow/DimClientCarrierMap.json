@@ -1,0 +1,81 @@
+{
+	"name": "DimClientCarrierMap",
+	"properties": {
+		"folder": {
+			"name": "Dimesnion"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "dsQuery",
+						"type": "DatasetReference"
+					},
+					"name": "DimClientCarrierGroup"
+				},
+				{
+					"dataset": {
+						"referenceName": "dsQuery",
+						"type": "DatasetReference"
+					},
+					"name": "DimCarrier"
+				},
+				{
+					"dataset": {
+						"referenceName": "dsQuery",
+						"type": "DatasetReference"
+					},
+					"name": "DimClient"
+				},
+				{
+					"dataset": {
+						"referenceName": "dsQuery",
+						"type": "DatasetReference"
+					},
+					"name": "DimLOB"
+				},
+				{
+					"dataset": {
+						"referenceName": "dsControlFiles",
+						"type": "DatasetReference"
+					},
+					"name": "CleintCarrierMappingFile"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "dsgrahamDWTables",
+						"type": "DatasetReference"
+					},
+					"name": "ClientCarrierGroupKey"
+				}
+			],
+			"transformations": [
+				{
+					"name": "FilterCarrierCode"
+				},
+				{
+					"name": "LookupCarrierKey"
+				},
+				{
+					"name": "LookupClient"
+				},
+				{
+					"name": "LookupLOB"
+				},
+				{
+					"name": "SelectColumns"
+				},
+				{
+					"name": "AlterRow1"
+				},
+				{
+					"name": "FilterInvalidRows"
+				}
+			],
+			"script": "source(output(\n\t\tClientCarrierGroupKey as integer,\n\t\tClientKey as short,\n\t\tCarrierKey as short,\n\t\tLineOfBusinessKey as short,\n\t\tDisplay_Carrier_Name as string,\n\t\tCarrierCode as string,\n\t\tClientCode as string,\n\t\tLOBCode as string,\n\t\tClientName as string,\n\t\tPolicyEffectiveDate as date\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_COMMITTED',\n\tquery: 'SELECT * FROM DimClientCarrierGroup',\n\tformat: 'query',\n\tstaged: false) ~> DimClientCarrierGroup\nsource(output(\n\t\tCarrierCode as string,\n\t\tCarrierKey as short\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tquery: 'Select CarrierCode, CarrierKey FROM DimCarrier',\n\tformat: 'query',\n\tstaged: false) ~> DimCarrier\nsource(output(\n\t\tClientCode as string,\n\t\tClientKey as short\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tquery: 'SELECT ClientCode,ClientKey FROM DimClient',\n\tformat: 'query',\n\tstaged: false) ~> DimClient\nsource(output(\n\t\tLineOfBusinessKey as short,\n\t\tLOBCode as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tquery: 'SELECT LineOfBusinessKey,LOBCode FROM DimLineOfBusiness',\n\tformat: 'query',\n\tstaged: false) ~> DimLOB\nsource(output(\n\t\t{Client Name} as string,\n\t\t{Client Code} as string,\n\t\t{Coverage (Line of Business)} as string,\n\t\t{Policy Effective Date} as date,\n\t\t{Billing Carrier Code} as string,\n\t\t{Billing Carrier Name} as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\twildcardPaths:['Clients- Carrier - Carrier Display - Effective Date.xlsx']) ~> CleintCarrierMappingFile\nCleintCarrierMappingFile filter({Billing Carrier Code}=='HAAV') ~> FilterCarrierCode\nFilterCarrierCode, DimCarrier lookup({Billing Carrier Code} == CarrierCode,\n\tmultiple: false,\n\tpickup: 'any',\n\tbroadcast: 'auto')~> LookupCarrierKey\nLookupCarrierKey, DimClient lookup({Client Code} == ClientCode,\n\tmultiple: false,\n\tpickup: 'any',\n\tbroadcast: 'auto')~> LookupClient\nLookupClient, DimLOB lookup({Coverage (Line of Business)} == LOBCode,\n\tmultiple: false,\n\tpickup: 'any',\n\tbroadcast: 'auto')~> LookupLOB\nLookupLOB select(mapColumn(\n\t\tPolicyEffectiveDate = {Policy Effective Date},\n\t\tDisplay_Carrier_Name = {Billing Carrier Name},\n\t\tCarrierCode,\n\t\tCarrierKey,\n\t\tClientCode,\n\t\tClientKey,\n\t\tLineOfBusinessKey,\n\t\tLOBCode,\n\t\tClientName = {Client Name}\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SelectColumns\nFilterInvalidRows alterRow(upsertIf(true())) ~> AlterRow1\nSelectColumns filter(!isNull(ClientCode)) ~> FilterInvalidRows\nAlterRow1 sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:false,\n\tupdateable:false,\n\tupsertable:true,\n\tkeys:['CarrierKey','ClientKey','LineOfBusinessKey','PolicyEffectiveDate'],\n\tformat: 'table',\n\tstaged: false,\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError',\n\tmapColumn(\n\t\tPolicyEffectiveDate,\n\t\tDisplay_Carrier_Name,\n\t\tCarrierCode,\n\t\tCarrierKey,\n\t\tClientCode,\n\t\tClientKey,\n\t\tLineOfBusinessKey,\n\t\tLOBCode,\n\t\tClientName\n\t)) ~> ClientCarrierGroupKey"
+		}
+	}
+}

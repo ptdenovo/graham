@@ -1,0 +1,146 @@
+{
+	"name": "ClassifyCarrierFiles",
+	"properties": {
+		"activities": [
+			{
+				"name": "Get CarrierFiles Metadata",
+				"type": "GetMetadata",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataset": {
+						"referenceName": "dsBinaryStorageParameterized",
+						"type": "DatasetReference",
+						"parameters": {
+							"Container": "carrier-source",
+							"Directory": {
+								"value": "@pipeline().parameters.CarrierName",
+								"type": "Expression"
+							},
+							"FileName": "*"
+						}
+					},
+					"fieldList": [
+						"childItems"
+					],
+					"storeSettings": {
+						"type": "AzureBlobFSReadSettings",
+						"recursive": true,
+						"enablePartitionDiscovery": false
+					},
+					"formatSettings": {
+						"type": "BinaryReadSettings"
+					}
+				}
+			},
+			{
+				"name": "ForEachFiles",
+				"type": "ForEach",
+				"dependsOn": [
+					{
+						"activity": "Get CarrierFiles Metadata",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@activity('Get CarrierFiles Metadata').output.childItems",
+						"type": "Expression"
+					},
+					"activities": [
+						{
+							"name": "If control files",
+							"type": "IfCondition",
+							"dependsOn": [],
+							"userProperties": [],
+							"typeProperties": {
+								"expression": {
+									"value": "@startswith(item().name,pipeline().parameters.CarrierName)",
+									"type": "Expression"
+								},
+								"ifFalseActivities": [
+									{
+										"name": "ValidateClaimFileName",
+										"type": "ExecutePipeline",
+										"dependsOn": [],
+										"userProperties": [],
+										"typeProperties": {
+											"pipeline": {
+												"referenceName": "ValidateClaimFileName",
+												"type": "PipelineReference"
+											},
+											"waitOnCompletion": true,
+											"parameters": {
+												"CarrierName": {
+													"value": "@pipeline().parameters.CarrierName",
+													"type": "Expression"
+												},
+												"FileName": {
+													"value": "@item().name",
+													"type": "Expression"
+												}
+											}
+										}
+									}
+								],
+								"ifTrueActivities": [
+									{
+										"name": "MoveFile",
+										"type": "ExecutePipeline",
+										"dependsOn": [],
+										"userProperties": [],
+										"typeProperties": {
+											"pipeline": {
+												"referenceName": "MoveFile",
+												"type": "PipelineReference"
+											},
+											"waitOnCompletion": true,
+											"parameters": {
+												"SourceContainer": "carrier-source",
+												"SinkContainer": "control-files",
+												"FilePath": {
+													"value": "@pipeline().parameters.CarrierName",
+													"type": "Expression"
+												},
+												"FileName": {
+													"value": "@item().name",
+													"type": "Expression"
+												}
+											}
+										}
+									}
+								]
+							}
+						}
+					]
+				}
+			}
+		],
+		"parameters": {
+			"CarrierName": {
+				"type": "string"
+			}
+		},
+		"variables": {
+			"Test": {
+				"type": "String"
+			}
+		},
+		"folder": {
+			"name": "POC/IngestExtract"
+		},
+		"annotations": [],
+		"lastPublishTime": "2021-05-25T18:40:36Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

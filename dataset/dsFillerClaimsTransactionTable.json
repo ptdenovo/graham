@@ -1,0 +1,380 @@
+{
+	"name": "dsFillerClaimsTransactionTable",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "GrahamDWHLinkedService",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "POC"
+		},
+		"annotations": [],
+		"type": "AzureSqlDWTable",
+		"schema": [
+			{
+				"name": "FillerClaimTransactionkey",
+				"type": "bigint",
+				"precision": 19
+			},
+			{
+				"name": "ValuationDateKey",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "ClientCarrierGroupKey",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "ClaimNumber",
+				"type": "varchar"
+			},
+			{
+				"name": "PolicyNumber",
+				"type": "varchar"
+			},
+			{
+				"name": "PolicyEffectiveDate",
+				"type": "date"
+			},
+			{
+				"name": "PolicyExpirationDate",
+				"type": "date"
+			},
+			{
+				"name": "CarrierKey",
+				"type": "smallint",
+				"precision": 5
+			},
+			{
+				"name": "Claimant",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Accident_Description",
+				"type": "nvarchar"
+			},
+			{
+				"name": "DayOfWeek",
+				"type": "varchar"
+			},
+			{
+				"name": "DateofLoss",
+				"type": "date"
+			},
+			{
+				"name": "ReportedDate",
+				"type": "date"
+			},
+			{
+				"name": "ClosedDate",
+				"type": "date"
+			},
+			{
+				"name": "DateOfHire",
+				"type": "date"
+			},
+			{
+				"name": "Driver",
+				"type": "varchar"
+			},
+			{
+				"name": "PolicyYear",
+				"type": "smallint",
+				"precision": 5
+			},
+			{
+				"name": "PolicyPeriod",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Age",
+				"type": "tinyint",
+				"precision": 3
+			},
+			{
+				"name": "LagTime",
+				"type": "varchar"
+			},
+			{
+				"name": "DaysToClose",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "Tenure",
+				"type": "smallint",
+				"precision": 5
+			},
+			{
+				"name": "Occurrence_State",
+				"type": "varchar"
+			},
+			{
+				"name": "Benefit_State",
+				"type": "varchar"
+			},
+			{
+				"name": "LOBCode",
+				"type": "varchar"
+			},
+			{
+				"name": "CauseTypeKey",
+				"type": "smallint",
+				"precision": 5
+			},
+			{
+				"name": "ClaimTypeKey",
+				"type": "smallint",
+				"precision": 5
+			},
+			{
+				"name": "InjuryTypeKey",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "BodyPartKey",
+				"type": "smallint",
+				"precision": 5
+			},
+			{
+				"name": "GenderKey",
+				"type": "tinyint",
+				"precision": 3
+			},
+			{
+				"name": "OccupationKey",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "ClaimStatus",
+				"type": "varchar"
+			},
+			{
+				"name": "MaritalStatusKey",
+				"type": "tinyint",
+				"precision": 3
+			},
+			{
+				"name": "ClientKey",
+				"type": "smallint",
+				"precision": 5
+			},
+			{
+				"name": "Litigation",
+				"type": "bit"
+			},
+			{
+				"name": "NAICS_Code",
+				"type": "varchar"
+			},
+			{
+				"name": "AgeRangeKey",
+				"type": "tinyint",
+				"precision": 3
+			},
+			{
+				"name": "ClaimTenureRangeKey",
+				"type": "tinyint",
+				"precision": 3
+			},
+			{
+				"name": "ClaimLagAmountRangeKey",
+				"type": "tinyint",
+				"precision": 3
+			},
+			{
+				"name": "ClaimClosePeriodRangeKey",
+				"type": "tinyint",
+				"precision": 3
+			},
+			{
+				"name": "NetLossAmtRangeKey",
+				"type": "tinyint",
+				"precision": 3
+			},
+			{
+				"name": "TotalIncurredLossAmtRangeKey",
+				"type": "tinyint",
+				"precision": 3
+			},
+			{
+				"name": "Expense_Paid",
+				"type": "decimal",
+				"precision": 18,
+				"scale": 2
+			},
+			{
+				"name": "Expense_Reserve",
+				"type": "decimal",
+				"precision": 18,
+				"scale": 2
+			},
+			{
+				"name": "Expense_Recovery",
+				"type": "decimal",
+				"precision": 18,
+				"scale": 2
+			},
+			{
+				"name": "Expense_Incurred",
+				"type": "decimal",
+				"precision": 18,
+				"scale": 2
+			},
+			{
+				"name": "Medical_BI_Paid",
+				"type": "decimal",
+				"precision": 18,
+				"scale": 2
+			},
+			{
+				"name": "Medical_BI_Reserves",
+				"type": "decimal",
+				"precision": 18,
+				"scale": 2
+			},
+			{
+				"name": "Indemnity_PD_Paid",
+				"type": "decimal",
+				"precision": 18,
+				"scale": 2
+			},
+			{
+				"name": "Indemnity_PD_Reserves",
+				"type": "decimal",
+				"precision": 18,
+				"scale": 2
+			},
+			{
+				"name": "Incurred_BI_Med",
+				"type": "decimal",
+				"precision": 18,
+				"scale": 2
+			},
+			{
+				"name": "Incurred_PD_LT",
+				"type": "decimal",
+				"precision": 18,
+				"scale": 2
+			},
+			{
+				"name": "Recovery_BI_Med",
+				"type": "decimal",
+				"precision": 18,
+				"scale": 2
+			},
+			{
+				"name": "Recovery_PD_LT",
+				"type": "decimal",
+				"precision": 18,
+				"scale": 2
+			},
+			{
+				"name": "Total_Paid",
+				"type": "decimal",
+				"precision": 18,
+				"scale": 2
+			},
+			{
+				"name": "Total_Reserve",
+				"type": "decimal",
+				"precision": 18,
+				"scale": 2
+			},
+			{
+				"name": "Recovery_Total",
+				"type": "decimal",
+				"precision": 18,
+				"scale": 2
+			},
+			{
+				"name": "Total_Incurred",
+				"type": "decimal",
+				"precision": 18,
+				"scale": 2
+			},
+			{
+				"name": "Net_Incurred",
+				"type": "decimal",
+				"precision": 18,
+				"scale": 2
+			},
+			{
+				"name": "LocationKey",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "EmployeeCount",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "Status_Priority",
+				"type": "tinyint",
+				"precision": 3
+			},
+			{
+				"name": "ClaimType_Priority",
+				"type": "tinyint",
+				"precision": 3
+			},
+			{
+				"name": "Litigation_Priority",
+				"type": "tinyint",
+				"precision": 3
+			},
+			{
+				"name": "LastLoadTime",
+				"type": "smalldatetime",
+				"precision": 16,
+				"scale": 0
+			},
+			{
+				"name": "Claim_Incurred",
+				"type": "decimal",
+				"precision": 18,
+				"scale": 2
+			},
+			{
+				"name": "Incurred_Expense",
+				"type": "decimal",
+				"precision": 18,
+				"scale": 2
+			},
+			{
+				"name": "Claim_Recovery",
+				"type": "decimal",
+				"precision": 18,
+				"scale": 2
+			},
+			{
+				"name": "Claim_Net_Incurred",
+				"type": "decimal",
+				"precision": 18,
+				"scale": 2
+			},
+			{
+				"name": "Expense_Net_Incurred",
+				"type": "decimal",
+				"precision": 18,
+				"scale": 2
+			},
+			{
+				"name": "Claim_Paid",
+				"type": "decimal",
+				"precision": 18,
+				"scale": 2
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "FillerClaimTransaction"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

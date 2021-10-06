@@ -1,0 +1,340 @@
+{
+	"name": "PMACClaims",
+	"properties": {
+		"folder": {
+			"name": "Transform"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "dsQuery",
+						"type": "DatasetReference"
+					},
+					"name": "Carrier"
+				},
+				{
+					"dataset": {
+						"referenceName": "dsQuery",
+						"type": "DatasetReference"
+					},
+					"name": "DimClient"
+				},
+				{
+					"dataset": {
+						"referenceName": "dsgrahamDB",
+						"type": "DatasetReference"
+					},
+					"name": "FieldValueMap"
+				},
+				{
+					"dataset": {
+						"referenceName": "dsQuery",
+						"type": "DatasetReference"
+					},
+					"name": "ClaimTransaction"
+				},
+				{
+					"dataset": {
+						"referenceName": "dsgrahamStageDB",
+						"type": "DatasetReference"
+					},
+					"name": "stagePMAC"
+				},
+				{
+					"dataset": {
+						"referenceName": "dsgrahamDB",
+						"type": "DatasetReference"
+					},
+					"name": "InsuredIdentifier"
+				},
+				{
+					"dataset": {
+						"referenceName": "dsgrahamDB",
+						"type": "DatasetReference"
+					},
+					"name": "FVMCombined"
+				},
+				{
+					"dataset": {
+						"referenceName": "dsMerakeyPolicyNumberMap",
+						"type": "DatasetReference"
+					},
+					"name": "PolicyNumberDescription"
+				},
+				{
+					"dataset": {
+						"referenceName": "dsgrahamDB",
+						"type": "DatasetReference"
+					},
+					"name": "CCMRecords"
+				},
+				{
+					"dataset": {
+						"referenceName": "dsgrahamDB",
+						"type": "DatasetReference"
+					},
+					"name": "CCM"
+				},
+				{
+					"dataset": {
+						"referenceName": "dsControlFiles",
+						"type": "DatasetReference"
+					},
+					"name": "PMACFilterClaims"
+				},
+				{
+					"dataset": {
+						"referenceName": "dsQuery",
+						"type": "DatasetReference"
+					},
+					"name": "DimClientCarrierMap"
+				},
+				{
+					"dataset": {
+						"referenceName": "dsQuery",
+						"type": "DatasetReference"
+					},
+					"name": "claimExist"
+				},
+				{
+					"dataset": {
+						"referenceName": "dsControlFiles",
+						"type": "DatasetReference"
+					},
+					"name": "FilterClientPolicies"
+				}
+			],
+			"sinks": [
+				{
+					"name": "cacheCarrier"
+				},
+				{
+					"name": "cacheClient"
+				},
+				{
+					"name": "cacheFieldValueMap"
+				},
+				{
+					"dataset": {
+						"referenceName": "dsClaimsTransaction",
+						"type": "DatasetReference"
+					},
+					"name": "stageClaimTransaction"
+				},
+				{
+					"name": "cacheInsuredIdentifier"
+				},
+				{
+					"name": "cacheFVMCombinedPolicyPeriod"
+				},
+				{
+					"name": "cacheClientPolicyNo"
+				},
+				{
+					"name": "cacheCCMBodyPart"
+				},
+				{
+					"name": "cacheCCMCauseType"
+				},
+				{
+					"name": "cacheClaimantName"
+				},
+				{
+					"name": "cacheCCMInjuryType"
+				},
+				{
+					"name": "cacheCCMGender"
+				},
+				{
+					"name": "cacheCCMMaritalStatus"
+				},
+				{
+					"name": "cacheOccupation"
+				},
+				{
+					"name": "cacheCCMOccupation"
+				},
+				{
+					"name": "cacheFVMCClaimtOccupation"
+				},
+				{
+					"dataset": {
+						"referenceName": "dsDimClaim",
+						"type": "DatasetReference"
+					},
+					"name": "DimClaim"
+				}
+			],
+			"transformations": [
+				{
+					"name": "SelectNonFinColumns"
+				},
+				{
+					"name": "FVM"
+				},
+				{
+					"name": "AlterRow1"
+				},
+				{
+					"name": "SetInsuredIdentifierAndDriver"
+				},
+				{
+					"name": "JoinStagePMAC"
+				},
+				{
+					"name": "MapCleintCode"
+				},
+				{
+					"name": "LookupCCMClaimNo"
+				},
+				{
+					"name": "DervieClaimNoAndPolicyPeriod"
+				},
+				{
+					"name": "FVMCPolicyPeriod"
+				},
+				{
+					"name": "SelectFVMCPolicyPeriod"
+				},
+				{
+					"name": "DerivedYearAdjustment"
+				},
+				{
+					"name": "SetPolicyDatesAndMarkeyPolicyNo"
+				},
+				{
+					"name": "SelectPolicyNumberMap"
+				},
+				{
+					"name": "FilterCarrierCode"
+				},
+				{
+					"name": "DeriveCCMKey"
+				},
+				{
+					"name": "CCMBodyPart"
+				},
+				{
+					"name": "SelectCCMCols"
+				},
+				{
+					"name": "CCMCauseType"
+				},
+				{
+					"name": "CCMClaimantName"
+				},
+				{
+					"name": "CCMInjuryType"
+				},
+				{
+					"name": "CCMGender"
+				},
+				{
+					"name": "CCMMaritalStatus"
+				},
+				{
+					"name": "SetCCMValues"
+				},
+				{
+					"name": "SelectColumnsToProcess"
+				},
+				{
+					"name": "FVMCOccupation"
+				},
+				{
+					"name": "SelectFVMCOccupation"
+				},
+				{
+					"name": "CCMDateReported"
+				},
+				{
+					"name": "SelectCCMDateReported"
+				},
+				{
+					"name": "CCMDateOfLoss"
+				},
+				{
+					"name": "SelectCCMDateOfLoss"
+				},
+				{
+					"name": "CCMClaimNo"
+				},
+				{
+					"name": "SelectCCMClaimNo"
+				},
+				{
+					"name": "LookupDateReported"
+				},
+				{
+					"name": "LookupDateOfLoss"
+				},
+				{
+					"name": "CCMOccupation"
+				},
+				{
+					"name": "FVMCClaimantOccupation"
+				},
+				{
+					"name": "SelectClaimantOccupationCols"
+				},
+				{
+					"name": "FilterClaims"
+				},
+				{
+					"name": "LookupFilterClaims"
+				},
+				{
+					"name": "JoinDimClientCarrierGroup"
+				},
+				{
+					"name": "DerivedColumns"
+				},
+				{
+					"name": "DerivedColumnForDimClaim"
+				},
+				{
+					"name": "LookupDimClient"
+				},
+				{
+					"name": "JoinClaimExist"
+				},
+				{
+					"name": "SelectDimClaimCols"
+				},
+				{
+					"name": "AggregateClaimRows"
+				},
+				{
+					"name": "AlterClaimRow"
+				},
+				{
+					"name": "AggregateClaimTranRows"
+				},
+				{
+					"name": "SelectPolicyFilter"
+				},
+				{
+					"name": "LookupClientPolicyFilters"
+				},
+				{
+					"name": "RemoveClientPoliciesFilters"
+				},
+				{
+					"name": "DerivedDateOfLoss"
+				},
+				{
+					"name": "DerivedReportedDate"
+				},
+				{
+					"name": "FilterYearAndClientCode"
+				},
+				{
+					"name": "GenerateClaimRank"
+				}
+			],
+			"script": "parameters{\n\tCarrierCode as string\n}\nsource(output(\n\t\tCarrierKey as short,\n\t\tCarrierCode as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_COMMITTED',\n\tquery: (concat('SELECT CarrierKey, CarrierCode From DimCarrier WHERE CarrierCode=', '\\'',$CarrierCode,'\\' AND Enabled=1')),\n\tformat: 'query',\n\tstaged: false) ~> Carrier\nsource(output(\n\t\tClientKey as short,\n\t\tClientCode as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_COMMITTED',\n\tquery: 'SELECT ClientKey,ClientCode FROM [dbo].[DimClient] WHERE Enabled=1',\n\tformat: 'query',\n\tstaged: false) ~> DimClient\nsource(output(\n\t\tFieldName as string,\n\t\tSourceValue as string,\n\t\tMappedValue as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_COMMITTED',\n\tquery: (concat('SELECT FieldName,SourceValue,MappedValue FROM FieldValueMap WHERE CarrierCode=',\"'\", $CarrierCode,\"'\")),\n\tformat: 'query') ~> FieldValueMap\nsource(output(\n\t\tClaimTransactionKey as long,\n\t\tCarrierCode as string,\n\t\tClientCode as string,\n\t\tValuationDate as date,\n\t\t{Policy Year} as integer,\n\t\t{Policy Effective Date} as date,\n\t\t{Policy Expiration Date} as date,\n\t\t{Policy Number} as string,\n\t\tAccident_Description as string,\n\t\tClaimant as string,\n\t\tClaimNumber as string,\n\t\t{Date of Loss} as date,\n\t\t{Lag Time} as string,\n\t\t{Date Reported} as date,\n\t\t{Day of Week} as string,\n\t\t{Closed Date} as date,\n\t\tDaysToClose as integer,\n\t\tClaimStatus as string,\n\t\tGender as string,\n\t\tMaritalStatus as string,\n\t\t{Date of Hire} as string,\n\t\tDriver as string,\n\t\tOccupation as string,\n\t\tLOBCode as string,\n\t\tClaimTypeCode as string,\n\t\tInjuryType as string,\n\t\tBodyPart as string,\n\t\tCauseType as string,\n\t\tNAICS_Code as string,\n\t\tLitigation as string,\n\t\tLocation_Name as string,\n\t\tDepartment_Name as string,\n\t\tDivision_Name as string,\n\t\tTotal_Paid as decimal(18,2),\n\t\tTotal_Reserve as decimal(18,2),\n\t\tRecovery_Total as decimal(18,2),\n\t\tTotal_Incurred as decimal(18,2),\n\t\tNet_Incurred as decimal(18,2),\n\t\tExpense_Paid as decimal(18,2),\n\t\tExpense_Reserve as decimal(18,2),\n\t\tExpense_Recovery as decimal(18,2),\n\t\tExpense_Incurred as decimal(18,2),\n\t\tMedical_BI_Paid as decimal(18,2),\n\t\tMedical_BI_Reserves as decimal(18,2),\n\t\tIndemnity_PD_Paid as decimal(18,2),\n\t\tIndemnity_PD_Reserves as decimal(18,2),\n\t\tIncurred_BI_Med as decimal(18,2),\n\t\tIncurred_PD_LT as decimal(18,2),\n\t\tRecovery_BI_Med as decimal(18,2),\n\t\tRecovery_PD_LT as decimal(18,2),\n\t\tOccurrance_State as string,\n\t\tBenefit_State as string,\n\t\tInsured_Identifier as string,\n\t\tRowID as long,\n\t\tAge as string,\n\t\tClientCarrierGroupKey as integer,\n\t\tClaimHashKey as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_COMMITTED',\n\tquery: (concat('SELECT * From stage.ClaimTransaction WHERE CarrierCode=', '\\'',$CarrierCode,'\\'')),\n\tformat: 'query',\n\tstaged: false) ~> ClaimTransaction\nsource(output(\n\t\t{Primary Account Name} as string,\n\t\t{Account Number} as string,\n\t\t{Accident Date} as string,\n\t\t{Birth Date} as string,\n\t\t{Claimant Last Name} as string,\n\t\t{Claimant First Name} as string,\n\t\t{Insured Driver Last Name} as string,\n\t\t{Insured Driver First Name} as string,\n\t\t{Policy Number} as string,\n\t\t{Claim Type} as string,\n\t\t{Line Of Business} as string,\n\t\t{Loss Description} as string,\n\t\t{Location Code} as string,\n\t\t{Job Description} as string,\n\t\t{Location Name} as string,\n\t\tRowID as long\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_COMMITTED',\n\tquery: 'SELECT [Primary Account Name] ,[Account Number],[Accident Date],\\n[Birth Date], [Claimant Last Name], [Claimant First Name], [Insured Driver Last Name],[Insured Driver First Name],[Policy Number] , [Claim Type], [Line Of Business] ,[Loss Description],[Location Code], [Job Description], [Location Name],RowID FROM stage.PMAC',\n\tformat: 'query') ~> stagePMAC\nsource(output(\n\t\tInsuredIdentifierName as string,\n\t\tClientCode as string,\n\t\tCarrierCode as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_COMMITTED',\n\tquery: (concat('SELECT TRIM(InsuredIdentifierName) AS InsuredIdentifierName,ClientCode,CarrierCode FROM dbo.InsuredIdentifier_Client_Carrier_Map WHERE CarrierCode=','\\'', $CarrierCode,'\\'')),\n\tformat: 'query') ~> InsuredIdentifier\nsource(output(\n\t\tFieldName as string,\n\t\tFieldValue1 as string,\n\t\tFieldValue2 as string,\n\t\tFieldValue3 as string,\n\t\tFieldValue4 as string,\n\t\tFieldValue5 as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_COMMITTED',\n\tquery: (concat('SELECT FieldName,FieldValue1 AS FieldValue1,FieldValue2,FieldValue3,FieldValue4,FieldValue5 FROM FieldValueCombinedMap WHERE CarrierCode=', '\\'',$CarrierCode,'\\'')),\n\tformat: 'query') ~> FVMCombined\nsource(output(\n\t\t{Client Code} as string,\n\t\tCarrier as string,\n\t\t{Carrier Code} as string,\n\t\tLOB as string,\n\t\t{Policy Period} as date,\n\t\t{Policy Number} as string,\n\t\t{Policy Number Description} as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> PolicyNumberDescription\nsource(output(\n\t\tCarrierCode as string,\n\t\tFieldName as string,\n\t\tFieldValue1 as string,\n\t\tFieldValue2 as string,\n\t\tFieldValue3 as string,\n\t\tFieldValue4 as string,\n\t\tFieldValue5 as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_COMMITTED',\n\tquery: (concat('SELECT CarrierCode,FieldName,FieldValue1 AS FieldValue1,FieldValue2,FieldValue3,FieldValue4,FieldValue5 FROM ClaimCorrectionMap WHERE CarrierCode=', '\\'',$CarrierCode,'\\'')),\n\tformat: 'query') ~> CCMRecords\nsource(output(\n\t\tCarrierCode as string,\n\t\tFieldName as string,\n\t\tFieldValue1 as string,\n\t\tFieldValue2 as string,\n\t\tFieldValue3 as string,\n\t\tFieldValue4 as string,\n\t\tFieldValue5 as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_COMMITTED',\n\tquery: (concat('SELECT CarrierCode,FieldName,FieldValue1 AS FieldValue1,FieldValue2,FieldValue3,FieldValue4,FieldValue5 FROM ClaimCorrectionMap WHERE CarrierCode=', '\\'',$CarrierCode,'\\'')),\n\tformat: 'query') ~> CCM\nsource(output(\n\t\t{Claim #} as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\twildcardPaths:[(concat($CarrierCode, '/',$CarrierCode, ' Claims Filter.xlsx'))]) ~> PMACFilterClaims\nsource(output(\n\t\tClientCarrierGroupKey as integer,\n\t\tClientKey as short,\n\t\tClientCode as string,\n\t\tLOBCode as string,\n\t\tPolicyEffectiveDate as date,\n\t\tLineOfBusinessKey as short\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_COMMITTED',\n\tquery: (concat('SELECT ClientCarrierGroupKey,ClientKey,ClientCode,LOBCode,PolicyEffectiveDate,LineOfBusinessKey FROM DimClientCarrierGroup WHERE CarrierCode=',\"'\", $CarrierCode,\"'\")),\n\tformat: 'query',\n\tstaged: false) ~> DimClientCarrierMap\nsource(output(\n\t\tClaimKey as long,\n\t\tClaimNumber as string,\n\t\tClaimant as string,\n\t\tClientCarrierGroupKey as integer\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_COMMITTED',\n\tquery: (concat('SELECT ClaimKey,ClaimNumber,Claimant, ClientCarrierGroupKey FROM DimClaim dc INNER JOIN DimCarrier c ON dc.CarrierKey=c.CarrierKey WHERE c.CarrierCode=',\"'\",$CarrierCode,\"'\")),\n\tformat: 'query',\n\tstaged: false) ~> claimExist\nsource(output(\n\t\t{Client Code} as string,\n\t\t{Coverage (Line of Business)} as string,\n\t\t{Policy Start Year} as short\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\twildcardPaths:[(concat($CarrierCode, '/',$CarrierCode, ' Client Policy Filter.xlsx'))]) ~> FilterClientPolicies\nClaimTransaction select(mapColumn(\n\t\tClaimTransactionKey,\n\t\tCarrierCode,\n\t\tClientCode,\n\t\tValuationDate,\n\t\t{Policy Year},\n\t\t{Policy Effective Date},\n\t\t{Policy Expiration Date},\n\t\t{Policy Number},\n\t\tAccident_Description,\n\t\tClaimant,\n\t\tClaimNumber,\n\t\t{Date of Loss},\n\t\t{Lag Time},\n\t\t{Date Reported},\n\t\t{Day of Week},\n\t\t{Closed Date},\n\t\tDaysToClose,\n\t\tClaimStatus,\n\t\tGender,\n\t\tMaritalStatus,\n\t\t{Date of Hire},\n\t\tDriver,\n\t\tOccupation,\n\t\tLOBCode,\n\t\tClaimTypeCode,\n\t\tInjuryType,\n\t\tBodyPart,\n\t\tCauseType,\n\t\tLitigation,\n\t\tOccurrance_State,\n\t\tBenefit_State,\n\t\tInsured_Identifier,\n\t\tRowID,\n\t\tAge,\n\t\tClientCarrierGroupKey,\n\t\tClaimHashKey\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SelectNonFinColumns\nSetInsuredIdentifierAndDriver derive(BodyPart = coalesce(cacheFieldValueMap#lookup('Body Part',BodyPart).MappedValue,BodyPart),\n\t\tCauseType = coalesce(cacheFieldValueMap#lookup('Cause Type',CauseType).MappedValue,CauseType),\n\t\tClaimTypeCode = coalesce(cacheFieldValueMap#lookup('Claim Type',ClaimTypeCode).MappedValue,ClaimTypeCode),\n\t\tClaimant = coalesce(cacheFieldValueMap#lookup('Claimant',Claimant).MappedValue,Claimant),\n\t\tLOBCode = coalesce(cacheFieldValueMap#lookup('Coverage (Line of Business)',LOBCode).MappedValue,LOBCode),\n\t\tDriver = coalesce(cacheFieldValueMap#lookup('Driver',Driver).MappedValue,Driver),\n\t\tGender = coalesce(cacheFieldValueMap#lookup('Gender',Gender).MappedValue,Gender),\n\t\tInjuryType = coalesce(cacheFieldValueMap#lookup('Injury Type',InjuryType).MappedValue,InjuryType),\n\t\tLitigation = coalesce(cacheFieldValueMap#lookup('Litigation',Litigation).MappedValue,Litigation),\n\t\tMaritalStatus = coalesce(cacheFieldValueMap#lookup('Marital Status',MaritalStatus).MappedValue,MaritalStatus),\n\t\tOccupation = coalesce(cacheFieldValueMap#lookup('Occupation',Occupation).MappedValue,Occupation),\n\t\t{Policy Number} = coalesce(cacheFieldValueMap#lookup('Policy Number',{Policy Number}).MappedValue,{Policy Number}),\n\t\tClaimStatus = coalesce(cacheFieldValueMap#lookup('Status',ClaimStatus).MappedValue,ClaimStatus)) ~> FVM\nAggregateClaimTranRows alterRow(updateIf(true())) ~> AlterRow1\nJoinStagePMAC derive(Insured_Identifier = iif(ValuationDate<toDate('2016-03-31'),{Primary Account Name},{Account Number}),\n\t\tClaimant = concatWS(',', {Claimant Last Name}, {Claimant First Name}),\n\t\tDriver = iif(!isNull({Insured Driver Last Name}),concatWS(',', {Insured Driver Last Name}, {Insured Driver Last Name}),''),\n\t\tAge = floor(((toDate({Accident Date})-toDate({Birth Date}))/365.0)),\n\t\t{Policy Number} = concatWS('_', stagePMAC@{Policy Number}, {Account Number}),\n\t\tClaimTypeCode = iif(upper(trim({Line Of Business}))=='PAL',concatWS('_',trim({Claim Type}),trim({Loss Description})),concatWS('_', {Line Of Business}, {Claim Type})),\n\t\tCarrierKey = cacheCarrier#lookup(CarrierCode).CarrierKey,\n\t\tClientCode = iif(upper(ClientCode)=='MULTI',toString(null()),ClientCode)) ~> SetInsuredIdentifierAndDriver\nSelectNonFinColumns, stagePMAC join(SelectNonFinColumns@RowID == stagePMAC@RowID,\n\tjoinType:'inner',\n\tbroadcast: 'auto')~> JoinStagePMAC\nFVM derive(ClientCode = coalesce(cacheInsuredIdentifier#lookup(Insured_Identifier).ClientCode,toString(null()))) ~> MapCleintCode\nMapCleintCode, SelectCCMClaimNo lookup(ClientCode == ClaimNoFieldValue1\n\t&& ClaimNumber == ClaimNoFieldValue2,\n\tmultiple: false,\n\tpickup: 'any',\n\tbroadcast: 'auto')~> LookupCCMClaimNo\nLookupCCMClaimNo derive(ClaimNumber = coalesce(ClaimNoFieldValue3,ClaimNumber),\n\t\tPolicyMonth = coalesce(toInteger(cacheFVMCombinedPolicyPeriod#lookup(ClientCode,LOBCode).PPMonth),0),\n\t\tPolicyDay = coalesce(toInteger(cacheFVMCombinedPolicyPeriod#lookup(ClientCode,LOBCode).PPDay),0)) ~> DervieClaimNoAndPolicyPeriod\nFVMCombined filter(FieldName=='Policy Period') ~> FVMCPolicyPeriod\nFVMCPolicyPeriod select(mapColumn(\n\t\tFieldName,\n\t\tPPClientCode = FieldValue1,\n\t\tPPMonth = FieldValue2,\n\t\tPPDay = FieldValue3,\n\t\tPPLOB = FieldValue4,\n\t\tFieldValue5\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SelectFVMCPolicyPeriod\nDervieClaimNoAndPolicyPeriod derive(YearAdjustment = iif(!isNull(PolicyMonth) && PolicyMonth!=0,iif((month({Date of Loss})*100 + dayOfMonth({Date of Loss}))<(PolicyMonth*100 + PolicyDay),-1,0),0),\n\t\tLossYear = year({Date of Loss})) ~> DerivedYearAdjustment\nDerivedYearAdjustment derive({Policy Effective Date} = iif(PolicyDay>0,toDate(concat(toString((LossYear+YearAdjustment)),'-',toString(PolicyMonth),'-',toString(PolicyDay))),{Policy Effective Date}),\n\t\t{Policy Expiration Date} = iif(PolicyDay>0,toDate(concat(toString((LossYear+1+YearAdjustment)),'-',toString(PolicyMonth),'-',toString(PolicyDay))),{Policy Expiration Date}),\n\t\t{Policy Number} = coalesce(cacheClientPolicyNo#lookup(ClientCode,{Policy Number}).{Policy Number Description},{Policy Number}),\n\t\tCCMKey = concatWS('_', trim(ClientCode), trim(ClaimNumber))) ~> SetPolicyDatesAndMarkeyPolicyNo\nFilterCarrierCode select(mapColumn(\n\t\t{PolicyMap Client Code} = {Client Code},\n\t\t{PolicyMap Policy Number} = {Policy Number},\n\t\t{Policy Number Description}\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SelectPolicyNumberMap\nPolicyNumberDescription filter({Carrier Code}==$CarrierCode) ~> FilterCarrierCode\nCCMRecords derive(CCMKey = concatWS('_', trim(FieldValue1), trim(FieldValue2))) ~> DeriveCCMKey\nSelectCCMCols filter(FieldName=='Body Part') ~> CCMBodyPart\nDeriveCCMKey select(mapColumn(\n\t\tFieldValue3,\n\t\tCCMKey,\n\t\tFieldName\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SelectCCMCols\nSelectCCMCols filter(FieldName=='Cause Type') ~> CCMCauseType\nSelectCCMCols filter(FieldName=='Claimant Name') ~> CCMClaimantName\nSelectCCMCols filter(FieldName=='Injury Type') ~> CCMInjuryType\nSelectCCMCols filter(FieldName=='Gender') ~> CCMGender\nSelectCCMCols filter(FieldName=='Marital Status') ~> CCMMaritalStatus\nSetPolicyDatesAndMarkeyPolicyNo derive(BodyPart = coalesce(cacheCCMBodyPart#lookup(CCMKey).FieldValue3,BodyPart),\n\t\tInjuryType = coalesce(cacheCCMInjuryType#lookup(CCMKey).FieldValue3,InjuryType),\n\t\tGender = coalesce(cacheCCMGender#lookup(CCMKey).FieldValue3,Gender),\n\t\tMaritalStatus = coalesce(cacheCCMMaritalStatus#lookup(CCMKey).FieldValue3,MaritalStatus),\n\t\tCauseType = coalesce(cacheCCMCauseType#lookup(CCMKey).FieldValue3,CauseType),\n\t\tClaimant = coalesce(cacheClaimantName#lookup(CCMKey).FieldValue3,Claimant),\n\t\tOccupation = coalesce(cacheOccupation#lookup(ClientCode,Occupation).OccupationNewValue,cacheFVMCClaimtOccupation#lookup(ClientCode,upper(Occupation)).NewOccupation,cacheOccupation#lookup(ClientCode,upper(Occupation)).OccupationNewValue,Occupation),\n\t\tClaimID = 1,\n\t\tPolicyStartYear = year({Policy Effective Date})) ~> SetCCMValues\nRemoveClientPoliciesFilters select(mapColumn(\n\t\tClaimTransactionKey,\n\t\tCarrierCode = SelectNonFinColumns@CarrierCode,\n\t\tClientCode = MapCleintCode@ClientCode,\n\t\tValuationDate,\n\t\t{Policy Year},\n\t\t{Policy Effective Date},\n\t\t{Policy Expiration Date},\n\t\t{Policy Number},\n\t\tAccident_Description,\n\t\tClaimant,\n\t\tClaimNumber,\n\t\t{Date of Loss},\n\t\t{Lag Time},\n\t\t{Date Reported},\n\t\t{Day of Week},\n\t\t{Closed Date},\n\t\tDaysToClose,\n\t\tClaimStatus,\n\t\tGender,\n\t\tMaritalStatus,\n\t\t{Date of Hire},\n\t\tDriver,\n\t\tLOBCode = FVM@LOBCode,\n\t\tClaimTypeCode,\n\t\tInjuryType,\n\t\tBodyPart,\n\t\tCauseType,\n\t\tLitigation,\n\t\tOccurrance_State,\n\t\tBenefit_State,\n\t\tRowID = SelectNonFinColumns@RowID,\n\t\tAge,\n\t\tClientCarrierGroupKey = DimClientCarrierMap@ClientCarrierGroupKey,\n\t\tClaimHashKey,\n\t\t{Loss Description},\n\t\t{Location Code},\n\t\t{Job Description},\n\t\t{Location Name},\n\t\tCarrierKey,\n\t\tLossYear,\n\t\tInsured_Identifier,\n\t\tOccupation,\n\t\tClientKey = DimClient@ClientKey,\n\t\tLineOfBusinessKey,\n\t\tClaimID\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SelectColumnsToProcess\nFVMCombined filter(FieldName=='Occupation') ~> FVMCOccupation\nFVMCOccupation select(mapColumn(\n\t\tFieldName,\n\t\tFVMCClientCode = FieldValue1,\n\t\tOccupationOldValue = FieldValue2,\n\t\tOccupationNewValue = FieldValue3\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SelectFVMCOccupation\nCCM filter(FieldName=='Date Reported') ~> CCMDateReported\nDerivedReportedDate select(mapColumn(\n\t\tCCMClientCode = FieldValue1,\n\t\tCCMDateReported,\n\t\tCCMClaimNo = FieldValue2\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SelectCCMDateReported\nCCM filter(FieldName=='Date of Loss') ~> CCMDateOfLoss\nDerivedDateOfLoss select(mapColumn(\n\t\tCCMDLClientCode = FieldValue1,\n\t\tCCMDateOfLoss,\n\t\tCCMDLClaimNo = FieldValue2\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SelectCCMDateOfLoss\nCCM filter(FieldName=='Claim #') ~> CCMClaimNo\nCCMClaimNo select(mapColumn(\n\t\tCarrierCode,\n\t\tClaimNoFieldName = FieldName,\n\t\tClaimNoFieldValue1 = FieldValue1,\n\t\tClaimNoFieldValue3 = FieldValue3,\n\t\tClaimNoFieldValue2 = FieldValue2,\n\t\tClaimNoFieldValue4 = FieldValue4,\n\t\tClaimNoFieldValue5 = FieldValue5\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SelectCCMClaimNo\nFilterClaims, SelectCCMDateReported lookup(ClientCode == CCMClientCode\n\t&& ClaimNumber == CCMClaimNo,\n\tmultiple: false,\n\tpickup: 'any',\n\tbroadcast: 'right')~> LookupDateReported\nLookupDateReported, SelectCCMDateOfLoss lookup(ClientCode == CCMDLClientCode\n\t&& ClaimNumber == CCMDLClaimNo,\n\tmultiple: false,\n\tpickup: 'any',\n\tbroadcast: 'right')~> LookupDateOfLoss\nSelectCCMCols filter(FieldName=='Occupation') ~> CCMOccupation\nFVMCombined filter(FieldName=='Client Occupation') ~> FVMCClaimantOccupation\nFVMCClaimantOccupation select(mapColumn(\n\t\tClaimantOcupClientCode = FieldValue1,\n\t\tOldOccupation = FieldValue2,\n\t\tNewOccupation = FieldValue3\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SelectClaimantOccupationCols\nLookupFilterClaims filter(isNull({Claim #})) ~> FilterClaims\nSetCCMValues, PMACFilterClaims lookup(ClaimNumber == {Claim #},\n\tmultiple: false,\n\tpickup: 'any',\n\tbroadcast: 'auto')~> LookupFilterClaims\nLookupDimClient, DimClientCarrierMap join(MapCleintCode@ClientCode == DimClientCarrierMap@ClientCode\n\t&& FVM@LOBCode == DimClientCarrierMap@LOBCode\n\t&& {Policy Effective Date} == PolicyEffectiveDate,\n\tjoinType:'left',\n\tbroadcast: 'right')~> JoinDimClientCarrierGroup\nGenerateClaimRank derive(ClientKey = coalesce(ClientKey,-99),\n\t\tClientCarrierGroupKey = coalesce(ClientCarrierGroupKey,-99),\n\t\t{Lag Time} = iif(!isNull({Date Reported}),toString({Date Reported}-{Date of Loss}),'Unknown'),\n\t\tDaysToClose = iif(!isNull({Date Reported}) && !isNull({Closed Date}), {Closed Date}-{Date Reported},-99),\n\t\tTenure = iif(!(isNull({Date of Loss}) || isNull({Date of Hire})),({Date of Loss}-toDate({Date of Hire})),-99),\n\t\tClaimant = coalesce(Claimant,'Unknown'),\n\t\tPolicyPeriod = concat(toString(year({Policy Effective Date})),'-',toString(year({Policy Effective Date})+1)),\n\t\t{Day of Week} = iif(dayOfWeek({Date of Loss})== 2d, 'Monday',\r\niif(dayOfWeek({Date of Loss})== 3d, 'Tuesday',\r\niif(dayOfWeek({Date of Loss})== 4d, 'Wednesday',\r\niif(dayOfWeek({Date of Loss})== 5d, 'Thursday',\r\niif(dayOfWeek({Date of Loss})== 6d, 'Friday',\r\niif(dayOfWeek({Date of Loss})== 7d, 'Saturday',\r\niif(dayOfWeek({Date of Loss})== 1d, 'Sunday',\r\n'')\r\n)))))),\n\t\t{Closed Date} = iif(ClaimStatus=='Closed' && isNull({Closed Date}), lastDayOfMonth({Date Reported}), {Closed Date}),\n\t\t{Policy Year} = year({Policy Effective Date}),\n\t\tClaimHashKey = md5(ClaimNumber,Claimant,ClientCarrierGroupKey,ClaimID)) ~> DerivedColumns\nFilterYearAndClientCode derive(LastLoadTime = currentTimestamp(),\n\t\tLagTime = {Lag Time},\n\t\tDateOfHire = toDate({Date of Hire}),\n\t\tDayOfWeek = {Day of Week},\n\t\tReportedDate = {Date Reported},\n\t\tClosedDate = {Closed Date},\n\t\tPolicyYear = {Policy Year},\n\t\tDateofLoss = {Date of Loss},\n\t\tAge = iif(Age>=0,Age,toLong(null()))) ~> DerivedColumnForDimClaim\nLookupDateOfLoss, DimClient lookup(MapCleintCode@ClientCode == DimClient@ClientCode,\n\tmultiple: false,\n\tpickup: 'any',\n\tbroadcast: 'right')~> LookupDimClient\nDerivedColumnForDimClaim, claimExist join(SelectColumnsToProcess@ClaimNumber == claimExist@ClaimNumber\n\t&& DerivedColumns@Claimant == claimExist@Claimant\n\t&& DerivedColumns@ClientCarrierGroupKey == claimExist@ClientCarrierGroupKey,\n\tjoinType:'left',\n\tbroadcast: 'auto')~> JoinClaimExist\nJoinClaimExist select(mapColumn(\n\t\tPolicyEffectiveDate = {Policy Effective Date},\n\t\tPolicyExpirationDate = {Policy Expiration Date},\n\t\tPolicyNumber = {Policy Number},\n\t\tAccident_Description,\n\t\tClaimant = DerivedColumns@Claimant,\n\t\tClaimNumber = SelectColumnsToProcess@ClaimNumber,\n\t\tDaysToClose,\n\t\tClaimStatus,\n\t\tDriver,\n\t\tOccurrance_State,\n\t\tBenefit_State,\n\t\tAge,\n\t\tClientCarrierGroupKey = DerivedColumns@ClientCarrierGroupKey,\n\t\tClaimHashKey,\n\t\tCarrierKey,\n\t\tClientKey,\n\t\tLineOfBusinessKey,\n\t\tTenure,\n\t\tPolicyPeriod,\n\t\tLastLoadTime,\n\t\tLagTime,\n\t\tDateOfHire,\n\t\tDayOfWeek,\n\t\tReportedDate,\n\t\tClosedDate,\n\t\tPolicyYear,\n\t\tDateofLoss,\n\t\tClaimKey\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SelectDimClaimCols\nSelectDimClaimCols aggregate(groupBy(ClaimHashKey),\n\teach(match(!in(['ClaimHashKey'],name)), $$ = first($$))) ~> AggregateClaimRows\nAggregateClaimRows alterRow(updateIf(!isNull(ClaimKey))) ~> AlterClaimRow\nDerivedColumns aggregate(groupBy(ClaimTransactionKey),\n\teach(match(!in(['ClaimTransactionKey'],name)), $$ = first($$))) ~> AggregateClaimTranRows\nFilterClientPolicies select(mapColumn(\n\t\tPolicyFilterClientCode = {Client Code},\n\t\tPolicyFilterCoverage = {Coverage (Line of Business)},\n\t\tPolicyStartYear = {Policy Start Year}\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SelectPolicyFilter\nJoinDimClientCarrierGroup, SelectPolicyFilter lookup(MapCleintCode@ClientCode == PolicyFilterClientCode\n\t&& FVM@LOBCode == PolicyFilterCoverage\n\t&& SetCCMValues@PolicyStartYear == SelectPolicyFilter@PolicyStartYear,\n\tmultiple: false,\n\tpickup: 'any',\n\tbroadcast: 'auto')~> LookupClientPolicyFilters\nLookupClientPolicyFilters filter(isNull(PolicyFilterClientCode) && isNull(PolicyFilterCoverage) && isNull(SelectPolicyFilter@PolicyStartYear)) ~> RemoveClientPoliciesFilters\nCCMDateOfLoss derive(CCMDateOfLoss = addDays(toDate('01-01-1900', 'dd-MM-yyyy'), toInteger(FieldValue3))) ~> DerivedDateOfLoss\nCCMDateReported derive(CCMDateReported = addDays(toDate('01-01-1900', 'dd-MM-yyyy'), toInteger(FieldValue3))) ~> DerivedReportedDate\nDerivedColumns filter(toInteger(year({Policy Effective Date}))>=2007&& ClientKey!=-99 && ClientCarrierGroupKey!=-99) ~> FilterYearAndClientCode\nSelectColumnsToProcess window(over(ClaimNumber,\n\t\tClaimant,\n\t\tClientCarrierGroupKey),\n\tasc(ClientCarrierGroupKey, false),\n\tClaimID = denseRank()) ~> GenerateClaimRank\nCarrier sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\tkeys:['CarrierCode'],\n\tstore: 'cache',\n\tformat: 'inline',\n\toutput: false,\n\tsaveOrder: 1) ~> cacheCarrier\nDimClient sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\tkeys:['ClientCode'],\n\tstore: 'cache',\n\tformat: 'inline',\n\toutput: false,\n\tsaveOrder: 1) ~> cacheClient\nFieldValueMap sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\tkeys:['FieldName','SourceValue'],\n\tstore: 'cache',\n\tformat: 'inline',\n\toutput: false,\n\tsaveOrder: 1) ~> cacheFieldValueMap\nAlterRow1 sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinput(\n\t\tClaimTransactionKey as long,\n\t\tCarrierCode as string,\n\t\tClientCode as string,\n\t\tValuationDate as date,\n\t\t{Policy Year} as integer,\n\t\t{Policy Effective Date} as date,\n\t\t{Policy Expiration Date} as date,\n\t\t{Policy Number} as string,\n\t\tAccident_Description as string,\n\t\tClaimant as string,\n\t\tClaimNumber as string,\n\t\t{Date of Loss} as date,\n\t\t{Lag Time} as string,\n\t\t{Date Reported} as date,\n\t\t{Day of Week} as string,\n\t\t{Closed Date} as date,\n\t\tDaysToClose as integer,\n\t\tClaimStatus as string,\n\t\tGender as string,\n\t\tMaritalStatus as string,\n\t\t{Date of Hire} as string,\n\t\tDriver as string,\n\t\tOccupation as string,\n\t\tLOBCode as string,\n\t\tClaimTypeCode as string,\n\t\tInjuryType as string,\n\t\tBodyPart as string,\n\t\tCauseType as string,\n\t\tNAICS_Code as string,\n\t\tLitigation as string,\n\t\tLocation_Name as string,\n\t\tDepartment_Name as string,\n\t\tDivision_Name as string,\n\t\tTotal_Paid as decimal(18,2),\n\t\tTotal_Reserve as decimal(18,2),\n\t\tRecovery_Total as decimal(18,2),\n\t\tTotal_Incurred as decimal(18,2),\n\t\tNet_Incurred as decimal(18,2),\n\t\tExpense_Paid as decimal(18,2),\n\t\tExpense_Reserve as decimal(18,2),\n\t\tExpense_Recovery as decimal(18,2),\n\t\tExpense_Incurred as decimal(18,2),\n\t\tMedical_BI_Paid as decimal(18,2),\n\t\tMedical_BI_Reserves as decimal(18,2),\n\t\tIndemnity_PD_Paid as decimal(18,2),\n\t\tIndemnity_PD_Reserves as decimal(18,2),\n\t\tIncurred_BI_Med as decimal(18,2),\n\t\tIncurred_PD_LT as decimal(18,2),\n\t\tRecovery_BI_Med as decimal(18,2),\n\t\tRecovery_PD_LT as decimal(18,2),\n\t\tOccurrance_State as string,\n\t\tBenefit_State as string,\n\t\tInsured_Identifier as string,\n\t\tRowID as long,\n\t\tAge as string,\n\t\tClientCarrierGroupKey as integer,\n\t\tClaimHashKey as string\n\t),\n\tdeletable:false,\n\tinsertable:false,\n\tupdateable:true,\n\tupsertable:false,\n\tkeys:['ClaimTransactionKey'],\n\tformat: 'table',\n\tstaged: false,\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\tsaveOrder: 2,\n\terrorHandlingOption: 'stopOnFirstError',\n\tmapColumn(\n\t\tClaimTransactionKey,\n\t\tClientCode,\n\t\t{Policy Year},\n\t\t{Policy Effective Date},\n\t\t{Policy Expiration Date},\n\t\t{Policy Number},\n\t\tAccident_Description,\n\t\tClaimant,\n\t\tClaimNumber,\n\t\t{Date of Loss},\n\t\t{Lag Time},\n\t\t{Date Reported},\n\t\t{Day of Week},\n\t\t{Closed Date},\n\t\tDaysToClose,\n\t\tClaimStatus,\n\t\tGender,\n\t\tMaritalStatus,\n\t\t{Date of Hire},\n\t\tDriver,\n\t\tOccupation,\n\t\tLOBCode,\n\t\tClaimTypeCode,\n\t\tInjuryType,\n\t\tBodyPart,\n\t\tCauseType,\n\t\tLitigation,\n\t\tOccurrance_State,\n\t\tBenefit_State,\n\t\tInsured_Identifier,\n\t\tAge,\n\t\tClientCarrierGroupKey,\n\t\tClaimHashKey\n\t)) ~> stageClaimTransaction\nInsuredIdentifier sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\tkeys:['InsuredIdentifierName'],\n\tstore: 'cache',\n\tformat: 'inline',\n\toutput: false,\n\tsaveOrder: 1) ~> cacheInsuredIdentifier\nSelectFVMCPolicyPeriod sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\tkeys:['PPClientCode','PPLOB'],\n\tstore: 'cache',\n\tformat: 'inline',\n\toutput: false,\n\tsaveOrder: 1,\n\tmapColumn(\n\t\tPPClientCode,\n\t\tPPMonth,\n\t\tPPDay,\n\t\tPPLOB\n\t)) ~> cacheFVMCombinedPolicyPeriod\nSelectPolicyNumberMap sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\tkeys:['PolicyMap Client Code','PolicyMap Policy Number'],\n\tstore: 'cache',\n\tformat: 'inline',\n\toutput: false,\n\tsaveOrder: 1) ~> cacheClientPolicyNo\nCCMBodyPart sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\tkeys:['CCMKey'],\n\tstore: 'cache',\n\tformat: 'inline',\n\toutput: false,\n\tsaveOrder: 1) ~> cacheCCMBodyPart\nCCMCauseType sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\tkeys:['CCMKey'],\n\tstore: 'cache',\n\tformat: 'inline',\n\toutput: false,\n\tsaveOrder: 1) ~> cacheCCMCauseType\nCCMClaimantName sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\tkeys:['CCMKey'],\n\tstore: 'cache',\n\tformat: 'inline',\n\toutput: false,\n\tsaveOrder: 1) ~> cacheClaimantName\nCCMInjuryType sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\tkeys:['CCMKey'],\n\tstore: 'cache',\n\tformat: 'inline',\n\toutput: false,\n\tsaveOrder: 1) ~> cacheCCMInjuryType\nCCMGender sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\tkeys:['CCMKey'],\n\tstore: 'cache',\n\tformat: 'inline',\n\toutput: false,\n\tsaveOrder: 1) ~> cacheCCMGender\nCCMMaritalStatus sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\tkeys:['CCMKey'],\n\tstore: 'cache',\n\tformat: 'inline',\n\toutput: false,\n\tsaveOrder: 1) ~> cacheCCMMaritalStatus\nSelectFVMCOccupation sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\tkeys:['FVMCClientCode','OccupationOldValue'],\n\tstore: 'cache',\n\tformat: 'inline',\n\toutput: false,\n\tsaveOrder: 1) ~> cacheOccupation\nCCMOccupation sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\tkeys:['CCMKey'],\n\tstore: 'cache',\n\tformat: 'inline',\n\toutput: false,\n\tsaveOrder: 1) ~> cacheCCMOccupation\nSelectClaimantOccupationCols sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\tkeys:['ClaimantOcupClientCode','OldOccupation'],\n\tstore: 'cache',\n\tformat: 'inline',\n\toutput: false,\n\tsaveOrder: 1) ~> cacheFVMCClaimtOccupation\nAlterClaimRow sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinput(\n\t\tClaimKey as long,\n\t\tClaimNumber as string,\n\t\tPolicyNumber as string,\n\t\tPolicyEffectiveDate as date,\n\t\tPolicyExpirationDate as date,\n\t\tClaimant as string,\n\t\tAccident_Description as string,\n\t\tDateofLoss as date,\n\t\tReportedDate as date,\n\t\tClosedDate as date,\n\t\tDateOfHire as date,\n\t\tDriver as string,\n\t\tPolicyYear as integer,\n\t\tPolicyPeriod as string,\n\t\tAge as integer,\n\t\tClientCarrierGroupKey as integer,\n\t\tTimeOfLoss as string,\n\t\tLagTime as string,\n\t\tDaysToClose as integer,\n\t\tTenure as integer,\n\t\tOccurrence_State as string,\n\t\tBenefit_State as string,\n\t\tClientKey as integer,\n\t\tLastLoadTime as timestamp,\n\t\tDayOfWeek as string,\n\t\tLineOfBusinessKey as integer,\n\t\tCarrierKey as integer,\n\t\tClaimHashKey as string,\n\t\tFillerClaim as boolean\n\t),\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:true,\n\tupsertable:false,\n\tkeys:['ClaimHashKey'],\n\tformat: 'table',\n\tstaged: true,\n\tallowCopyCommand: true,\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\tsaveOrder: 3,\n\terrorHandlingOption: 'stopOnFirstError',\n\tmapColumn(\n\t\tClaimNumber,\n\t\tPolicyNumber,\n\t\tPolicyEffectiveDate,\n\t\tPolicyExpirationDate,\n\t\tClaimant,\n\t\tAccident_Description,\n\t\tDateofLoss,\n\t\tReportedDate,\n\t\tClosedDate,\n\t\tDateOfHire,\n\t\tDriver,\n\t\tPolicyYear,\n\t\tPolicyPeriod,\n\t\tAge,\n\t\tClientCarrierGroupKey,\n\t\tLagTime,\n\t\tDaysToClose,\n\t\tTenure,\n\t\tOccurrence_State = Occurrance_State,\n\t\tBenefit_State,\n\t\tClientKey,\n\t\tLastLoadTime,\n\t\tDayOfWeek,\n\t\tLineOfBusinessKey,\n\t\tCarrierKey,\n\t\tClaimHashKey\n\t),\n\tpartitionBy('hash', 4,\n\t\tClaimNumber\n\t)) ~> DimClaim"
+		}
+	}
+}

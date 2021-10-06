@@ -1,0 +1,54 @@
+{
+	"name": "KeyshumClaimsTransaction",
+	"properties": {
+		"folder": {
+			"name": "Transform"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "dsgrahamStageDB",
+						"type": "DatasetReference"
+					},
+					"name": "stageKeshum"
+				},
+				{
+					"dataset": {
+						"referenceName": "dsKeshumLocationFile",
+						"type": "DatasetReference"
+					},
+					"name": "LocationMap"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "dsClientClaimTransaction",
+						"type": "DatasetReference"
+					},
+					"name": "ClientClaimTransaction"
+				}
+			],
+			"transformations": [
+				{
+					"name": "DerivedColums"
+				},
+				{
+					"name": "JoinLocation"
+				},
+				{
+					"name": "DerivedLocation"
+				},
+				{
+					"name": "SelectColumns"
+				},
+				{
+					"name": "AlterClientClaim"
+				}
+			],
+			"script": "source(output(\n\t\tClaimNumber as string,\n\t\tValuationDate as date,\n\t\tLocation_Level1 as string,\n\t\tLocation_Level2 as string,\n\t\tDateofHire as string,\n\t\tDateofBirth as string,\n\t\tAge as string,\n\t\tGender as string,\n\t\tWheelchair_Accesible as string,\n\t\tOccupation as string,\n\t\tDriverLastName as string,\n\t\tDriverFirstName as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_COMMITTED',\n\tquery: 'SELECT [AmTrust Claim] AS [ClaimNumber],ValuationDate, [Location 1] AS [Location_Level1],[Location 2] AS [Location_Level2],\\ndbo.ConvertNumericToDate([Date of Hire]) AS [DateofHire],\\ndbo.ConvertNumericToDate([Date of Birth]) AS [DateofBirth],\\n[Age at Time of Accident] AS [Age],[Gender],\\n[Wheelchair Accessible] AS [Wheelchair_Accesible],[Occupation],[Driver Last Name] AS [DriverLastName],\\n[Driver First Name] AS [DriverFirstName]\\nFROM stage.[KEYSHUM-01]',\n\tformat: 'query') ~> stageKeshum\nsource(output(\n\t\t{Location 2} as string,\n\t\t{Location 1} as string,\n\t\t{Location Name} as string,\n\t\t{Department Name} as string,\n\t\t{Division Name} as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> LocationMap\nstageKeshum derive(DateofHire = iif(isNull(DateofHire), 'Unknown', \r\niif(DateofHire=='', 'Unknown',\r\niif(DateofHire=='1/1/1900','Unknown',\r\niif(DateofHire=='#N/A', 'Unknown', \r\nDateofHire)))),\n\t\tDateofBirth = iif(isNull(DateofBirth), 'Unknown', \r\niif(DateofBirth=='', 'Unknown',\r\niif(DateofBirth=='1/1/1900','Unknown',\r\niif(DateofBirth=='#N/A', 'Unknown', \r\nDateofBirth)))),\n\t\tAge = iif(isNull(Age), 'Unknown',\r\niif(Age=='', 'Unknown',\r\niif(Age=='#N/A', 'Unknown',\r\nAge))),\n\t\tGender = iif(isNull(Gender), 'Unknown', \r\niif(Gender=='', 'Unknown',\r\niif(Gender=='#N/A','Unknown',Gender))),\n\t\tWheelchair_Accesible = iif(isNull(Wheelchair_Accesible), 'Unknown', \r\niif(Wheelchair_Accesible=='', 'Unknown',\r\niif(Wheelchair_Accesible=='#N/A','Unknown',Wheelchair_Accesible))),\n\t\tDriver = iif((trim(upper(DriverLastName))=='UNASSIGNED' || trim(upper(DriverLastName))=='UNKNOWN') && (trim(upper(DriverFirstName))=='UNASSIGNED' || trim(upper(DriverFirstName))=='UNKNOWN'), '', concat(concat(trim(DriverLastName), ',') ,trim(DriverFirstName))),\n\t\tClientCode = 'KEYSHUM-01') ~> DerivedColums\nDerivedColums, LocationMap join(Location_Level1 == {Location 1}\n\t&& Location_Level2 == {Location 2},\n\tjoinType:'left',\n\tbroadcast: 'auto')~> JoinLocation\nJoinLocation derive(Location_Level1 = {Location Name},\n\t\tLocation_Level2 = {Department Name},\n\t\tLocation_Level3 = {Division Name}) ~> DerivedLocation\nDerivedLocation select(mapColumn(\n\t\tClaimNumber,\n\t\tValuationDate,\n\t\tLocation_Level1,\n\t\tLocation_Level2,\n\t\tDateofHire,\n\t\tDateofBirth,\n\t\tAge,\n\t\tGender,\n\t\tWheelchair_Accesible,\n\t\tOccupation,\n\t\tDriver,\n\t\tLocation_Level3,\n\t\tClientCode\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SelectColumns\nSelectColumns alterRow(insertIf(true())) ~> AlterClientClaim\nAlterClientClaim sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinput(\n\t\tClaimTransactionKey as long,\n\t\tClientCode as string,\n\t\tValuationDate as date,\n\t\tClaimNumber as string,\n\t\tLocation_Level1 as string,\n\t\tLocation_Level2 as string,\n\t\tLocation_Level3 as string,\n\t\tDateofHire as date,\n\t\tDateofBirth as date,\n\t\tAge as string,\n\t\tGender as string,\n\t\tWheelchair_Accesible as string,\n\t\tDriver as string,\n\t\tOccupation as string\n\t),\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tstaged: false,\n\tpreSQLs:['TRUNCATE TABLE [stage].[ClientClaimTransaction]'],\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError') ~> ClientClaimTransaction"
+		}
+	}
+}

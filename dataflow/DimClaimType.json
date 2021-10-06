@@ -1,0 +1,100 @@
+{
+	"name": "DimClaimType",
+	"properties": {
+		"folder": {
+			"name": "Dimesnion"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "dsExcelClaimType",
+						"type": "DatasetReference"
+					},
+					"name": "ClaimTypeSource"
+				},
+				{
+					"dataset": {
+						"referenceName": "dsDimClaimType",
+						"type": "DatasetReference"
+					},
+					"name": "DimClaimTypeSource"
+				},
+				{
+					"dataset": {
+						"referenceName": "dsQuery",
+						"type": "DatasetReference"
+					},
+					"name": "DimLOBSource"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "dsDimClaimType",
+						"type": "DatasetReference"
+					},
+					"name": "DimClaimType"
+				},
+				{
+					"name": "cacheDimLOB"
+				}
+			],
+			"transformations": [
+				{
+					"name": "SelectColumns"
+				},
+				{
+					"name": "AlterClaimTypeRow"
+				},
+				{
+					"name": "DerivedClaimType"
+				},
+				{
+					"name": "AggregateClaimType"
+				},
+				{
+					"name": "AggregateClaimTypeKey"
+				},
+				{
+					"name": "DerivedKeyField"
+				},
+				{
+					"name": "SelectMaxKey"
+				},
+				{
+					"name": "JoinExisting"
+				},
+				{
+					"name": "ConditionalClaimTypeRows"
+				},
+				{
+					"name": "SelectColumnsToProcess"
+				},
+				{
+					"name": "SurrogateKeyClaimType"
+				},
+				{
+					"name": "DerivedTempKey"
+				},
+				{
+					"name": "JoinWithMax"
+				},
+				{
+					"name": "DerivedClaimTypeKey"
+				},
+				{
+					"name": "UnionForUpsert"
+				},
+				{
+					"name": "DerivedLOBKeyAndTime"
+				},
+				{
+					"name": "FilterRows"
+				}
+			],
+			"script": "source(output(\n\t\tClaimTypeId as short,\n\t\t{Coverage (Line of Business)} as string,\n\t\t{Claim Type} as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> ClaimTypeSource\nsource(output(\n\t\tClaimTypeKey as integer,\n\t\tClaimTypeCode as string,\n\t\tClaimTypeName as string,\n\t\tNotice_ClaimType as boolean,\n\t\tLineOfBusinessKey as integer,\n\t\tLastLoadTime as timestamp,\n\t\tClaimTypeID as integer\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_COMMITTED',\n\tformat: 'table',\n\tstaged: false) ~> DimClaimTypeSource\nsource(output(\n\t\tLineOfBusinessKey as short,\n\t\tLOBCode as string,\n\t\tLineOfBusiness as string,\n\t\tLastLoadTime as timestamp\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_COMMITTED',\n\tquery: 'SELECT * FROM DimLineOfBusiness',\n\tformat: 'query',\n\tstaged: false) ~> DimLOBSource\nDerivedClaimType select(mapColumn(\n\t\tClaimType,\n\t\tLOBCode,\n\t\tNotice_ClaimType,\n\t\tClaimTypeId\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SelectColumns\nDerivedLOBKeyAndTime alterRow(upsertIf(true())) ~> AlterClaimTypeRow\nClaimTypeSource derive(ClaimType = trim({Claim Type}),\n\t\tLOBCode = trim({Coverage (Line of Business)}),\n\t\tNotice_ClaimType = iif(substring(upper(trim({Claim Type})), -1, 1)=='N',true(),false()),\n\t\tClaimTypeId = toShort(ClaimTypeId)) ~> DerivedClaimType\nSelectColumns aggregate(groupBy(ClaimType),\n\teach(match(!in(['ClaimType'],name)), $$ = first($$))) ~> AggregateClaimType\nDimClaimTypeSource aggregate(ClaimTypeKey = coalesce(max(ClaimTypeKey), 0)) ~> AggregateClaimTypeKey\nAggregateClaimTypeKey derive(Key = 'MaxKey') ~> DerivedKeyField\nDerivedKeyField select(mapColumn(\n\t\tMaxClaimTypeKey = ClaimTypeKey,\n\t\tKey\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SelectMaxKey\nAggregateClaimType, DimClaimTypeSource join(AggregateClaimType@ClaimTypeId == DimClaimTypeSource@ClaimTypeID,\n\tjoinType:'left',\n\tbroadcast: 'right')~> JoinExisting\nSelectColumnsToProcess split(!isNull(ClaimTypeKey),\n\tdisjoint: false) ~> ConditionalClaimTypeRows@(UpdateRows, InsertRows)\nFilterRows select(mapColumn(\n\t\tClaimType,\n\t\tLOBCode,\n\t\tNotice_ClaimType = AggregateClaimType@Notice_ClaimType,\n\t\tClaimTypeKey,\n\t\tLineOfBusinessKey,\n\t\tClaimTypeId = AggregateClaimType@ClaimTypeId\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SelectColumnsToProcess\nConditionalClaimTypeRows@InsertRows keyGenerate(output(SurrogateClaimTypeKey as long),\n\tstartAt: 1L) ~> SurrogateKeyClaimType\nSurrogateKeyClaimType derive(TempKey = 'MaxKey') ~> DerivedTempKey\nDerivedTempKey, SelectMaxKey join(TempKey == Key,\n\tjoinType:'inner',\n\tbroadcast: 'auto')~> JoinWithMax\nJoinWithMax derive(ClaimTypeKey = SurrogateClaimTypeKey+MaxClaimTypeKey) ~> DerivedClaimTypeKey\nConditionalClaimTypeRows@UpdateRows, DerivedClaimTypeKey union(byName: true)~> UnionForUpsert\nUnionForUpsert derive(LineOfBusinessKey = cacheDimLOB#lookup(LOBCode).LineOfBusinessKey,\n\t\tLoadTime = currentTimestamp()) ~> DerivedLOBKeyAndTime\nJoinExisting filter(!isNull(AggregateClaimType@ClaimTypeId) && lower(ClaimType)!='unk') ~> FilterRows\nAlterClaimTypeRow sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinput(\n\t\tClaimTypeKey as integer,\n\t\tClaimTypeCode as string,\n\t\tClaimTypeName as string,\n\t\tNotice_ClaimType as boolean,\n\t\tLineOfBusinessKey as integer,\n\t\tLastLoadTime as timestamp,\n\t\tClaimTypeID as integer\n\t),\n\tdeletable:false,\n\tinsertable:false,\n\tupdateable:false,\n\tupsertable:true,\n\tkeys:['ClaimTypeKey'],\n\tformat: 'table',\n\tstaged: false,\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\tsaveOrder: 2,\n\terrorHandlingOption: 'stopOnFirstError',\n\tmapColumn(\n\t\tClaimTypeKey,\n\t\tClaimTypeCode = ClaimType,\n\t\tNotice_ClaimType,\n\t\tLineOfBusinessKey,\n\t\tLastLoadTime = LoadTime,\n\t\tClaimTypeID = ClaimTypeId\n\t)) ~> DimClaimType\nDimLOBSource sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\tkeys:['LOBCode'],\n\tstore: 'cache',\n\tformat: 'inline',\n\toutput: false,\n\tsaveOrder: 1) ~> cacheDimLOB"
+		}
+	}
+}

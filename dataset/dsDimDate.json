@@ -1,0 +1,106 @@
+{
+	"name": "dsDimDate",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "GrahamDWHLinkedService",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "POC"
+		},
+		"annotations": [],
+		"type": "AzureSqlDWTable",
+		"schema": [
+			{
+				"name": "DateKey",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "Date",
+				"type": "date"
+			},
+			{
+				"name": "Year",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "MonthKey",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "DayOfMonth",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "DayName",
+				"type": "varchar"
+			},
+			{
+				"name": "DayOfWeekInMonth",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "DayOfWeekInYear",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "DayOfQuarter",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "DayOfYear",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "WeekOfMonth",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "DayOfWeek",
+				"type": "varchar"
+			},
+			{
+				"name": "WeekOfQuarter",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "WeekOfYear",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "Month",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "MonthName",
+				"type": "varchar"
+			},
+			{
+				"name": "Quarter",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "QuarterName",
+				"type": "varchar"
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "DimDate"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

@@ -1,0 +1,139 @@
+{
+	"name": "ClientCarrierMap",
+	"properties": {
+		"activities": [
+			{
+				"name": "Copy ClientCarrierInfo",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "ExcelSource",
+						"storeSettings": {
+							"type": "AzureBlobFSReadSettings",
+							"recursive": true,
+							"wildcardFileName": "Clients- Carrier - Carrier Display - Effective Date.xlsx",
+							"enablePartitionDiscovery": false
+						}
+					},
+					"sink": {
+						"type": "AzureSqlSink"
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "Billing Carrier Name",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Display_Carrier_Name",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "Billing Carrier Code",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "CarrierCode",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "Client Code",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "ClientCode",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "Coverage (Line of Business)",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "LOBCode",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "Client Name",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "ClientName",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "Policy Effective Date",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "PolicyEffectiveDate",
+									"type": "DateTime",
+									"physicalType": "date"
+								}
+							}
+						],
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "dsControlFiles",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "dsGrahamAnaDB",
+						"type": "DatasetReference",
+						"parameters": {
+							"SchemaName": "dbo",
+							"TableName": "ClientCarrierMap"
+						}
+					}
+				]
+			}
+		],
+		"folder": {
+			"name": "POC/BKP"
+		},
+		"annotations": [],
+		"lastPublishTime": "2021-08-26T09:18:30Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

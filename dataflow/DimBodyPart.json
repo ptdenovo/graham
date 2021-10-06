@@ -1,0 +1,87 @@
+{
+	"name": "DimBodyPart",
+	"properties": {
+		"folder": {
+			"name": "Dimesnion"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "dsExcelBodyPart",
+						"type": "DatasetReference"
+					},
+					"name": "BodyPartSource"
+				},
+				{
+					"dataset": {
+						"referenceName": "dsDimBodyPart",
+						"type": "DatasetReference"
+					},
+					"name": "DimBodyPartSource"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "dsDimBodyPart",
+						"type": "DatasetReference"
+					},
+					"name": "DimBodyPart"
+				}
+			],
+			"transformations": [
+				{
+					"name": "SelectColumns"
+				},
+				{
+					"name": "AlterBodyPartRow"
+				},
+				{
+					"name": "DerivedBodyPart"
+				},
+				{
+					"name": "AggregateBodyPartKey"
+				},
+				{
+					"name": "DerivedKeyField"
+				},
+				{
+					"name": "SelectMaxKey"
+				},
+				{
+					"name": "JoinExisting"
+				},
+				{
+					"name": "ConditionalBodyPartRows"
+				},
+				{
+					"name": "SelectColumnsToProcess"
+				},
+				{
+					"name": "SurrogateKeyBodyPart"
+				},
+				{
+					"name": "DerivedTempKey"
+				},
+				{
+					"name": "JoinWithMax"
+				},
+				{
+					"name": "DerivedBodyPartKey"
+				},
+				{
+					"name": "UnionForUpsert"
+				},
+				{
+					"name": "DerivedLoadTime"
+				},
+				{
+					"name": "FilterRows"
+				}
+			],
+			"script": "source(output(\n\t\tBodyPartId as string,\n\t\t{Body Part} as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> BodyPartSource\nsource(output(\n\t\tBodyPartKey as integer,\n\t\tBodyPart as string,\n\t\tLastLoadTime as timestamp,\n\t\tBodyPartID as integer\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_COMMITTED',\n\tformat: 'table',\n\tstaged: false) ~> DimBodyPartSource\nDerivedBodyPart select(mapColumn(\n\t\tBodyPartId,\n\t\tBodyPart\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SelectColumns\nDerivedLoadTime alterRow(upsertIf(true())) ~> AlterBodyPartRow\nBodyPartSource derive(BodyPart = trim({Body Part}),\n\t\tBodyPartId = toShort(BodyPartId)) ~> DerivedBodyPart\nDimBodyPartSource aggregate(BodyPartKey = coalesce(max(BodyPartKey), 0)) ~> AggregateBodyPartKey\nAggregateBodyPartKey derive(Key = 'MaxKey') ~> DerivedKeyField\nDerivedKeyField select(mapColumn(\n\t\tMaxBodyPartKey = BodyPartKey,\n\t\tKey\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SelectMaxKey\nSelectColumns, DimBodyPartSource join(SelectColumns@BodyPartId == DimBodyPartSource@BodyPartID,\n\tjoinType:'left',\n\tbroadcast: 'auto')~> JoinExisting\nSelectColumnsToProcess split(!isNull(BodyPartKey),\n\tdisjoint: false) ~> ConditionalBodyPartRows@(UpdateRows, InsertRows)\nFilterRows select(mapColumn(\n\t\tBodyPartId = SelectColumns@BodyPartId,\n\t\tBodyPart = SelectColumns@BodyPart,\n\t\tBodyPartKey\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SelectColumnsToProcess\nConditionalBodyPartRows@InsertRows keyGenerate(output(SurrogateBodyPartKey as long),\n\tstartAt: 1L) ~> SurrogateKeyBodyPart\nSurrogateKeyBodyPart derive(TempKey = 'MaxKey') ~> DerivedTempKey\nDerivedTempKey, SelectMaxKey join(TempKey == Key,\n\tjoinType:'inner',\n\tbroadcast: 'auto')~> JoinWithMax\nJoinWithMax derive(BodyPartKey = SurrogateBodyPartKey+MaxBodyPartKey) ~> DerivedBodyPartKey\nConditionalBodyPartRows@UpdateRows, DerivedBodyPartKey union(byName: true)~> UnionForUpsert\nUnionForUpsert derive(LoadTime = currentTimestamp()) ~> DerivedLoadTime\nJoinExisting filter(!isNull(SelectColumns@BodyPartId) && lower(SelectColumns@BodyPart)!='unknown') ~> FilterRows\nAlterBodyPartRow sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinput(\n\t\tBodyPartKey as integer,\n\t\tBodyPart as string,\n\t\tLastLoadTime as timestamp,\n\t\tBodyPartID as integer\n\t),\n\tdeletable:false,\n\tinsertable:false,\n\tupdateable:false,\n\tupsertable:true,\n\tkeys:['BodyPartKey'],\n\tformat: 'table',\n\tstaged: false,\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError',\n\tmapColumn(\n\t\tBodyPartKey,\n\t\tBodyPart,\n\t\tLastLoadTime = LoadTime,\n\t\tBodyPartID = BodyPartId\n\t)) ~> DimBodyPart"
+		}
+	}
+}

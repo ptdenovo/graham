@@ -1,0 +1,74 @@
+{
+	"name": "ExtractKeyshumEmployeeCount",
+	"properties": {
+		"activities": [
+			{
+				"name": "Copy Keyshum Employee Count",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "ExcelSource",
+						"storeSettings": {
+							"type": "AzureBlobFSReadSettings",
+							"recursive": true,
+							"wildcardFileName": "KEYSHUM-01 Employee Counts.xlsx",
+							"enablePartitionDiscovery": false
+						}
+					},
+					"sink": {
+						"type": "AzureSqlSink",
+						"preCopyScript": "Delete from stage.EmployeeCount",
+						"disableMetricsCollection": false
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "dsExcelFiles",
+						"type": "DatasetReference",
+						"parameters": {
+							"ContainerName": "client-source",
+							"CarrierCode": "KEYSHUM",
+							"DataStartRange": "A1",
+							"SheetIndex": 0,
+							"FirstRowHeader": true
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "dsgrahamStageDBTables",
+						"type": "DatasetReference",
+						"parameters": {
+							"SchemaName": "stage",
+							"TableName": "EmployeeCount"
+						}
+					}
+				]
+			}
+		],
+		"folder": {
+			"name": "ClientData"
+		},
+		"annotations": [],
+		"lastPublishTime": "2021-05-17T16:35:11Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

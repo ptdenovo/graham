@@ -1,0 +1,128 @@
+{
+	"name": "FinancialCorrections",
+	"properties": {
+		"folder": {
+			"name": "FinancialCorrections"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "dsQuery",
+						"type": "DatasetReference"
+					},
+					"name": "dsValuationDates"
+				},
+				{
+					"dataset": {
+						"referenceName": "dsQuery",
+						"type": "DatasetReference"
+					},
+					"name": "DimCarrier"
+				},
+				{
+					"dataset": {
+						"referenceName": "dsQuery",
+						"type": "DatasetReference"
+					},
+					"name": "FactClaimTransaction"
+				},
+				{
+					"dataset": {
+						"referenceName": "dsQuery",
+						"type": "DatasetReference"
+					},
+					"name": "DimClient"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "dsFactClaimTrans",
+						"type": "DatasetReference"
+					},
+					"name": "FactClaimTransactionUpdate"
+				},
+				{
+					"dataset": {
+						"referenceName": "dsZeroTotalIncurredNonZeroNetIncurred",
+						"type": "DatasetReference"
+					},
+					"name": "ReportZeroTotalIncurredNonZeroNetIncurred"
+				},
+				{
+					"dataset": {
+						"referenceName": "dsNegativeNetIncurred",
+						"type": "DatasetReference"
+					},
+					"name": "ReportNegativeNetIncurred"
+				},
+				{
+					"dataset": {
+						"referenceName": "dsClosedNonZeroTotalReserve",
+						"type": "DatasetReference"
+					},
+					"name": "ReportClosedNonZeroTotalReserve"
+				}
+			],
+			"transformations": [
+				{
+					"name": "JoinCarrier"
+				},
+				{
+					"name": "JoinDate"
+				},
+				{
+					"name": "FilterMatchingRows"
+				},
+				{
+					"name": "DerivedNetIncurred"
+				},
+				{
+					"name": "SelectFactUpdate"
+				},
+				{
+					"name": "AlterFactRow"
+				},
+				{
+					"name": "SelectForReport"
+				},
+				{
+					"name": "FilterNegativeNetIncurred"
+				},
+				{
+					"name": "CleanseNegativeNetIncurred"
+				},
+				{
+					"name": "SelectReportNegativeNetIncurredCols"
+				},
+				{
+					"name": "SelectFactNegativeNetIncurred"
+				},
+				{
+					"name": "UnionNegativeNetIncurred"
+				},
+				{
+					"name": "JoinDimClient"
+				},
+				{
+					"name": "FilterClosedWithNonZeroReserves"
+				},
+				{
+					"name": "CleanseFCValues"
+				},
+				{
+					"name": "SelectReportClosedClaim"
+				},
+				{
+					"name": "SelectFactClosedNonZeroTotalReserve"
+				},
+				{
+					"name": "UnionClosedNonZeroReservs"
+				}
+			],
+			"script": "parameters{\n\tCarrierCode as string\n}\nsource(output(\n\t\tValuationDate as date,\n\t\tDateKey as integer\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_COMMITTED',\n\tquery: (concat('SELECT DISTINCT ValuationDate,DateKey FROM stage.ClaimTransaction ct INNER JOIN DimDate dd ON ct.ValuationDate=dd.Date WHERE CarrierCode=', \"'\",$CarrierCode,\"'\")),\n\tformat: 'query',\n\tstaged: false) ~> dsValuationDates\nsource(output(\n\t\tCarrierKey as short,\n\t\tCarrierCode as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_COMMITTED',\n\tquery: (concat('SELECT CarrierKey, CarrierCode From DimCarrier WHERE CarrierCode=', '\\'',$CarrierCode,'\\' AND Enabled=1')),\n\tformat: 'query',\n\tstaged: false) ~> DimCarrier\nsource(output(\n\t\tTransactionKey as long,\n\t\tClaimStatus as string,\n\t\tClaimKey as long,\n\t\tCarrierKey as short,\n\t\tClientKey as short,\n\t\tValuationDateKey as integer,\n\t\tClaimNumber as string,\n\t\tTotal_Incurred as decimal(18,2),\n\t\tNet_Incurred as decimal(18,2),\n\t\tTotal_Paid as decimal(18,2),\n\t\tRecovery_Total as decimal(18,2),\n\t\tTotal_Reserve as decimal(18,2),\n\t\tExpense_Reserve as decimal(18,2),\n\t\tMedical_BI_Reserves as decimal(18,2),\n\t\tIndemnity_PD_Reserves as decimal(18,2),\n\t\tIncurred_BI_Med as decimal(18,2),\n\t\tIncurred_PD_LT as decimal(18,2)\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tquery: (concat('SELECT TransactionKey,ClaimStatus,dc.ClaimKey,CarrierKey,fc.ClientKey,ValuationDateKey,ClaimNumber,Total_Incurred,Net_Incurred,Total_Paid,Recovery_Total,Total_Reserve,Expense_Reserve,Medical_BI_Reserves,Indemnity_PD_Reserves,Incurred_BI_Med,Incurred_PD_LT FROM dbo.FactClaimTransaction fc INNER JOIN DimClaim dc ON fc.ClaimKey=dc.ClaimKey')),\n\tformat: 'query',\n\tstaged: false) ~> FactClaimTransaction\nsource(output(\n\t\tClientKey as short,\n\t\tClientCode as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tquery: 'SELECT ClientKey,ClientCode FROM [dbo].[DimClient] WHERE Enabled=1',\n\tformat: 'query',\n\tstaged: false) ~> DimClient\nFactClaimTransaction, DimCarrier join(FactClaimTransaction@CarrierKey == DimCarrier@CarrierKey,\n\tjoinType:'inner',\n\tbroadcast: 'right')~> JoinCarrier\nJoinDimClient, dsValuationDates join(ValuationDateKey == DateKey,\n\tjoinType:'inner',\n\tbroadcast: 'right')~> JoinDate\nJoinDate filter(Total_Incurred == 0 && Net_Incurred != 0) ~> FilterMatchingRows\nFilterMatchingRows derive(New_Net_Incurred = 0) ~> DerivedNetIncurred\nDerivedNetIncurred select(mapColumn(\n\t\tTransactionKey,\n\t\tNew_Net_Incurred\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SelectFactUpdate\nUnionClosedNonZeroReservs alterRow(updateIf(true())) ~> AlterFactRow\nDerivedNetIncurred select(mapColumn(\n\t\tTransactionKey,\n\t\tClaimKey,\n\t\tClientKey = FactClaimTransaction@ClientKey,\n\t\tValuationDateKey,\n\t\tClaimNumber,\n\t\tTotal_Incurred,\n\t\tOld_Net_Incurred = Net_Incurred,\n\t\tValuationDate,\n\t\tClientCode,\n\t\tNew_Net_Incurred,\n\t\tCarrierCode\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SelectForReport\nJoinDate filter(Net_Incurred<0) ~> FilterNegativeNetIncurred\nFilterNegativeNetIncurred derive(New_Total_Paid = coalesce(Total_Paid,0)-coalesce(Net_Incurred,0),\n\t\tNew_Total_Incurred = coalesce(Total_Incurred,0)-coalesce(Net_Incurred,0),\n\t\tNew_Net_Incurred = 0,\n\t\tOther_Paid = -1*coalesce(Recovery_Total,0)) ~> CleanseNegativeNetIncurred\nCleanseNegativeNetIncurred select(mapColumn(\n\t\tTransactionKey,\n\t\tClaimKey,\n\t\tCarrierKey = FactClaimTransaction@CarrierKey,\n\t\tClientKey = FactClaimTransaction@ClientKey,\n\t\tValuationDateKey,\n\t\tClaimNumber,\n\t\tTotal_Incurred,\n\t\tNet_Incurred,\n\t\tTotal_Paid,\n\t\tRecovery_Total,\n\t\tCarrierCode,\n\t\tValuationDate,\n\t\tDateKey,\n\t\tNew_Total_Paid,\n\t\tNew_Total_Incurred,\n\t\tNew_Net_Incurred,\n\t\tOther_Paid,\n\t\tClientCode\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SelectReportNegativeNetIncurredCols\nCleanseNegativeNetIncurred select(mapColumn(\n\t\tTransactionKey,\n\t\tNew_Total_Paid,\n\t\tNew_Total_Incurred,\n\t\tNew_Net_Incurred,\n\t\tOther_Paid\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SelectFactNegativeNetIncurred\nSelectFactUpdate, SelectFactNegativeNetIncurred union(byName: true)~> UnionNegativeNetIncurred\nJoinCarrier, DimClient join(FactClaimTransaction@ClientKey == DimClient@ClientKey,\n\tjoinType:'inner',\n\tbroadcast: 'auto')~> JoinDimClient\nJoinDate filter(ClaimStatus=='Closed' && Total_Reserve!=0) ~> FilterClosedWithNonZeroReserves\nFilterClosedWithNonZeroReserves derive(New_Total_Reserve = 0,\n\t\tNew_Total_Incurred = coalesce(Total_Incurred,0) - coalesce(Total_Reserve,0),\n\t\tNew_Net_Incurred = coalesce(Net_Incurred,0) - coalesce(Total_Reserve,0),\n\t\tNew_Expense_Reserve = 0,\n\t\tNew_Medical_BI_Reserves = 0,\n\t\tNew_Indemnity_PD_Reserves = 0,\n\t\tNew_Incurred_BI_Med = coalesce(Incurred_BI_Med,0) - coalesce(Medical_BI_Reserves,0),\n\t\tNew_Incurred_PD_LT = coalesce(Incurred_PD_LT,0) - coalesce(Indemnity_PD_Reserves,0)) ~> CleanseFCValues\nCleanseFCValues select(mapColumn(\n\t\tTransactionKey,\n\t\tClaimKey,\n\t\tCarrierKey = FactClaimTransaction@CarrierKey,\n\t\tClientKey = FactClaimTransaction@ClientKey,\n\t\tValuationDateKey,\n\t\tClaimNumber,\n\t\tTotal_Incurred,\n\t\tNet_Incurred,\n\t\tTotal_Paid,\n\t\tRecovery_Total,\n\t\tTotal_Reserve,\n\t\tExpense_Reserve,\n\t\tMedical_BI_Reserves,\n\t\tIndemnity_PD_Reserves,\n\t\tIncurred_BI_Med,\n\t\tIncurred_PD_LT,\n\t\tCarrierCode,\n\t\tClientCode,\n\t\tValuationDate,\n\t\tNew_Total_Reserve,\n\t\tNew_Total_Incurred,\n\t\tNew_Net_Incurred,\n\t\tNew_Expense_Reserve,\n\t\tNew_Medical_BI_Reserves,\n\t\tNew_Indemnity_PD_Reserves,\n\t\tNew_Incurred_BI_Med,\n\t\tNew_Incurred_PD_LT\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SelectReportClosedClaim\nCleanseFCValues select(mapColumn(\n\t\tTransactionKey,\n\t\tNew_Total_Reserve,\n\t\tNew_Total_Incurred,\n\t\tNew_Net_Incurred,\n\t\tNew_Expense_Reserve,\n\t\tNew_Medical_BI_Reserves,\n\t\tNew_Indemnity_PD_Reserves,\n\t\tNew_Incurred_BI_Med,\n\t\tNew_Incurred_PD_LT\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SelectFactClosedNonZeroTotalReserve\nUnionNegativeNetIncurred, SelectFactClosedNonZeroTotalReserve union(byName: true)~> UnionClosedNonZeroReservs\nAlterFactRow sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:false,\n\tupdateable:true,\n\tupsertable:false,\n\tkeys:['TransactionKey'],\n\tformat: 'table',\n\tstaged: false,\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\tsaveOrder: 1,\n\terrorHandlingOption: 'stopOnFirstError',\n\tmapColumn(\n\t\tTransactionKey,\n\t\tNet_Incurred = New_Net_Incurred,\n\t\tTotal_Paid = New_Total_Paid,\n\t\tTotal_Incurred = New_Total_Incurred,\n\t\tTotal_Reserve = New_Total_Reserve,\n\t\tExpense_Reserve = New_Expense_Reserve,\n\t\tMedical_BI_Reserves = New_Medical_BI_Reserves,\n\t\tIndemnity_PD_Reserves = New_Indemnity_PD_Reserves,\n\t\tIncurred_BI_Med = New_Incurred_BI_Med,\n\t\tIncurred_PD_LT = New_Incurred_PD_LT\n\t),\n\tpartitionBy('hash', 4,\n\t\tTransactionKey\n\t)) ~> FactClaimTransactionUpdate\nSelectForReport sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinput(\n\t\tTransactionKey as long,\n\t\tValuationDateKey as integer,\n\t\tClientKey as integer,\n\t\tClaimKey as long,\n\t\tClaimNumber as string,\n\t\tValuationDate as date,\n\t\tClientCode as string,\n\t\tTotal_Incurred as decimal(18,2),\n\t\tOld_Net_Incurred as decimal(18,2),\n\t\tNew_Net_Incurred as decimal(18,2),\n\t\tCarrierCode as string\n\t),\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tstaged: false,\n\tpreSQLs:[(concat('DELETE rpt FROM [report].[ZeroTotalIncurredNonZeroNetIncurred] rpt INNER JOIN DimClaim dc ON rpt.ClaimKey=dc.ClaimKey INNER JOIN stage.ClaimTransaction sc ON dc.ClaimNumber=sc.ClaimNumber AND dc.Claimant=sc.Claimant AND dc.ClientCarrierGroupKey=sc.ClientCarrierGroupKey INNER JOIN DimDate dd ON dd.Date=sc.ValuationDate WHERE rpt.CarrierCode=',\"'\",$CarrierCode,\"'\"))],\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\tsaveOrder: 2,\n\terrorHandlingOption: 'stopOnFirstError',\n\tmapColumn(\n\t\tTransactionKey,\n\t\tValuationDateKey,\n\t\tClientKey,\n\t\tClaimKey,\n\t\tClaimNumber,\n\t\tValuationDate,\n\t\tClientCode,\n\t\tTotal_Incurred,\n\t\tOld_Net_Incurred,\n\t\tNew_Net_Incurred,\n\t\tCarrierCode\n\t)) ~> ReportZeroTotalIncurredNonZeroNetIncurred\nSelectReportNegativeNetIncurredCols sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinput(\n\t\tTransactionKey as long,\n\t\tValuationDateKey as integer,\n\t\tClientKey as integer,\n\t\tClaimKey as long,\n\t\tClaimNumber as string,\n\t\tValuationDate as date,\n\t\tClientCode as string,\n\t\tCarrierCode as string,\n\t\tOld_Total_Paid as decimal(18,2),\n\t\tOld_Total_Incurred as decimal(18,2),\n\t\tOld_Net_Incurred as decimal(18,2),\n\t\tRecovery_Total as decimal(18,2),\n\t\tOther_Paid as decimal(18,2),\n\t\tNew_Total_Paid as decimal(18,2),\n\t\tNew_Total_Incurred as decimal(18,2),\n\t\tNew_Net_Incurred as decimal(18,2)\n\t),\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tstaged: false,\n\tpreSQLs:[(concat('DELETE rpt FROM [report].[NegativeNetIncurred] rpt INNER JOIN DimClaim dc ON rpt.ClaimKey=dc.ClaimKey INNER JOIN stage.ClaimTransaction sc ON dc.ClaimNumber=sc.ClaimNumber AND dc.Claimant=sc.Claimant AND dc.ClientCarrierGroupKey=sc.ClientCarrierGroupKey INNER JOIN DimDate dd ON dd.Date=sc.ValuationDate WHERE rpt.CarrierCode=',\"'\",$CarrierCode,\"'\"))],\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\tsaveOrder: 3,\n\terrorHandlingOption: 'stopOnFirstError',\n\tmapColumn(\n\t\tTransactionKey,\n\t\tValuationDateKey,\n\t\tClientKey,\n\t\tClaimKey,\n\t\tClaimNumber,\n\t\tValuationDate,\n\t\tClientCode,\n\t\tCarrierCode,\n\t\tNew_Total_Paid,\n\t\tNew_Total_Incurred,\n\t\tNew_Net_Incurred,\n\t\tOld_Total_Incurred = Total_Incurred,\n\t\tOld_Total_Paid = Total_Paid,\n\t\tOld_Net_Incurred = Net_Incurred\n\t)) ~> ReportNegativeNetIncurred\nSelectReportClosedClaim sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinput(\n\t\tTransactionKey as long,\n\t\tValuationDateKey as integer,\n\t\tClientKey as integer,\n\t\tClaimKey as long,\n\t\tClaimNumber as string,\n\t\tValuationDate as date,\n\t\tClientCode as string,\n\t\tCarrierCode as string,\n\t\tOld_Total_Reserve as decimal(18,2),\n\t\tOld_Total_Incurred as decimal(18,2),\n\t\tOld_Net_Incurred as decimal(18,2),\n\t\tNew_Total_Reserve as decimal(18,2),\n\t\tNew_Total_Incurred as decimal(18,2),\n\t\tNew_Net_Incurred as decimal(18,2)\n\t),\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tstaged: false,\n\tpreSQLs:[(concat('DELETE rpt FROM [report].[NonZeroTotalReserve] rpt INNER JOIN DimClaim dc ON rpt.ClaimKey=dc.ClaimKey INNER JOIN stage.ClaimTransaction sc ON dc.ClaimNumber=sc.ClaimNumber AND dc.Claimant=sc.Claimant AND dc.ClientCarrierGroupKey=sc.ClientCarrierGroupKey INNER JOIN DimDate dd ON dd.Date=sc.ValuationDate WHERE rpt.CarrierCode=',\"'\",$CarrierCode,\"'\"))],\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\tsaveOrder: 4,\n\terrorHandlingOption: 'stopOnFirstError',\n\tmapColumn(\n\t\tTransactionKey,\n\t\tValuationDateKey,\n\t\tClientKey,\n\t\tClaimKey,\n\t\tClaimNumber,\n\t\tValuationDate,\n\t\tClientCode,\n\t\tCarrierCode,\n\t\tOld_Total_Reserve = Total_Reserve,\n\t\tOld_Total_Incurred = Total_Incurred,\n\t\tOld_Net_Incurred = Net_Incurred,\n\t\tNew_Total_Reserve,\n\t\tNew_Total_Incurred,\n\t\tNew_Net_Incurred\n\t),\n\tpartitionBy('hash', 4,\n\t\tClientKey\n\t)) ~> ReportClosedNonZeroTotalReserve"
+		}
+	}
+}

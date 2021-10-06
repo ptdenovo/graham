@@ -1,0 +1,90 @@
+{
+	"name": "DimInjuryType",
+	"properties": {
+		"folder": {
+			"name": "Dimesnion"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "dsExcelInjuryType",
+						"type": "DatasetReference"
+					},
+					"name": "InjuryTypeSource"
+				},
+				{
+					"dataset": {
+						"referenceName": "dsDimInjuryType",
+						"type": "DatasetReference"
+					},
+					"name": "DimInjuryTypeSource"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "dsDimInjuryType",
+						"type": "DatasetReference"
+					},
+					"name": "DimInjuryType"
+				}
+			],
+			"transformations": [
+				{
+					"name": "SelectColumns"
+				},
+				{
+					"name": "AlterInjuryTypeRow"
+				},
+				{
+					"name": "DerivedInjuryType"
+				},
+				{
+					"name": "AggregateInjuryType"
+				},
+				{
+					"name": "AggregateInjuryTypeKey"
+				},
+				{
+					"name": "DerivedKeyField"
+				},
+				{
+					"name": "SelectMaxKey"
+				},
+				{
+					"name": "JoinExisting"
+				},
+				{
+					"name": "ConditionalInjuryTypeRows"
+				},
+				{
+					"name": "SelectColumnsToProcess"
+				},
+				{
+					"name": "SurrogateKeyInjuryType"
+				},
+				{
+					"name": "DerivedTempKey"
+				},
+				{
+					"name": "DerivedInjuryTypeKey"
+				},
+				{
+					"name": "UnionForUpsert"
+				},
+				{
+					"name": "JoinMaxKey"
+				},
+				{
+					"name": "FilterRows"
+				},
+				{
+					"name": "DerivedLoadTime"
+				}
+			],
+			"script": "source(output(\n\t\tInjuryTypeId as string,\n\t\t{Injury Type} as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> InjuryTypeSource\nsource(output(\n\t\tInjuryTypeKey as integer,\n\t\tInjuryType as string,\n\t\tLastLoadTime as timestamp,\n\t\tInjuryTypeID as integer\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_COMMITTED',\n\tformat: 'table',\n\tstaged: false) ~> DimInjuryTypeSource\nDerivedInjuryType select(mapColumn(\n\t\tInjuryTypeId,\n\t\tInjuryType\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SelectColumns\nDerivedLoadTime alterRow(upsertIf(true())) ~> AlterInjuryTypeRow\nInjuryTypeSource derive(InjuryType = trim({Injury Type}),\n\t\tInjuryTypeId = toInteger(InjuryTypeId)) ~> DerivedInjuryType\nSelectColumns aggregate(groupBy(InjuryType),\n\teach(match(!in(['InjuryType'],name)), $$ = first($$))) ~> AggregateInjuryType\nDimInjuryTypeSource aggregate(InjuryTypeKey = coalesce(max(InjuryTypeKey), 0)) ~> AggregateInjuryTypeKey\nAggregateInjuryTypeKey derive(Key = 'MaxKey') ~> DerivedKeyField\nDerivedKeyField select(mapColumn(\n\t\tMaxInjuryTypeKey = InjuryTypeKey,\n\t\tKey\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SelectMaxKey\nAggregateInjuryType, DimInjuryTypeSource join(AggregateInjuryType@InjuryTypeId == DimInjuryTypeSource@InjuryTypeID,\n\tjoinType:'left',\n\tbroadcast: 'auto')~> JoinExisting\nSelectColumnsToProcess split(!isNull(InjuryTypeKey),\n\tdisjoint: false) ~> ConditionalInjuryTypeRows@(UpdateRows, InsertRows)\nFilterRows select(mapColumn(\n\t\tInjuryType = AggregateInjuryType@InjuryType,\n\t\tInjuryTypeId = AggregateInjuryType@InjuryTypeId,\n\t\tInjuryTypeKey\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SelectColumnsToProcess\nConditionalInjuryTypeRows@InsertRows keyGenerate(output(SurrogateInjuryTypeKey as long),\n\tstartAt: 1L) ~> SurrogateKeyInjuryType\nSurrogateKeyInjuryType derive(TempKey = 'MaxKey') ~> DerivedTempKey\nJoinMaxKey derive(InjuryTypeKey = SurrogateInjuryTypeKey+MaxInjuryTypeKey) ~> DerivedInjuryTypeKey\nConditionalInjuryTypeRows@UpdateRows, DerivedInjuryTypeKey union(byName: true)~> UnionForUpsert\nDerivedTempKey, SelectMaxKey join(TempKey == Key,\n\tjoinType:'inner',\n\tbroadcast: 'auto')~> JoinMaxKey\nJoinExisting filter(!isNull(AggregateInjuryType@InjuryTypeId) && lower(AggregateInjuryType@InjuryType)!='unknown') ~> FilterRows\nUnionForUpsert derive(LoadTime = currentTimestamp()) ~> DerivedLoadTime\nAlterInjuryTypeRow sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinput(\n\t\tInjuryTypeKey as integer,\n\t\tInjuryType as string,\n\t\tLastLoadTime as timestamp,\n\t\tInjuryTypeID as integer\n\t),\n\tdeletable:false,\n\tinsertable:false,\n\tupdateable:false,\n\tupsertable:true,\n\tkeys:['InjuryTypeKey'],\n\tformat: 'table',\n\tstaged: false,\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError',\n\tmapColumn(\n\t\tInjuryTypeKey,\n\t\tInjuryType,\n\t\tLastLoadTime = LoadTime,\n\t\tInjuryTypeID = InjuryTypeId\n\t)) ~> DimInjuryType"
+		}
+	}
+}
